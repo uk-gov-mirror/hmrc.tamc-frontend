@@ -43,40 +43,7 @@ class EligibilityController @Inject()(
                                      )(implicit templateRenderer: TemplateRenderer,
                                        formPartialRetriever: FormPartialRetriever) extends BaseController {
 
-  def howItWorks: Action[AnyContent] = unauthenticatedAction {
-    implicit request =>
-      Ok(views.html.multiyear.how_it_works())
-  }
 
-  def home: Action[AnyContent] = unauthenticatedAction {
-    implicit request =>
-      Redirect(controllers.routes.EligibilityController.eligibilityCheck())
-  }
-
-  def eligibilityCheck(): Action[AnyContent] = unauthenticatedAction {
-    implicit request =>
-      Ok(eligibility_check(eligibilityCheckForm = eligibilityForm))
-  }
-
-  def eligibilityCheckAction(): Action[AnyContent] = {
-
-    def finishUrl(isLoggedIn: Boolean): String =
-      if (isLoggedIn) ptaFinishedUrl else gdsFinishedUrl
-
-    unauthenticatedAction {
-      implicit request =>
-        eligibilityForm.bindFromRequest.fold(
-          formWithErrors =>
-            BadRequest(views.html.multiyear.eligibility_check(formWithErrors)),
-          eligibilityInput => {
-            if (eligibilityInput.married) {
-              Redirect(controllers.routes.EligibilityController.dateOfBirthCheck())
-            } else {
-              Ok(views.html.multiyear.eligibility_non_eligible_finish(finishUrl(request.authState.permanent)))
-            }
-          })
-    }
-  }
 
   def dateOfBirthCheck(): Action[AnyContent] = unauthenticatedAction {
     implicit request =>

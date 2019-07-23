@@ -8,6 +8,20 @@ GET    /signed-out                                 @controllers.AuthorisationCon
 # GDS journey
 GET    /benefit-calculator                         @controllers.EligibilityController.gdsCalculator
 POST   /benefit-calculator                         @controllers.EligibilityController.gdsCalculatorAction
+GET    /how-it-works                               @controllers.eligibility.HowItWorksController.onPageLoad
+GET    /                                           @controllers.eligibility.MarriedOrPartnershipController.onPageLoad
+GET    /eligibility-check                          @controllers.eligibility.MarriedOrPartnershipController.onPageLoad
+POST   /eligibility-check                          @controllers.eligibility.MarriedOrPartnershipController.onSubmit
+GET    /lower-earner                               @controllers.EligibilityController.lowerEarnerCheck
+POST   /lower-earner                               @controllers.EligibilityController.lowerEarnerCheckAction
+GET    /partners-income                            @controllers.EligibilityController.partnersIncomeCheck
+POST   /partners-income                            @controllers.EligibilityController.partnersIncomeCheckAction
+GET    /date-of-birth-check                        @controllers.eligibility.DateOfBirthController.onPageLoad
+POST   /date-of-birth-check                        @controllers.eligibility.DateOfBirthController.onSubmit
+GET    /do-you-live-in-scotland                    @controllers.EligibilityController.doYouLiveInScotland
+POST   /do-you-live-in-scotland                    @controllers.EligibilityController.doYouLiveInScotlandAction
+GET    /do-you-want-to-apply                       @controllers.EligibilityController.doYouWantToApply
+POST   /do-you-want-to-apply                       @controllers.EligibilityController.doYouWantToApplyAction
 
 # PTA journey
 GET    /benefit-calculator-pta                     @controllers.EligibilityController.ptaCalculator
@@ -51,27 +65,13 @@ GET    /reject                                     @controllers.UpdateRelationsh
 GET    /finished-change                            @controllers.UpdateRelationshipController.finishUpdate
 POST   /confirm-email-update                       @controllers.UpdateRelationshipController.confirmYourEmailActionUpdate
 
-GET    /how-it-works                               @controllers.EligibilityController.howItWorks
-GET    /eligibility-check-pta                      controllers.Default.redirect(to = controllers.routes.EligibilityController.eligibilityCheck().url)
+GET    /eligibility-check-pta                      controllers.Default.redirect(to = controllers.eligibility.routes.MarriedOrPartnershipController.onPageLoad().url)
 GET    /lower-earner-pta                           controllers.Default.redirect(to = controllers.routes.EligibilityController.lowerEarnerCheck().url)
 GET    /partners-income-pta                        controllers.Default.redirect(to = controllers.routes.EligibilityController.partnersIncomeCheck().url)
-GET    /date-of-birth-check-pta                    controllers.Default.redirect(to = controllers.routes.EligibilityController.dateOfBirthCheck().url)
+GET    /date-of-birth-check-pta                    controllers.Default.redirect(to = controllers.eligibility.routes.DateOfBirthController.onPageLoad().url)
 GET    /do-you-live-in-scotland-pta                controllers.Default.redirect(to = controllers.routes.EligibilityController.doYouLiveInScotland().url)
 GET    /do-you-want-to-apply-pta                   controllers.Default.redirect(to = controllers.routes.EligibilityController.doYouWantToApply().url)
 
-GET    /                                           @controllers.EligibilityController.home
-GET    /eligibility-check                          @controllers.EligibilityController.eligibilityCheck
-POST   /eligibility-check                          @controllers.EligibilityController.eligibilityCheckAction
-GET    /lower-earner                               @controllers.EligibilityController.lowerEarnerCheck
-POST   /lower-earner                               @controllers.EligibilityController.lowerEarnerCheckAction
-GET    /partners-income                            @controllers.EligibilityController.partnersIncomeCheck
-POST   /partners-income                            @controllers.EligibilityController.partnersIncomeCheckAction
-GET    /date-of-birth-check                        @controllers.EligibilityController.dateOfBirthCheck
-POST   /date-of-birth-check                        @controllers.EligibilityController.dateOfBirthCheckAction
-GET    /do-you-live-in-scotland                    @controllers.EligibilityController.doYouLiveInScotland
-POST   /do-you-live-in-scotland                    @controllers.EligibilityController.doYouLiveInScotlandAction
-GET    /do-you-want-to-apply                       @controllers.EligibilityController.doYouWantToApply
-POST   /do-you-want-to-apply                       @controllers.EligibilityController.doYouWantToApplyAction
 
 #Welsh Translation
 GET     /lang/enGb                                 @controllers.LanguageController.enGb()

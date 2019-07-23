@@ -30,7 +30,7 @@ formPartialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 title = Messages("title.eligibility.pattern", Messages("title.dateOfBirth"))
 ) {
 
-<a href="@controllers.routes.EligibilityController.eligibilityCheck"
+<a href="@controllers.eligibility.routes.MarriedOrPartnershipController.onPageLoad"
    class="link-back">@Html(Messages("generic.back"))</a>
 
 @templates.form_error_notification(dateofBirthCheckForm, formErrorMessage = "pages.form.error.mandatory.data")
@@ -39,7 +39,7 @@ title = Messages("title.eligibility.pattern", Messages("title.dateOfBirth"))
     <span class="heading-large secondary-text-colour"> @Html(Messages("eligibility.check.span.h1"))</span><br/>
     @Html(Messages("eligibility.check.date.of.birth.h1"))</h1>
 
-@helpers.form(action = routes.EligibilityController.dateOfBirthCheckAction, args = ('id -> "dateOfBirth-form")) {
+@helpers.form(action = controllers.eligibility.routes.DateOfBirthController.onSubmit, args = ('id -> "dateOfBirth-form")) {
 <div class="form-group inline">
     @templates.input_radio_group(
     dateofBirthCheckForm("date-of-birth"),

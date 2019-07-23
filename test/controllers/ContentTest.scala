@@ -21,6 +21,7 @@ import java.text.NumberFormat
 import _root_.services.{CachingService, TimeService, TransferService}
 import config.ApplicationConfig._
 import controllers.actions.AuthenticatedActionRefiner
+import controllers.eligibility.{DateOfBirthController, HowItWorksController, MarriedOrPartnershipController}
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -677,7 +678,7 @@ class ContentTest extends ControllerBaseSpec {
 
   "PTA How It Works page for multi year " should {
     "successfully loaded " in {
-      val result = eligibilityController.howItWorks()(request)
+      val result = howItWorksController.onPageLoad()(request)
 
       status(result) shouldBe OK
       val document = Jsoup.parse(contentAsString(result))
@@ -696,7 +697,7 @@ class ContentTest extends ControllerBaseSpec {
   "PTA Eligibility check page for multiyear" should {
 
     "successfully authenticate the user and have eligibility-check page action" in {
-      val result = eligibilityController.eligibilityCheck()(request)
+      val result = marriedOrPartnershipController.onPageLoad()(request)
 
       status(result) shouldBe OK
       val document = Jsoup.parse(contentAsString(result))
@@ -706,7 +707,7 @@ class ContentTest extends ControllerBaseSpec {
     }
 
     "diplay errors as none of the radio buttons are selected " in {
-      val result = eligibilityController.eligibilityCheckAction()(request)
+      val result = marriedOrPartnershipController.onSubmit()(request)
       status(result) shouldBe BAD_REQUEST
 
       val document = Jsoup.parse(contentAsString(result))
@@ -724,7 +725,7 @@ class ContentTest extends ControllerBaseSpec {
   "GDS Eligibility check page for multiyear" should {
 
     "successfully authenticate the user and have eligibility-check page action" in {
-      val result = eligibilityController.eligibilityCheck()(request)
+      val result = marriedOrPartnershipController.onPageLoad()(request)
 
       status(result) shouldBe OK
       val document = Jsoup.parse(contentAsString(result))
@@ -734,7 +735,7 @@ class ContentTest extends ControllerBaseSpec {
     }
 
     "diplay errors as none of the radio buttons are selected " in {
-      val result = eligibilityController.eligibilityCheckAction()(request)
+      val result = marriedOrPartnershipController.onSubmit()(request)
       status(result) shouldBe BAD_REQUEST
 
       val document = Jsoup.parse(contentAsString(result))
@@ -752,7 +753,7 @@ class ContentTest extends ControllerBaseSpec {
   "PTA date of birth check page for multiyear" should {
 
     "successfully authenticate the user and have date of birth page and content" in {
-      val result = eligibilityController.dateOfBirthCheck()(request)
+      val result = dateOfBirthController.onPageLoad()(request)
 
       status(result) shouldBe OK
       val document = Jsoup.parse(contentAsString(result))
@@ -820,7 +821,7 @@ class ContentTest extends ControllerBaseSpec {
   "GDS date of birth page for multiyear" should {
 
     "successfully authenticate the user and have date of birth page and content" in {
-      val result = eligibilityController.dateOfBirthCheck()(request)
+      val result = dateOfBirthController.onPageLoad()(request)
 
       status(result) shouldBe OK
       val document = Jsoup.parse(contentAsString(result))
@@ -927,6 +928,12 @@ class ContentTest extends ControllerBaseSpec {
   val mockTimeService: TimeService = mock[TimeService]
 
   def eligibilityController: EligibilityController = instanceOf[EligibilityController]
+
+  def howItWorksController: HowItWorksController = instanceOf[HowItWorksController]
+
+  def marriedOrPartnershipController: MarriedOrPartnershipController = instanceOf[MarriedOrPartnershipController]
+
+  def dateOfBirthController: DateOfBirthController = instanceOf[DateOfBirthController]
 
   def transferController: TransferController = new TransferController(
     messagesApi,

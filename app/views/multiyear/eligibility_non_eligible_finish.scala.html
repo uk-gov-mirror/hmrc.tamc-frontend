@@ -27,7 +27,7 @@ formPartialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 title = Messages("title.eligibility.pattern", Messages("title.non-eligible"))
 ){
 
-<a href="@controllers.routes.EligibilityController.eligibilityCheck"
+<a href="@controllers.eligibility.routes.MarriedOrPartnershipController.onPageLoad"
    class="link-back">@Html(Messages("generic.back"))</a>
 
 <h1>@Html(Messages("eligibility.check.header"))</h1>

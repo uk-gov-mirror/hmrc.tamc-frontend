@@ -19,6 +19,7 @@ package controllers
 import _root_.services.{CachingService, TimeService, TransferService}
 import config.ApplicationConfig._
 import controllers.actions.AuthenticatedActionRefiner
+import controllers.eligibility.{DateOfBirthController, MarriedOrPartnershipController}
 import models._
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -114,7 +115,7 @@ class RoutesTest extends ControllerBaseSpec {
 
   "PTA Eligibility check page for multi year" should {
     "diplay errors as no radio buttons is selected " in {
-      val result = eligibilityController.eligibilityCheckAction()(request)
+      val result = marriedOrPartnershipController.onSubmit()(request)
       status(result) shouldBe BAD_REQUEST
 
       val document = Jsoup.parse(contentAsString(result))
@@ -129,7 +130,7 @@ class RoutesTest extends ControllerBaseSpec {
     }
 
     "diplay errors as wrong input is provided by selected radio button" in {
-      val result = eligibilityController.eligibilityCheckAction()(request)
+      val result = marriedOrPartnershipController.onSubmit()(request)
       status(result) shouldBe BAD_REQUEST
 
       val document = Jsoup.parse(contentAsString(result))
@@ -143,7 +144,7 @@ class RoutesTest extends ControllerBaseSpec {
   "PTA date of birth check page for multi year" should {
 
     "diplay errors as no radio buttons is selected " in {
-      val result = eligibilityController.dateOfBirthCheckAction()(request)
+      val result = dateOfBirthController.onSubmit()(request)
       status(result) shouldBe BAD_REQUEST
 
       val document = Jsoup.parse(contentAsString(result))
@@ -151,7 +152,7 @@ class RoutesTest extends ControllerBaseSpec {
       document.getElementById("form-error-heading").text() shouldBe ERROR_HEADING
       val back = document.getElementsByClass("link-back")
       back shouldNot be(null)
-      back.attr("href") shouldBe controllers.routes.EligibilityController.eligibilityCheck().url
+      back.attr("href") shouldBe controllers.eligibility.routes.MarriedOrPartnershipController.onPageLoad().url
     }
   }
 
@@ -194,7 +195,7 @@ class RoutesTest extends ControllerBaseSpec {
   "GDS Eligibility check page for multi year" should {
 
     "diplay errors as no radio buttons is selected " in {
-      val result = eligibilityController.eligibilityCheckAction()(request)
+      val result = marriedOrPartnershipController.onSubmit()(request)
       status(result) shouldBe BAD_REQUEST
 
       val document = Jsoup.parse(contentAsString(result))
@@ -209,7 +210,7 @@ class RoutesTest extends ControllerBaseSpec {
     }
 
     "diplay errors as wrong input is provided by selected radio button" in {
-      val result = eligibilityController.eligibilityCheckAction()(request)
+      val result = marriedOrPartnershipController.onSubmit()(request)
       status(result) shouldBe BAD_REQUEST
 
       val document = Jsoup.parse(contentAsString(result))
@@ -231,6 +232,10 @@ class RoutesTest extends ControllerBaseSpec {
   val mockTimeService: TimeService = mock[TimeService]
 
   def eligibilityController: EligibilityController = instanceOf[EligibilityController]
+
+  def marriedOrPartnershipController: MarriedOrPartnershipController = instanceOf[MarriedOrPartnershipController]
+
+  def dateOfBirthController: DateOfBirthController = instanceOf[DateOfBirthController]
 
   def transferController: TransferController = new TransferController(
     messagesApi,

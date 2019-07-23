@@ -79,7 +79,7 @@ class UpdateRelationshipContentTest extends ControllerBaseSpec {
 
       val start = document.getElementById("start-now")
       start shouldNot be(null)
-      start.attr("href") shouldBe controllers.routes.EligibilityController.howItWorks().url
+      start.attr("href") shouldBe controllers.eligibility.routes.HowItWorksController.onPageLoad().url
 
       val historicRecord = document.getElementById("historicRecords")
       historicRecord shouldNot be(null)
@@ -105,7 +105,7 @@ class UpdateRelationshipContentTest extends ControllerBaseSpec {
 
       val start = document.getElementById("start-now")
       start shouldNot be(null)
-      start.attr("href") shouldBe controllers.routes.EligibilityController.howItWorks().url
+      start.attr("href") shouldBe controllers.eligibility.routes.HowItWorksController.onPageLoad().url
 
       val historicRecord = document.getElementById("historicRecords")
       historicRecord shouldNot be(null)

@@ -56,7 +56,7 @@ class UpdateRelationshipController @Inject()(
             if (!request.authState.permanent) {
               Redirect(controllers.routes.TransferController.transfer())
             } else {
-              Redirect(controllers.routes.EligibilityController.howItWorks())
+              Redirect(controllers.eligibility.routes.HowItWorksController.onPageLoad())
             }
           } else {
             Ok(views.html.coc.your_status(

@@ -88,7 +88,7 @@ class UpdateRelationshipControllerTest extends ControllerBaseSpec {
           )
         val result: Future[Result] = controller().history()(request)
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.routes.EligibilityController.howItWorks().url)
+        redirectLocation(result) shouldBe Some(controllers.eligibility.routes.HowItWorksController.onPageLoad().url)
       }
     }
 

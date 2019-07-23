@@ -31,12 +31,12 @@ formPartialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 title = Messages("title.pattern", Messages("title.eligibility-criteria"))
 ){
 
-<a href="@controllers.routes.EligibilityController.howItWorks" class="link-back">@Html(Messages("generic.back"))</a>
+<a href="@controllers.eligibility.routes.HowItWorksController.onPageLoad" class="link-back">@Html(Messages("generic.back"))</a>
 
 @templates.form_error_notification(calculatorForm)
 <h1 class="heading-xlarge">@Html(Messages("pages.calc.header"))</h1>
 <p class="lede">@Html(Messages("pages.calc.skip-it.pre")) <a
-        href="@controllers.routes.EligibilityController.eligibilityCheck">@Html(Messages("pages.calc.skip-it"))</a></p>
+        href="@controllers.eligibility.routes.MarriedOrPartnershipController.onPageLoad">@Html(Messages("pages.calc.skip-it"))</a></p>
 
 <p>@Html(Messages("pages.calc.para1"))</p>
 
@@ -83,7 +83,7 @@ title = Messages("title.pattern", Messages("title.eligibility-criteria"))
 </p>
 <div class="calculator-apply-link">
     <p>
-        <a id="continue" href="@controllers.routes.EligibilityController.eligibilityCheck">@Html(Messages("change.status.apply"))</a>
+        <a id="continue" href="@controllers.eligibility.routes.MarriedOrPartnershipController.onPageLoad">@Html(Messages("change.status.apply"))</a>
     </p>
 </div>
 }
