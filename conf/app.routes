@@ -36,6 +36,7 @@ GET    /history                                    @controllers.UpdateRelationsh
 GET    /history-en                                 @controllers.UpdateRelationshipController.historyWithEn
 GET    /history-cy                                 @controllers.UpdateRelationshipController.historyWithCy
 POST   /make-changes                               @controllers.UpdateRelationshipController.makeChange
+GET    /choices                                    @controllers.UpdateRelationshipController.choices
 GET    /change-of-income                           @controllers.UpdateRelationshipController.changeOfIncome
 GET    /bereavement                                @controllers.UpdateRelationshipController.bereavement
 POST   /reason-for-change                          @controllers.UpdateRelationshipController.updateRelationshipAction

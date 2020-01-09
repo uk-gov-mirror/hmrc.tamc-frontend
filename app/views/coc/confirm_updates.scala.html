@@ -83,22 +83,14 @@ mainConfig = views.helpers.MainConfig()
             <header class="page-heading">
                 <h1 class="heading-xlarge" id="reject-heading">@Html(Messages("change.status.cancel-your.h1"))</h1>
             </header>
-            <p id="reject-content">@Html(Messages("change.status.reject.content", TextGenerators.ukDateTransformer(effectiveDate,
-                LanguageUtils.isWelsh(messages))))</p>
-            <p id="reject-partner">@Html(Messages("change.status.reject.partner",
+            <p id="reject-content">@Html(Messages("change.status.cancel.content", TextGenerators.ukDateTransformer(effectiveDate,
+                LanguageUtils.isWelsh(messages)))) </p>
+            <p id="reject-partner">@Html(Messages("change.status.cancel.content1",
                 TextGenerators.ukDateTransformer(Some(TaxYear.current.finishes), LanguageUtils.isWelsh(messages))))</p>
 
-            <p>&nbsp;</p>
-            <div class="notice form-group">
-                <div class="icon icon-important"></div>
-                <strong class="bold-small">@Html(Messages("change.status.reject.warning",
-                    TextGenerators.ukDateTransformer(Some(TimeService.getStartDateForTaxYear(TimeService.getCurrentTaxYear)),
-                    LanguageUtils.isWelsh(messages))))</strong>
-            </div>
             <a href="@{controllers.routes.UpdateRelationshipController.confirmEmail}"
                id="confirmUpdate" class="button" role="button"
                data-journey-click="marriage-allowance:button:confirmupdatereject_continue">@Html(Messages("change.status.continue"))</a>
-
         }
 
     }

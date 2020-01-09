@@ -37,10 +37,9 @@ formPartialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 @templates.form_error_notification(changeRelationshipForm, formErrorMessage = "pages.form.error.mandatory.data")
 
 <header class="page-heading">
-    <h1 class="heading-xlarge">@Html(Messages("change.status.cancel-your.h1"))</h1>
+    <h1 class="heading-xlarge">@Html(Messages("change.status.cancel-your.p"))</h1>
 </header>
 
-<p>@Html(Messages("change.status.cancel-your.p"))</p>
 @helpers.form(action = routes.UpdateRelationshipController.updateRelationshipAction, args = ('id -> "change-relationship-form")) {
 
 <div class="form-group">
@@ -79,7 +78,9 @@ formPartialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
     @templates.input_radio_group(
     changeRelationshipForm("endReason"),
     Seq((EndReasonCode.DIVORCE, Messages("change.status.divorce.radio")),
-    (EndReasonCode.REJECT, Messages("change.status.cancel.radio"))),
+    (EndReasonCode.EARNINGS, Messages("change.status.householdIncome.radio")),
+    (EndReasonCode.REJECT, Messages("change.status.cancel.radio")),
+    (EndReasonCode.BEREAVEMENT, Messages("coc.end-reason.DEATH"))),
     '_legend -> Html(Messages("title.change.reason")),
     '_legendClass -> "visuallyhidden",
     '_labelClass -> "block-label",

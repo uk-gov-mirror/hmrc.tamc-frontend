@@ -82,11 +82,11 @@ case REJECT => {
 @templates.coc.confirmIconHeading("pages.confirm.message")
 
     <ul class="list list-bullet">
-        <li>@Html(Messages("pages.reject.message1",TextGenerators.ukDateTransformer(relevantDate,
+        <li>@Html(Messages("pages.confirm.messageShort",TextGenerators.ukDateTransformer(relevantDate,
             LanguageUtils.isWelsh(messages))))
         </li>
-        <li>@Html(Messages("pages.reject.message2"))</li>
-        <li>@Html(Messages("pages.reject.message3"))</li>
+        <li>@Html(Messages("pages.confirm.message2"))</li>
+
     </ul>
 }
 case DIVORCE_CY => {
@@ -95,6 +95,7 @@ case DIVORCE_CY => {
 @templates.coc.confirmIconHeading("pages.confirm.divorce.cy.prev.message")
 
     <ul class="list list-bullet">
+
         <li>@Html(Messages("pages.confirm.divorce.cy.prev.message1",TextGenerators.ukDateTransformer(Some(TimeService.getEffectiveUntilDate(data.endRelationshipReason).get),
             LanguageUtils.isWelsh(messages))))
         </li>
@@ -124,7 +125,7 @@ case DIVORCE_CY => {
 @templates.coc.confirmIconHeading("pages.confirm.divorce.cy.prev.message", relevantDate)
 
     <ul class="list list-bullet">
-        <li id="message1">@Html(Messages("pages.confirm.recipient.divorce.cy.message1",TextGenerators.ukDateTransformer(Some(TimeService.getEffectiveUntilDate(data.endRelationshipReason).get),
+        <li id="message1">@Html(Messages("pages.confirm.messageShort",TextGenerators.ukDateTransformer(Some(TimeService.getEffectiveUntilDate(data.endRelationshipReason).get),
             LanguageUtils.isWelsh(messages))))
         </li>
         <li id="message2">@Html(Messages("pages.confirm.recipient.divorce.cy.message2",TextGenerators.ukDateTransformer(Some(TimeService.getEffectiveDate(data.endRelationshipReason)),
@@ -136,7 +137,6 @@ case DIVORCE_CY => {
 }
 case DIVORCE_PY => {
 @templates.coc.confirmIconHeading("pages.confirm.divorce.py.message", relevantDate)
-
     <ul class="list list-bullet">
         <li>@Html(Messages("pages.confirm.divorce.py.message1"))</li>
         <li>@Html(Messages("pages.confirm.divorce.py.message2",TextGenerators.ukDateTransformer(relevantDate,

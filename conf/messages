@@ -183,6 +183,8 @@ title.cannot-use-service=You cannot use this service
 # Contact details
 #********************************************************************************
 hmrc.contact-details = You can call HMRC on:
+hmrc.contact-link=You can
+hmrc.contact-link-2=to tell us about a change of income.
 hmrc.contact-details-1=You can let HMRC know of a change in income on:
 hmrc.contact-details-2=Telephone: 0300 200 3300
 hmrc.contact-details-3=Textphone: 0300 200 3319
@@ -298,9 +300,11 @@ pages.form.field.your-confirmation=Confirmation email
 pages.form.field.yourDetails=We will email confirmation of your Marriage Allowance application within 24 hours. We will not share your email with anyone else.
 pages.form.field.transferor-email=Your email address
 pages.form.field.enter-email=Enter email address
-pages.form.field.dod=If you are currently separated, you can still receive Marriage Allowance until you legally end your marriage or civil partnership.
+pages.form.field.dod=You need to go to court to be legally separated. You can still get Marriage Allowance if you are separated, but not legally separated.
 pages.form.field.dod.question=When did you legally end your marriage or civil partnership?
-
+pages.form.field.dod.question2=You need to go to court to be legally separated. You can still get Marriage Allowance if you are separated, but not legally separated.
+pages.form.field.dod.linkText=contact the Income Tax general enquiries helpline
+pages.form.field.dod.website=https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees
 
 #********************************************************************************
 # Date of Marriage
@@ -356,6 +360,7 @@ change.status.divorce.date.invalid.para1=The date you divorced or dissolved your
 change.status.divorce.date.invalid.para2=You can go back and check the information you have entered is correct.
 change.status.divorce.date.invalid.para3=Contact HMRC if you think we have the wrong date for the start of your marriage or civil partnership.
 change.status.divorce.h1=Date of divorce or end of civil partnership
+change.status.divorce.h2=Date of divorce, end of civil partnership or legal separation
 change.status.divorce.header=The date of your divorce
 change.status.divorce-py-heading=Remove this Marriage Allowance transfer
 change.status.divorce-py-content=This will be removed from the beginning of the current tax year, April 6 {0}.
@@ -422,15 +427,16 @@ change.status.ask-to-check=If you are married or in a civil partnership you may 
 change.status.bereavement.sorry=We are sorry for your loss
 change.status.bereavement.notify-hmrc=You can let HMRC know of a bereavement on:
 change.status.bereavement.rec.instruction=If your partner transferred some of their Personal Allowance to you before they died:
-change.status.bereavement.rec.instruction-1=your Personal Allowance will remain at the higher level until the end of the tax year (5 April)
+change.status.bereavement.rec.instruction-1=their estate will be treated as having the extra Personal Allowance you transferred to them
 change.status.bereavement.rec.instruction-2=their estate will be treated as having a smaller Personal Allowance, because they transferred some of it to you
 change.status.bereavement.tr.instruction=If your partner dies after you have transferred some of your Personal Allowance to them:
 change.status.bereavement.tr.instruction-1=their estate will be treated as having the extra Personal Allowance you transferred to them
 change.status.bereavement.tr.instruction-2=your Personal Allowance will go back to the normal amount at the end of the tax year (5 April)
-change.status.divorce.radio=Divorce or end of civil partnership
+change.status.divorce.radio=Divorce, end of civil partnership or legally separated
 change.status.bereavement.radio=Bereavement
 change.status.earnings.radio=Change in your income
-change.status.cancel.radio=I want to stop Marriage Allowance payments
+change.status.cancel.radio=Do not want Marriage Allowance anymore
+change.status.householdIncome.radio=Household income changes
 change.status.confirm-change=Confirm you want to change this Marriage Allowance transfer.
 change.status.previous-years=We have noticed you might be able to claim Marriage Allowance for previous tax years. If you are eligible we will backdate it and send your partner a cheque in the post.
 confirm.transferor.heading=Confirm cancellation of Marriage Allowance
@@ -440,7 +446,8 @@ pages.ended.reject.message1=your Marriage Allowance will be removed from {0}, th
 pages.ended.reject.message2=if you have not paid enough tax, we will usually collect it by adjusting your tax code
 pages.confirm.message=You have asked us to cancel your Marriage Allowance. This means:
 pages.confirm.message1=your Marriage Allowance will remain in place until {0}, the end of the current tax year
-pages.confirm.message2=your Personal Allowance will go back to the normal amount from {0}, the start of the new tax year
+pages.confirm.messageShort=your Marriage Allowance will remain in place until {0}
+pages.confirm.message2=your Personal Allowance will go back to the normal amount from {0}
 pages.reject.message1=your Marriage Allowance will be cancelled from {0}, the start of the tax year you first received it
 pages.reject.message2=we will let you know if you have paid the right amount of tax at the end of tax year
 pages.reject.message3=if you have not paid enough tax, we will usually collect it by adjusting your tax code
@@ -456,6 +463,7 @@ pages.confirm.divorce.py.message2=your Personal Allowance will go back to the no
 pages.confirm.recipient.divorce.cy.prev.message1=your Marriage Allowance will be cancelled from {0}, the end of the tax year you divorced
 pages.confirm.recipient.divorce.cy.prev.message2=if you have not paid enough tax, we will usually collect it by adjusting your tax code
 pages.confirm.recipient.divorce.cy.message1=your Marriage Allowance will remain in place until {0}, the end of the current tax year
+pages.confirm.messageShort=your Marriage Allowance will remain in place until {0}
 pages.confirm.recipient.divorce.cy.message2=your Personal Allowance will go back to the normal amount from {0}, the start of the new tax year
 
 
@@ -516,6 +524,13 @@ pages.history.cancel2=have had a change in your income
 pages.history.cancel3=want to reject the allowance
 pages.history.cancel4=have suffered a bereavement
 pages.history.button.remove=Remove allowance
+
+#********************************************************************************
+# choose page
+#********************************************************************************
+pages.coc.choose.h1=What do you want to do?
+pages.coc.choose.input1=Check current or earlier Marriage Allowance claims
+pages.coc.choose.input2=Stop current Marriage Allowance claim
 
 #********************************************************************************
 # eligible year page
@@ -605,13 +620,3 @@ tamc.banner.recruitment.link=Help improve digital services by joining the HMRC u
 tamc.banner.recruitment.reject=No thanks
 tamc.banner.recruitment.title=Help improve GOV.UK
 tamc.banner.recruitment.linkURL=https://signup.take-part-in-research.service.gov.uk/?utm_campaign=TAMCPTAbanner&utm_source=Other&utm_medium=gov.uk%20survey&t=HMRC&id=133
-
-#*************************************************************
-# Page not found
-#*************************************************************
-global.page.not.found.error.title=Page not found
-global.page.not.found.error.check.web.address.correct=If you typed the web address, check it is correct.
-global.page.not.found.error.check.web.address.full=If you pasted the web address, check you copied the entire address.
-global.page.not.found.error.contact=If the web address is correct or you selected a link or button, {0} if you need to speak to someone about your Marriage Allowance application.
-global.page.not.found.error.contact.link.text=contact the Income Tax helpline
-global.page.not.found.error.contact.link=https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees

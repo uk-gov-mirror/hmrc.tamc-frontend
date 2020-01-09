@@ -85,19 +85,18 @@ class UpdateRelationshipController @Inject()(
       Redirect(controllers.routes.UpdateRelationshipController.history()).withLang(Lang("en"))
         .flashing(LanguageUtils.FlashWithSwitchIndicator)
   }
-
-  def makeChange(): Action[AnyContent] = authenticate {
-    implicit request =>
-      changeRelationshipForm.bindFromRequest.fold(
-        formWithErrors => {
-          Logger.warn("unexpected error in makeChange()")
-          Redirect(controllers.routes.UpdateRelationshipController.history())
-        },
-        formData => {
-          Ok(views.html.coc.reason_for_change(changeRelationshipForm.fill(formData)))
-        }
-      )
-  }
+    def makeChange(): Action[AnyContent] = authenticate {
+      implicit request =>
+        changeRelationshipForm.bindFromRequest.fold(
+          formWithErrors => {
+            Logger.warn("unexpected error in makeChange()")
+            Redirect(controllers.routes.UpdateRelationshipController.history())
+          },
+          formData => {
+            Ok(views.html.coc.reason_for_change(changeRelationshipForm.fill(formData)))
+          }
+        )
+    }
 
   def updateRelationshipAction(): Action[AnyContent] = authenticate.async {
     implicit request =>
@@ -157,7 +156,53 @@ class UpdateRelationshipController @Inject()(
             _ => Redirect(controllers.routes.UpdateRelationshipController.confirmUpdate())
           }
       ) recover handleError
-  }
+    }
+
+    def choices(): Action[AnyContent] = authenticate {
+      implicit request =>
+        Ok(views.html.coc.choices())
+    }
+
+     /*
+     def choices(): Action[AnyContent] = authenticate {
+      implicit request =>
+        changeRelationshipForm.bindFromRequest.fold(
+          formWithErrors => {
+            Logger.warn("unexpected error in choices()")
+            Redirect(controllers.routes.UpdateRelationshipController.history())
+          },
+          formData => {
+            Ok(views.html.coc.choices(changeRelationshipForm.fill(formData)))
+          }
+        )
+    }
+    */
+
+    /* def checkRelationshipAction(): Action[AnyContent] = authenticate.async {
+        implicit request =>
+          updateRelationshipForm.bindFromRequest.fold(
+            formWithErrors => Future {
+              Logger.warn("unexpected error in updateRelationshipAction()")
+              val form = formWithErrors.fill(ChangeRelationship(formWithErrors.data.get("role"), None, Some(formWithErrors.data.get("historicActiveRecord").forall(_.equals("true")))))
+              BadRequest(views.html.coc.choices(form))
+            },
+            formData => {
+              cachingService.saveRoleRecord(formData.role.get).flatMap { _ =>
+                (formData.endReason, formData.role) match {
+                  case (Some(EndReasonCode.CHECK), _) => Future.successful {
+                    Ok(views.html.coc.history())
+                  }
+                  case (Some(EndReasonCode.CANCEL), _) => Future.successful {
+                    Ok(views.html.coc.reason_for_change(changeRelationshipForm.fill(formData)))
+                  }
+                  case (None, _) =>
+                    throw new Exception("Missing EndReasonCode")
+                }
+              }
+            }
+         )
+      }
+   */
 
   def divorceYear: Action[AnyContent] = authenticate.async {
     implicit request =>

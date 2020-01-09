@@ -95,13 +95,13 @@
                 }
                 case (_, true) => {
                     <header class="page-heading">
-                        <h1 class="heading-xlarge">@Html(Messages("change.status.divorce.transferor.h1"))</h1>
+                        <h1 class="heading-xlarge">@Html(Messages("change.status.cancel-your.h1"))</h1>
                     </header>
                     <p>@Html(Messages("change.status.divorce.transferor.conditional1.para1",TextGenerators.ukDateTransformer(Some(changeRelationshipForm.get.dateOfDivorce.get), LanguageUtils.isWelsh(messages))))</p>
                     <p>@Html(Messages("change.status.divorce.recipient.content1"))</p>
                     <ul class="list list-bullet">
                         <li>@Html(Messages("change.status.divorce.recipient.para1",TextGenerators.ukDateTransformer(cyEffectiveUntilDate, LanguageUtils.isWelsh(messages))))</li>
-                        <li>@Html(Messages("pages.confirm.message2",TextGenerators.ukDateTransformer(cyEffectiveDate, LanguageUtils.isWelsh(messages))))</li>
+                        <li>@Html(Messages("change.status.divorce.recipient.previous.para2", TextGenerators.ukDateTransformer(cyEffectiveDate, LanguageUtils.isWelsh(messages))))</li>
                     </ul>
                     <input name="endReason" id="endReason-divorce_cy" type="hidden" value="@EndReasonCode.DIVORCE_CY"/>
                 }

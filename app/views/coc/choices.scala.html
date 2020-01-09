@@ -15,27 +15,25 @@
  *@
 
 @import play.twirl.api.Html
-@import views.helpers.TextGenerators
-@import config.ApplicationConfig
+@import config.ApplicationConfig._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import java.text.NumberFormat
 @import models.auth.AuthenticatedUserRequest
 
-@(transferorEmail: uk.gov.hmrc.emailaddress.EmailAddress)(implicit messages: Messages,
+@()(implicit messages: Messages,
 request: AuthenticatedUserRequest[_],
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 formPartialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @templates.tamc_main(
-title = Messages("title.pattern", Messages("title.change.complete")),
-mainConfig = views.helpers.MainConfig(
-maybeMainDataAttributes = Some(Html("data-journey=marriage-allowance:stage:finished")))
+title = Messages("title.pattern", Messages("New page")),
+mainConfig = views.helpers.MainConfig()
 ) {
-<div class="govuk-box-highlight">
-    <h1 class="heading-large">
-        @Html(Messages("pages.coc.finish.header"))
-    </h1>
-</div>
-<p>@Html(Messages("pages.coc.finish.acknowledgement", transferorEmail))</p>
-<p>@Html(Messages("pages.coc.finish.junk"))</p>
-<h2 class="heading-medium">@Html(Messages("pages.coc.finish.whn"))</h2>
-<p>@Html(Messages("pages.coc.finish.para2"))</p>
+
+<a href="@controllers.routes.UpdateRelationshipController.history" class="link-back">@Html(Messages("generic.back"))</a>
+
+<header class="page-heading">
+    <h1 class="heading-xlarge">@Html(Messages("pages.coc.choose.h1"))</h1>
+</header>
+
 }
