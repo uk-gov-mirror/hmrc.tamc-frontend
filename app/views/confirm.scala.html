@@ -53,7 +53,7 @@ title = Messages("title.application.pattern", Messages("title.confirm"))
         </tr>
         <tr class="grey-underline-large-thick">
             }.getOrElse("")
-            <td>@Html(Messages("generic.email"))</td>
+            <td class="bold">@Html(Messages("generic.email"))</td>
             <td id="transferor-email">@data.transferorEmail</td>
             <td>
                 <a href="@controllers.routes.TransferController.confirmYourEmail()"

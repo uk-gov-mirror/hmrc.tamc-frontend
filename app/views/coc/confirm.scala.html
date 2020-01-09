@@ -128,7 +128,7 @@ case DIVORCE_CY => {
         <li id="message1">@Html(Messages("pages.confirm.messageShort",TextGenerators.ukDateTransformer(Some(TimeService.getEffectiveUntilDate(data.endRelationshipReason).get),
             LanguageUtils.isWelsh(messages))))
         </li>
-        <li id="message2">@Html(Messages("pages.confirm.recipient.divorce.cy.message2",TextGenerators.ukDateTransformer(Some(TimeService.getEffectiveDate(data.endRelationshipReason)),
+        <li id="message2">@Html(Messages("pages.confirm.message2",TextGenerators.ukDateTransformer(Some(TimeService.getEffectiveDate(data.endRelationshipReason)),
             LanguageUtils.isWelsh(messages))))
         </li>
     </ul>
@@ -139,7 +139,7 @@ case DIVORCE_PY => {
 @templates.coc.confirmIconHeading("pages.confirm.divorce.py.message", relevantDate)
     <ul class="list list-bullet">
         <li>@Html(Messages("pages.confirm.divorce.py.message1"))</li>
-        <li>@Html(Messages("pages.confirm.divorce.py.message2",TextGenerators.ukDateTransformer(relevantDate,
+        <li>@Html(Messages("pages.confirm.message2",TextGenerators.ukDateTransformer(relevantDate,
             LanguageUtils.isWelsh(messages))))
         </li>
     </ul>

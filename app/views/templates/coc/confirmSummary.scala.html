@@ -44,28 +44,23 @@
         <td id="transferor-name">@name</td>
         <td>&nbsp;</td>
     </tr>
+    @if(data.endRelationshipReason.endReason == DIVORCE_CY || data.endRelationshipReason.endReason == DIVORCE_PY) {
+        <tr>
+            <td class="bold">@Html(Messages("change.status.divorce.h1"))</td>
+            <td id="divorce-date">@TextGenerators.ukDateTransformer(data.endRelationshipReason.dateOfDivorce,
+                LanguageUtils.isWelsh(messages))
+            </td>
+            <td><a href="divorce-select-year" id="edit-divorce" data-journey-click="marriage-allowance:button:edit_divorce">@Html(Messages("generic.change"))</a>
+            </td>
+        </tr>
+    }
     <tr>
         }.getOrElse("")
-        <td>@Html(Messages("generic.email"))
+        <td class="bold">@Html(Messages("generic.email"))
         <td id="email">@data.email</td>
         <td><a href="confirm-email" id="edit-email" data-journey-click="marriage-allowance:button:edit_email">@Html(Messages("generic.change"))</a>
         </td>
     </tr>
-    <tr>
-        <td class="bold">@Html(Messages("change.status.realtionship-end"))</td>
-        <td id="end-reason">@Html(Messages(s"change.status.reason-${data.endRelationshipReason.endReason}"))</td>
-        <td>&nbsp;</td>
-    </tr>
-    @if(data.endRelationshipReason.endReason == DIVORCE_CY || data.endRelationshipReason.endReason == DIVORCE_PY) {
-    <tr>
-        <td class="bold">@Html(Messages("change.status.divorce.h1"))</td>
-        <td id="divorce-date">@TextGenerators.ukDateTransformer(data.endRelationshipReason.dateOfDivorce,
-            LanguageUtils.isWelsh(messages))
-        </td>
-        <td><a href="divorce-select-year" id="edit-divorce" data-journey-click="marriage-allowance:button:edit_divorce">@Html(Messages("generic.change"))</a>
-        </td>
-    </tr>
-    }
     }
     }
 </table>
