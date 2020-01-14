@@ -159,7 +159,7 @@ class UpdateRelationshipController @Inject()(
           }
       ) recover handleError
     }
-  
+
   def choices(): Action[AnyContent] = authenticate {
     implicit request =>
       Ok(views.html.coc.choices(checkRelationshipForm = checkRelationship))

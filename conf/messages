@@ -89,6 +89,9 @@ change.status.reason-REJECT=I want to stop Marriage Allowance payments
 change.status.reason-DIVORCE_CY=Divorce or end of civil partnership
 change.status.reason-DIVORCE_PY=Divorce or end of civil partnership
 
+change.status.radio.1="Check current or earlier Marriage Allowance claims"
+change.status.radio.2="Stop current Marriage Allowance claim"
+
 change.status.relevantDate-CANCEL=This will be removed at the end of the tax year ({0}).
 change.status.relevantDate-REJECT=This will be removed from the start of the tax year you first received Marriage Allowance ({0}).
 change.status.relevantDate-DIVORCE_CY=This will be removed from the end of the tax year you got divorced ({0}).

@@ -37,15 +37,14 @@ mainConfig = views.helpers.MainConfig()
     </header>
 
     <div class="form-group inline">
-    @helpers.form(action = routes.EligibilityController.eligibilityCheckAction, args = ('id -> "eligibility-form")) {
+
             @templates.input_radio_group(
                 checkRelationshipForm("update-marriage-criteria"),
-                Seq(("true", Messages("radio.yes")), ("false", Messages("radio.no"))),
+                Seq(("true", Messages("change.status.radio.1")), ("false", Messages("change.status.radio.2"))),
                 '_labelClass -> "block-label",
                 '_labelAfter -> true,
-                '_fieldsetAttributes -> "data-inline-error=married-js-error",
+                '_fieldsetAttributes -> "data-inline-error=update-marriage-criteria-js-error",
                 '_groupClass -> "inline spacingBottom"
-            )
+        )
         </div>
-    }
 }
