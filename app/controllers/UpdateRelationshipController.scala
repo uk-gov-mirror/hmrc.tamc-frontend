@@ -22,7 +22,8 @@ import errors._
 import forms.ChangeRelationshipForm.{changeRelationshipForm, divorceForm, updateRelationshipDivorceForm, updateRelationshipForm}
 import forms.EmailForm.emailForm
 import forms.EmptyForm
-import models._
+import forms.choiceForm.checkRelationship
+import models.{checkRelationshipForm, _}
 import models.auth.UserRequest
 import org.joda.time.LocalDate
 import play.Logger
@@ -34,6 +35,7 @@ import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.time
+import views.html.multiyear.eligibility_check
 
 import scala.concurrent.Future
 
@@ -157,52 +159,12 @@ class UpdateRelationshipController @Inject()(
           }
       ) recover handleError
     }
+  
+  def choices(): Action[AnyContent] = authenticate {
+    implicit request =>
+      Ok(views.html.coc.choices(checkRelationshipForm = checkRelationship))
+  }
 
-    def choices(): Action[AnyContent] = authenticate {
-      implicit request =>
-        Ok(views.html.coc.choices())
-    }
-
-     /*
-     def choices(): Action[AnyContent] = authenticate {
-      implicit request =>
-        changeRelationshipForm.bindFromRequest.fold(
-          formWithErrors => {
-            Logger.warn("unexpected error in choices()")
-            Redirect(controllers.routes.UpdateRelationshipController.history())
-          },
-          formData => {
-            Ok(views.html.coc.choices(changeRelationshipForm.fill(formData)))
-          }
-        )
-    }
-    */
-
-    /* def checkRelationshipAction(): Action[AnyContent] = authenticate.async {
-        implicit request =>
-          updateRelationshipForm.bindFromRequest.fold(
-            formWithErrors => Future {
-              Logger.warn("unexpected error in updateRelationshipAction()")
-              val form = formWithErrors.fill(ChangeRelationship(formWithErrors.data.get("role"), None, Some(formWithErrors.data.get("historicActiveRecord").forall(_.equals("true")))))
-              BadRequest(views.html.coc.choices(form))
-            },
-            formData => {
-              cachingService.saveRoleRecord(formData.role.get).flatMap { _ =>
-                (formData.endReason, formData.role) match {
-                  case (Some(EndReasonCode.CHECK), _) => Future.successful {
-                    Ok(views.html.coc.history())
-                  }
-                  case (Some(EndReasonCode.CANCEL), _) => Future.successful {
-                    Ok(views.html.coc.reason_for_change(changeRelationshipForm.fill(formData)))
-                  }
-                  case (None, _) =>
-                    throw new Exception("Missing EndReasonCode")
-                }
-              }
-            }
-         )
-      }
-   */
 
   def divorceYear: Action[AnyContent] = authenticate.async {
     implicit request =>

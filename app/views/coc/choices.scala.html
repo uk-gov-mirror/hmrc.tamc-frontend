@@ -20,7 +20,7 @@
 @import java.text.NumberFormat
 @import models.auth.AuthenticatedUserRequest
 
-@()(implicit messages: Messages,
+@(checkRelationshipForm: Form[(checkRelationshipForm)])(implicit messages: Messages,
 request: AuthenticatedUserRequest[_],
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 formPartialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
@@ -30,10 +30,22 @@ title = Messages("title.pattern", Messages("New page")),
 mainConfig = views.helpers.MainConfig()
 ) {
 
-<a href="@controllers.routes.UpdateRelationshipController.history" class="link-back">@Html(Messages("generic.back"))</a>
+    <a href="@controllers.routes.UpdateRelationshipController.history" class="link-back">@Html(Messages("generic.back"))</a>
 
-<header class="page-heading">
-    <h1 class="heading-xlarge">@Html(Messages("pages.coc.choose.h1"))</h1>
-</header>
+    <header class="page-heading">
+        <h1 class="heading-xlarge">@Html(Messages("pages.coc.choose.h1"))</h1>
+    </header>
 
+    <div class="form-group inline">
+    @helpers.form(action = routes.EligibilityController.eligibilityCheckAction, args = ('id -> "eligibility-form")) {
+            @templates.input_radio_group(
+                checkRelationshipForm("update-marriage-criteria"),
+                Seq(("true", Messages("radio.yes")), ("false", Messages("radio.no"))),
+                '_labelClass -> "block-label",
+                '_labelAfter -> true,
+                '_fieldsetAttributes -> "data-inline-error=married-js-error",
+                '_groupClass -> "inline spacingBottom"
+            )
+        </div>
+    }
 }
