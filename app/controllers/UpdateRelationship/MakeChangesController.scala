@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,36 +36,46 @@ class MakeChangesController @Inject()(authenticate: StandardAuthJourney,
 
   def makeChange(): Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
     implicit request =>
-      updateRelationshipService.getMakeChangesDecision map { makeChangesData =>
-        Ok(reasonForChange(MakeChangesDecisionForm.form().fill(makeChangesData)))
-      } recover {
-        case NonFatal(_) => Ok(reasonForChange(MakeChangesDecisionForm.form()))
+
+      updateRelationshipService.getRelationshipRecords.flatMap { relationshipRecords =>
+        val role: Role = relationshipRecords.primaryRecord.role
+
+        updateRelationshipService.getMakeChangesDecision.map {makeChangesData =>
+          Ok(reasonForChange(MakeChangesDecisionForm.form().fill(makeChangesData), role))
+        }.recover {
+          case NonFatal(_) => Ok(reasonForChange(MakeChangesDecisionForm.form(), role))
+        }
       }
   }
 
   def submitMakeChange(): Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
     implicit request =>
-      MakeChangesDecisionForm.form().bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(reasonForChange(formWithErrors)))
-        }, {
-          case Some(MakeChangesDecisionForm.Divorce) =>
-            updateRelationshipService.saveMakeChangeDecision(MakeChangesDecisionForm.Divorce) map { _ =>
-              Redirect(controllers.UpdateRelationship.routes.DivorceController.divorceEnterYear())
-            }
+      updateRelationshipService.getRelationshipRecords.flatMap { relationshipRecords =>
+        val role: Role = relationshipRecords.primaryRecord.role
 
-          case Some(MakeChangesDecisionForm.Cancel) =>
-            updateRelationshipService.saveMakeChangeDecision(MakeChangesDecisionForm.Cancel) flatMap { _ =>
-              noLongerWantMarriageAllowanceRedirect
-            }
+        MakeChangesDecisionForm.form().bindFromRequest().fold(
+          formWithErrors => {
+            Future.successful(BadRequest(reasonForChange(formWithErrors, role)))
+          },
+          {
+            case Some(MakeChangesDecisionForm.Divorce) =>
+              updateRelationshipService.saveMakeChangeDecision(MakeChangesDecisionForm.Divorce) map { _ =>
+                Redirect(controllers.UpdateRelationship.routes.DivorceController.divorceEnterYear())
+              }
 
-          case Some(MakeChangesDecisionForm.Bereavement) =>
-            updateRelationshipService.saveMakeChangeDecision(MakeChangesDecisionForm.Bereavement) map { _ =>
-              Redirect(controllers.UpdateRelationship.routes.BereavementController.bereavement())
-            }
+            case Some(MakeChangesDecisionForm.Cancel) =>
+              updateRelationshipService.saveMakeChangeDecision(MakeChangesDecisionForm.Cancel) flatMap { _ =>
+                noLongerWantMarriageAllowanceRedirect
+              }
 
-          case _ => Future.successful(Redirect(controllers.UpdateRelationship.routes.MakeChangesController.makeChange()))
-        })
+            case Some(MakeChangesDecisionForm.Bereavement) =>
+              updateRelationshipService.saveMakeChangeDecision(MakeChangesDecisionForm.Bereavement) map { _ =>
+                Redirect(controllers.UpdateRelationship.routes.BereavementController.bereavement())
+              }
+
+            case _ => Future.successful(Redirect(controllers.UpdateRelationship.routes.MakeChangesController.makeChange()))
+          })
+      }
   }
 
   private def noLongerWantMarriageAllowanceRedirect(implicit request: Request[?]): Future[Result] = {

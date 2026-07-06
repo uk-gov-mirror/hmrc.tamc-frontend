@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,37 @@
 
 package views.UpdateRelationship
 
-import forms.coc._
+import forms.coc.*
 import models.auth.AuthenticatedUserRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.test.{FakeRequest, Injecting}
 import uk.gov.hmrc.domain.Nino
-import utils.{BaseTest, NinoGenerator}
+import utils.{BaseTest, CreateRelationshipRecordsHelper, NinoGenerator}
 import views.html.coc.reason_for_change
 
 import java.util.Locale
 
-class MakeChangesContentTest extends BaseTest with Injecting with NinoGenerator {
+class MakeChangesContentTest extends BaseTest with Injecting with NinoGenerator with CreateRelationshipRecordsHelper {
 
   val view: reason_for_change = inject[reason_for_change]
   implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
   override implicit lazy val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
   lazy val nino: String = generateNino().nino
-  val doc: Document = Jsoup.parse(view(MakeChangesDecisionForm.form()).toString())
+
+  private val relationshipRecords = createRelationshipRecords()
+  val doc: Document = Jsoup.parse(view(MakeChangesDecisionForm.form(), relationshipRecords.primaryRecord.role).toString())
 
   "Make change - get view" should {
 
     "display correct pageHeading" in {
       doc.getElementById("pageHeading").text() shouldBe "Why do you need to stop your Marriage Allowance?"
+    }
+
+    "render the hidden user type tag" in {
+      doc.select("#ma-user-type").size() shouldBe 1
+      doc.select("#ma-user-type").attr("data-user-type") shouldBe "transferor"
     }
 
     "show all appropriate radio buttons" in {
