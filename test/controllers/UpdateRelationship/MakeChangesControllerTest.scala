@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,20 @@ package controllers.UpdateRelationship
 import controllers.ControllerViewTestHelper
 import controllers.actions.AuthRetrievals
 import controllers.auth.PertaxAuthAction
-import forms.coc._
+import forms.coc.*
 import helpers.FakePertaxAuthAction
+import models.{RelationshipRecords, Role}
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mockito.*
 import play.api.Application
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.api.test.{FakeRequest, Injecting}
-import services._
-import utils.RequestBuilder._
+import services.*
+import utils.RequestBuilder.*
 import utils.{ControllerBaseTest, CreateRelationshipRecordsHelper, MockAuthenticatedAction}
 import views.html.coc.reason_for_change
 
@@ -52,10 +53,16 @@ class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTe
   lazy val controller: MakeChangesController = app.injector.instanceOf[MakeChangesController]
 
   val reasonForChangeView: reason_for_change = inject[views.html.coc.reason_for_change]
+  val relationshipRecords: RelationshipRecords = createRelationshipRecords()
+  val role: Role = relationshipRecords.primaryRecord.role
+
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockUpdateRelationshipService)
+    when(mockUpdateRelationshipService.getRelationshipRecords(any(), any())).thenReturn(
+      Future.successful(relationshipRecords)
+    )
   }
 
   "makeChange" should {
@@ -67,7 +74,7 @@ class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTe
         val result = controller.makeChange()(request)
 
         status(result) shouldBe OK
-        result `rendersTheSameViewAs` reasonForChangeView(MakeChangesDecisionForm.form().fill(Some(userAnswer)))
+        result `rendersTheSameViewAs` reasonForChangeView(MakeChangesDecisionForm.form().fill(Some(userAnswer)), role)
       }
 
       "there is no data in the cache" in {
@@ -76,7 +83,7 @@ class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTe
         val result = controller.makeChange()(request)
 
         status(result) shouldBe OK
-        result `rendersTheSameViewAs` reasonForChangeView(MakeChangesDecisionForm.form())
+        result `rendersTheSameViewAs` reasonForChangeView(MakeChangesDecisionForm.form(), role)
       }
 
       "a non fatal error has occurred when trying to get cached data" in {
@@ -85,7 +92,7 @@ class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTe
         val result = controller.makeChange()(request)
 
         status(result) shouldBe OK
-        result `rendersTheSameViewAs` reasonForChangeView(MakeChangesDecisionForm.form())
+        result `rendersTheSameViewAs` reasonForChangeView(MakeChangesDecisionForm.form(), role)
       }
     }
   }
@@ -144,12 +151,9 @@ class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTe
     "redirect to the cancel page" when {
       "a transferor selects Do not want Marriage Allowance anymore" in {
         val userAnswer = MakeChangesDecisionForm.Cancel
-        val relationshipRecords = createRelationshipRecords()
         val request = buildFakePostRequest(MakeChangesDecisionForm.StopMAChoice -> userAnswer)
         when(mockUpdateRelationshipService.saveMakeChangeDecision(ArgumentMatchers.eq(userAnswer))(any()))
           .thenReturn(Future.successful(userAnswer))
-        when(mockUpdateRelationshipService.getRelationshipRecords(any(), any()))
-          .thenReturn(Future.successful(relationshipRecords))
 
         val result = controller.submitMakeChange()(request)
 

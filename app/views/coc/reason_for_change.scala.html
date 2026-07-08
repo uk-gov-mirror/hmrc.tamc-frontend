@@ -1,5 +1,5 @@
 @*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *@
 
 @import models.auth.AuthenticatedUserRequest
+@import models.Role
 @import forms.coc.MakeChangesDecisionForm
 @import includes.{H1, InputRadios, Button, ErrorSummary}
 
@@ -29,13 +30,15 @@ viewHelpers: utils.ViewHelpers,
 inputRadios: InputRadios,
 button: Button)
 
-@(makeChangesDecisionForm: Form[Option[String]])(implicit messages: Messages,
+@(makeChangesDecisionForm: Form[Option[String]], role: Role)(implicit messages: Messages,
 request: AuthenticatedUserRequest[?])
 
 @main(
     pageTitle = viewHelpers.formErrorPrefix(makeChangesDecisionForm, messages("title.make-a-change")),
     serviceTitle = "tamc.manage"
 ){
+
+    <div id="ma-user-type" data-user-type="@role.value.toLowerCase" hidden></div>
 
     @errorSummary(makeChangesDecisionForm, Some("stopMAChoice-cancel"))
 
