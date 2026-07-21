@@ -1,3 +1,5 @@
+import uk.gov.hmrc.DefaultBuildSettings
+
 /*
  * Copyright 2025 HM Revenue & Customs
  *
@@ -31,17 +33,25 @@ TwirlKeys.templateImports ++= Seq(
   "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
 )
 
-val root: Project = Project(appName, file("."))
+val microservice: Project = Project(appName, file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(
     CodeCoverageSettings(),
     PlayKeys.playDefaultPort := 9900,
-    libraryDependencies ++= AppDependencies(),
+    libraryDependencies ++= AppDependencies.all,
+  )
+
+lazy val it = project
+  .enablePlugins(play.sbt.PlayScala)
+  .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
+  .settings(
+    libraryDependencies ++= AppDependencies.test,
+    DefaultBuildSettings.itSettings()
   )
 
 addCommandAlias("runLocal", "run -Dplay.http.router=testOnlyDoNotUseInAppConf.Routes")
 addCommandAlias("runLocalWithColours", "run -Dplay.http.router=testOnlyDoNotUseInAppConf.Routes -Dlogger.resource=logback-colours.xml")
-addCommandAlias("runAllTests", ";test;")
+addCommandAlias("runAllTests", ";test;it/test;")
 addCommandAlias("runAllTestsWithColours", ";set Test/javaOptions += \"-Dlogger.resource=logback-colours.xml\";runAllTests;")
 addCommandAlias("runAllChecks", ";clean;scalastyle;coverageOn;runAllTests;coverageOff;coverageAggregate;")
