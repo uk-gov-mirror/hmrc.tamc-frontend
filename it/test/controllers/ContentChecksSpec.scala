@@ -17,50 +17,94 @@
 package controllers
 
 import org.jsoup.Jsoup
-import play.api.Application
-import play.api.http.Status.{OK, SEE_OTHER}
-import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{GET, contentAsString, defaultAwaitTimeout, redirectLocation, route, status, writeableOf_AnyContentAsEmpty}
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.SessionKeys
 import utils.IntegrationSpec
+
+import java.util.UUID
 
 class ContentChecksSpec extends IntegrationSpec {
 
-  override def fakeApplication(): Application = {
-    new GuiceApplicationBuilder()
-      .configure(
-        "microservice.services.auth.port" -> server.port()
-      )
-      .build()
-  }
+  private val baseUrl = "/marriage-allowance-application"
 
-  "GET /" must {
-    "redirect to /how-it-works" in {
-      val result =
-        route(app, FakeRequest(GET, "/marriage-allowance-application/")).value
+  case class ExpectedData(content: String)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe routes.HowItWorksController.howItWorks().url
+  def getExpectedData(key: String): ExpectedData =
+    key match {
+      case "how-it-works"              =>
+        ExpectedData(
+          "Marriage Allowance automatically renews at the end of each tax year. You can cancel it, but it will not be stopped until the end of the tax year."
+        )
+      case "date-of-marriage"          => ExpectedData("Date of marriage or civil partnership")
+      case "choose-years-to-apply-for" => ExpectedData("Choose the years you want to apply for")
+      case "partners-details"          => ExpectedData("Your partner’s details")
+      case "apply-by-post"             => ExpectedData("You must apply by post")
+      case "confirm-your-email"        => ExpectedData("We will email confirmation of your Marriage Allowance application.")
+
+      case "history"                 => ExpectedData("Your Marriage Allowance summary")
+      case "choose"                  => ExpectedData("What do you want to do?")
+      case "claims"                  => ExpectedData("Your Marriage Allowance claims")
+      case "make-changes"            => ExpectedData("Why do you need to stop your Marriage Allowance?")
+      case "cancel"                  => ExpectedData("We will cancel your Marriage Allowance")
+      case "divorce-enter-year"      => ExpectedData("Date of divorce, end of civil partnership or legal separation")
+      case "bereavement"             => ExpectedData("We are sorry for your loss")
+      case "stop-allowance"          => ExpectedData("Your partner needs to stop the Marriage Allowance claim")
+      case "divorce-end-explanation" =>
+        ExpectedData("You have told us you divorced, ended your civil partnership or were legally separated")
+      case "confirm-email"           =>
+        ExpectedData("We will email confirmation that you have cancelled your Marriage Allowance within 24 hours.")
+      case "confirm-change"          => ExpectedData("You have asked us to cancel your Marriage Allowance")
+      case "finished-change"         => ExpectedData("Marriage Allowance cancelled")
+
+      case "you-cannot-use-this-service" =>
+        ExpectedData(
+          "Contact the Income Tax Helpline(opens in a new tab) if you need to discuss your Marriage Allowance application."
+        )
+      case "signed-out"                  => ExpectedData("You have been signed out")
+      case key                           => throw new RuntimeException(s"Expected data are missing for `$key`")
+    }
+
+  val urls: Map[String, ExpectedData] = Map(
+    "/how-it-works"                -> getExpectedData("how-it-works"),
+    "/date-of-marriage"            -> getExpectedData("date-of-marriage"),
+    "/choose-years-to-apply-for"   -> getExpectedData("choose-years-to-apply-for"),
+    "/partners-details"            -> getExpectedData("partners-details"),
+    "/apply-by-post"               -> getExpectedData("apply-by-post"),
+    "/confirm-your-email"          -> getExpectedData("confirm-your-email"),
+    "/history"                     -> getExpectedData("history"),
+    "/choose"                      -> getExpectedData("choose"),
+    "/claims"                      -> getExpectedData("claims"),
+    "/make-changes"                -> getExpectedData("make-changes"),
+    "/cancel"                      -> getExpectedData("cancel"),
+    "/divorce-enter-year"          -> getExpectedData("divorce-enter-year"),
+    "/bereavement"                 -> getExpectedData("bereavement"),
+    "/stop-allowance"              -> getExpectedData("stop-allowance"),
+    "/divorce-end-explanation"     -> getExpectedData("divorce-end-explanation"),
+    "/confirm-email"               -> getExpectedData("confirm-email"),
+    "/confirm-change"              -> getExpectedData("confirm-change"),
+    "/finished-change"             -> getExpectedData("finished-change"),
+    "/you-cannot-use-this-service" -> getExpectedData("you-cannot-use-this-service"),
+    "/signed-out"                  -> getExpectedData("signed-out")
+  )
+
+  val uuid: String = UUID.randomUUID().toString
+
+  def request(url: String): FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest(GET, s"$baseUrl$url")
+      .withSession(SessionKeys.sessionId -> uuid, SessionKeys.authToken -> "Bearer 123")
+
+  "Content Checks" must {
+    urls.foreach { case (url, expectedData) =>
+      s"pass content checks at url $url" in {
+        val result = route(app, request(url)).value
+
+        status(result) mustBe OK
+
+        val page = Jsoup.parse(contentAsString(result))
+        page.text() must include(expectedData.content)
+      }
     }
   }
-
-  "GET /how-it-works" must {
-    "render successfully" in {
-      val result = route(app, FakeRequest(GET, "/marriage-allowance-application/how-it-works")).value
-
-      status(result) mustBe OK
-
-      val page = Jsoup.parse(contentAsString(result))
-
-      page.title() must include("Apply for Marriage Allowance")
-      val text = page.text()
-      Seq(
-        "Marriage Allowance lets you transfer",
-        "Eligibility",
-        "Before you apply",
-        "Apply now"
-      ).foreach(text must include(_))
-    }
-  }
-
 }

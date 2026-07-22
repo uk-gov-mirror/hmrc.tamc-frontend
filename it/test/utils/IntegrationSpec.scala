@@ -22,7 +22,9 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.Application
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.*
 import play.api.test.Injecting
 import uk.gov.hmrc.domain.{AtedUtr, Generator, Nino}
@@ -46,6 +48,16 @@ trait IntegrationSpec extends PlaySpec with GuiceOneAppPerSuite with Matchers wi
   lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
 
   implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+
+  override def fakeApplication(): Application = {
+    new GuiceApplicationBuilder()
+      .configure(
+        "microservice.services.auth.port" -> server.port(),
+        "microservice.services.pertax-auth.port" -> server.port()
+
+      )
+      .build()
+  }
 
   override def beforeEach(): Unit = {
 
@@ -79,6 +91,11 @@ trait IntegrationSpec extends PlaySpec with GuiceOneAppPerSuite with Matchers wi
     server.stubFor(
       post(urlEqualTo("/auth/authorise"))
         .willReturn(aResponse().withBody(authResponse))
+    )
+
+    server.stubFor(
+      post(urlEqualTo("/pertax/authorise"))
+        .willReturn(aResponse().withBody("{\"code\": \"ACCESS_GRANTED\", \"message\": \"Access granted\"}"))
     )
 
     val wrapperDataResponse: String =
