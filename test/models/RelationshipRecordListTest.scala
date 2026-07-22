@@ -24,20 +24,22 @@ class RelationshipRecordListTest extends UnitSpec {
   "RelationshipRecordList" should {
 
     "return a RelationshipRecordList with LoggedInUserInfo" in {
-      val recordList = Seq(activeRecipientRelationshipRecord, inactiveRelationshipRecord1)
-      val loggedInUser = LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some("First"), Some("Name"))))
+      val recordList             = Seq(activeRecipientRelationshipRecord, inactiveRelationshipRecord1)
+      val loggedInUser           = LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some("First"), Some("Name"))))
       val relationshipRecordList = RelationshipRecordList(recordList, Some(loggedInUser))
 
       relationshipRecordList.relationships shouldBe Seq(activeRecipientRelationshipRecord, inactiveRelationshipRecord1)
-      relationshipRecordList.userRecord shouldBe Some(LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some("First"), Some("Name")))))
+      relationshipRecordList.userRecord    shouldBe Some(
+        LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some("First"), Some("Name"))))
+      )
     }
 
     "return a RelationshipRecordList without LoggedInUserInfo" in {
-      val recordList = Seq(activeRecipientRelationshipRecord, inactiveRelationshipRecord1)
+      val recordList             = Seq(activeRecipientRelationshipRecord, inactiveRelationshipRecord1)
       val relationshipRecordList = RelationshipRecordList(recordList)
 
       relationshipRecordList.relationships shouldBe Seq(activeRecipientRelationshipRecord, inactiveRelationshipRecord1)
-      relationshipRecordList.userRecord shouldBe None
+      relationshipRecordList.userRecord    shouldBe None
     }
 
     "return Empty sequence for relationships" when {

@@ -36,32 +36,35 @@ import java.util.Locale
 
 class DivorceContentTest extends BaseTest with Injecting with NinoGenerator {
 
-  val divorceView: divorce_select_year = inject[divorce_select_year]
-  val explanationView: divorce_end_explanation = inject[divorce_end_explanation]
-  val divorceEndExplanationViewModelImpl: DivorceEndExplanationViewModelImpl = instanceOf[DivorceEndExplanationViewModelImpl]
-  val appConfig: ApplicationConfig = inject[ApplicationConfig]
-  val timeService: TimeService = inject[TimeService]
-  val languageUtilsImpl: LanguageUtilsImpl = inject[LanguageUtilsImpl]
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  lazy val nino: String = generateNino().nino
-  override implicit lazy val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
+  val divorceView: divorce_select_year                                       = inject[divorce_select_year]
+  val explanationView: divorce_end_explanation                               = inject[divorce_end_explanation]
+  val divorceEndExplanationViewModelImpl: DivorceEndExplanationViewModelImpl =
+    instanceOf[DivorceEndExplanationViewModelImpl]
+  val appConfig: ApplicationConfig                                           = inject[ApplicationConfig]
+  val timeService: TimeService                                               = inject[TimeService]
+  val languageUtilsImpl: LanguageUtilsImpl                                   = inject[LanguageUtilsImpl]
+  implicit val request: AuthenticatedUserRequest[?]                          =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  lazy val nino: String                                                      = generateNino().nino
+  override implicit lazy val messages: MessagesImpl                          = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
 
   "Divorce Enter Year Page" when {
     "divorceEnterYear" in {
-      val doc = Jsoup.parse(divorceView(new DivorceSelectYearForm(appConfig, timeService, languageUtilsImpl).form
-      ).toString()).getElementById("main-content")
+      val doc = Jsoup
+        .parse(divorceView(new DivorceSelectYearForm(appConfig, timeService, languageUtilsImpl).form).toString())
+        .getElementById("main-content")
 
-      val heading = doc.getElementsByTag("h1").text
-      val paras = doc.getElementsByTag("p").eachText().toArray()
+      val heading   = doc.getElementsByTag("h1").text
+      val paras     = doc.getElementsByTag("p").eachText().toArray()
       val formLabel = doc.getElementsByTag("label").eachText.toArray
       val formInput = doc.getElementsByTag("input").eachAttr("type")
-      val hint = doc.getElementsByClass("govuk-hint").text
+      val hint      = doc.getElementsByClass("govuk-hint").text
 
-      heading shouldBe "Date of divorce, end of civil partnership or legal separation"
+      heading   shouldBe "Date of divorce, end of civil partnership or legal separation"
       formLabel shouldBe Array("Day", "Month", "Year")
       formInput `contains` "text"
-      hint shouldBe "For example, 30 6 2019"
-      paras shouldBe Array(
+      hint      shouldBe "For example, 30 6 2019"
+      paras     shouldBe Array(
         "You need to go to court to be legally separated. You can still get Marriage Allowance if you are separated, but not legally separated.",
         "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."
       )
@@ -72,15 +75,19 @@ class DivorceContentTest extends BaseTest with Injecting with NinoGenerator {
     "Transferor and DivorceDate is in Current Year" in {
       val endingDates = MarriageAllowanceEndingDates(TaxYear.current.previous.finishes, TaxYear.current.starts)
       val divorceDate = LocalDate.of(TaxYear.current.startYear, 7, 23)
-      val doc = Jsoup.parse(explanationView(divorceEndExplanationViewModelImpl(Transferor, divorceDate, endingDates))
-        .toString()).getElementById("main-content")
+      val doc         = Jsoup
+        .parse(
+          explanationView(divorceEndExplanationViewModelImpl(Transferor, divorceDate, endingDates))
+            .toString()
+        )
+        .getElementById("main-content")
 
       val heading = doc.getElementsByTag("h1").text()
-      val paras = doc.getElementsByTag("p").eachText().toArray
+      val paras   = doc.getElementsByTag("p").eachText().toArray
       val bullets = doc.getElementsByTag("li").eachText().toArray
 
       heading shouldBe "Cancelling Marriage Allowance"
-      paras shouldBe Array(
+      paras   shouldBe Array(
         s"You have told us you divorced, ended your civil partnership or were legally separated on 23 July ${TaxYear.current.startYear}.",
         "As this date falls within the current tax year:",
         "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."
@@ -93,17 +100,24 @@ class DivorceContentTest extends BaseTest with Injecting with NinoGenerator {
 
     "Transferor and DivorceDate is in PreviousYear" in {
       val previousTaxStartYear = TaxYear.current.previous.startYear
-      val endingDates = MarriageAllowanceEndingDates(LocalDate.of(TaxYear.current.previous.previous.finishYear, 4, 5), LocalDate.of(previousTaxStartYear, 4, 6))
-      val divorceDate  = LocalDate.of(TaxYear.current.previous.startYear, 7, 23)
-      val doc = Jsoup.parse(explanationView(divorceEndExplanationViewModelImpl(Transferor, divorceDate, endingDates))
-        .toString()).getElementById("main-content")
+      val endingDates          = MarriageAllowanceEndingDates(
+        LocalDate.of(TaxYear.current.previous.previous.finishYear, 4, 5),
+        LocalDate.of(previousTaxStartYear, 4, 6)
+      )
+      val divorceDate          = LocalDate.of(TaxYear.current.previous.startYear, 7, 23)
+      val doc                  = Jsoup
+        .parse(
+          explanationView(divorceEndExplanationViewModelImpl(Transferor, divorceDate, endingDates))
+            .toString()
+        )
+        .getElementById("main-content")
 
       val heading = doc.getElementsByTag("h1").text
-      val paras = doc.getElementsByTag("p").eachText().toArray
+      val paras   = doc.getElementsByTag("p").eachText().toArray
       val bullets = doc.getElementsByTag("li").eachText().toArray
 
       heading shouldBe "Cancelling Marriage Allowance"
-      paras shouldBe Array(
+      paras   shouldBe Array(
         s"You have told us you divorced, ended your civil partnership or were legally separated on 23 July $previousTaxStartYear.",
         "As this date falls within a previous tax year:",
         "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."
@@ -116,17 +130,21 @@ class DivorceContentTest extends BaseTest with Injecting with NinoGenerator {
 
     "Recipient and DivorceDate is in current year" in {
       val taxYear: TaxYear = appConfig.currentTaxYear()
-      val divorceDate  = taxYear.starts
-      val endingDates = MarriageAllowanceEndingDates(taxYear.finishes, taxYear.next.starts)
-      val doc = Jsoup.parse(explanationView(divorceEndExplanationViewModelImpl(Recipient, divorceDate, endingDates))
-        .toString()).getElementById("main-content")
+      val divorceDate      = taxYear.starts
+      val endingDates      = MarriageAllowanceEndingDates(taxYear.finishes, taxYear.next.starts)
+      val doc              = Jsoup
+        .parse(
+          explanationView(divorceEndExplanationViewModelImpl(Recipient, divorceDate, endingDates))
+            .toString()
+        )
+        .getElementById("main-content")
 
       val heading = doc.getElementsByTag("h1").text
-      val paras = doc.getElementsByTag("p").eachText().toArray
+      val paras   = doc.getElementsByTag("p").eachText().toArray
       val bullets = doc.getElementsByTag("li").eachText().toArray
 
       heading shouldBe "Cancelling Marriage Allowance"
-      paras shouldBe Array(
+      paras   shouldBe Array(
         s"You have told us you divorced, ended your civil partnership or were legally separated on 6 April ${divorceDate.getYear}.",
         "As this date falls within the current tax year:",
         "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."
@@ -140,15 +158,19 @@ class DivorceContentTest extends BaseTest with Injecting with NinoGenerator {
     "Recipient and DivorceDate is in previous year" in {
       val endingDates = MarriageAllowanceEndingDates(TaxYear.current.previous.finishes, TaxYear.current.starts)
       val divorceDate = LocalDate.of(TaxYear.current.previous.startYear, 7, 23)
-      val doc = Jsoup.parse(explanationView(divorceEndExplanationViewModelImpl(Recipient, divorceDate, endingDates))
-        .toString()).getElementById("main-content")
+      val doc         = Jsoup
+        .parse(
+          explanationView(divorceEndExplanationViewModelImpl(Recipient, divorceDate, endingDates))
+            .toString()
+        )
+        .getElementById("main-content")
 
       val heading = doc.getElementsByTag("h1").text
-      val paras = doc.getElementsByTag("p").eachText().toArray
+      val paras   = doc.getElementsByTag("p").eachText().toArray
       val bullets = doc.getElementsByTag("li").eachText().toArray
 
       heading shouldBe "Cancelling Marriage Allowance"
-      paras shouldBe Array(
+      paras   shouldBe Array(
         s"You have told us you divorced, ended your civil partnership or were legally separated on 23 July ${divorceDate.getYear}.",
         "As this date falls within a previous tax year:",
         "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."

@@ -21,21 +21,24 @@ import config.ApplicationConfig
 import controllers.actions.UnauthenticatedActionTransformer
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 
-class HowItWorksController @Inject()(
-                                      appConfig: ApplicationConfig,
-                                      unauthenticatedAction: UnauthenticatedActionTransformer,
-                                      howItWorksView: views.html.multiyear.how_it_works,
-                                      cc: MessagesControllerComponents) extends BaseController(cc) {
+class HowItWorksController @Inject() (
+  appConfig: ApplicationConfig,
+  unauthenticatedAction: UnauthenticatedActionTransformer,
+  howItWorksView: views.html.multiyear.how_it_works,
+  cc: MessagesControllerComponents
+) extends BaseController(cc) {
 
   def home: Action[AnyContent] = unauthenticatedAction {
     Redirect(controllers.routes.HowItWorksController.howItWorks())
   }
 
-  def howItWorks: Action[AnyContent] = unauthenticatedAction {
-    implicit request => request.headers.get("Referer") match {
-      case Some(referrer) if referrer.contains(appConfig.gdsStartUrl) => Redirect (controllers.transfer.routes.DateOfMarriageController.dateOfMarriage())
-      case Some(referrer) if referrer.contains(appConfig.gdsContinueUrl) => Redirect (controllers.transfer.routes.DateOfMarriageController.dateOfMarriage())
-      case _ => Ok(howItWorksView())
+  def howItWorks: Action[AnyContent] = unauthenticatedAction { implicit request =>
+    request.headers.get("Referer") match {
+      case Some(referrer) if referrer.contains(appConfig.gdsStartUrl)    =>
+        Redirect(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage())
+      case Some(referrer) if referrer.contains(appConfig.gdsContinueUrl) =>
+        Redirect(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage())
+      case _                                                             => Ok(howItWorksView())
     }
   }
 }

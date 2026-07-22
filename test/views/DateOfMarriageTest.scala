@@ -28,18 +28,18 @@ import java.time.LocalDate
 
 class DateOfMarriageTest extends BaseTest with NinoGenerator {
 
-  lazy val nino: String = generateNino().nino
-  lazy val dateOfMarriage: date_of_marriage = instanceOf[date_of_marriage]
+  lazy val nino: String                           = generateNino().nino
+  lazy val dateOfMarriage: date_of_marriage       = instanceOf[date_of_marriage]
   lazy val dateOfMarriageForm: DateOfMarriageForm = instanceOf[DateOfMarriageForm]
 
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, true, None, Nino(nino))
-
+  implicit val request: AuthenticatedUserRequest[?] =
+    AuthenticatedUserRequest(FakeRequest(), None, true, None, Nino(nino))
 
   "dateOfMarriage" should {
     "return the correct title" in {
 
       val document = Jsoup.parse(dateOfMarriage(dateOfMarriageForm.dateOfMarriageForm(LocalDate.now)).toString)
-      val title = document.title()
+      val title    = document.title()
       val expected = messages("title.date-of-marriage") + " - " + messages("title.application.pattern")
 
       title.shouldBe(expected)
@@ -48,7 +48,7 @@ class DateOfMarriageTest extends BaseTest with NinoGenerator {
     "return the correct h1" in {
 
       val document = Jsoup.parse(dateOfMarriage(dateOfMarriageForm.dateOfMarriageForm(LocalDate.now)).toString)
-      val h1Tag = document.getElementsByTag("h1").toString
+      val h1Tag    = document.getElementsByTag("h1").toString
 
       val expected = messages("pages.date-of-marriage.heading")
 
@@ -57,9 +57,9 @@ class DateOfMarriageTest extends BaseTest with NinoGenerator {
 
     "return When did you marry or form a civil partnership h2" in {
 
-      val document = Jsoup.parse(dateOfMarriage(dateOfMarriageForm.dateOfMarriageForm(LocalDate.now)).toString)
+      val document     = Jsoup.parse(dateOfMarriage(dateOfMarriageForm.dateOfMarriageForm(LocalDate.now)).toString)
       val paragraphTag = document.getElementsByTag("form").toString
-      val expected = messages("pages.date-of-marriage.h2")
+      val expected     = messages("pages.date-of-marriage.h2")
 
       paragraphTag.should(include(expected))
     }

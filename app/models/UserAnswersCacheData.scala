@@ -18,28 +18,29 @@ package models
 
 import play.api.libs.json.{Format, Json}
 
-
 case class UserAnswersCacheData(
-                      transferor: Option[UserRecord],
-                      recipient: Option[RecipientRecord],
-                      notification: Option[NotificationRecord],
-                      relationshipCreated: Option[Boolean] = None,
-                      selectedYears: Option[List[Int]] = None,
-                      recipientDetailsFormData: Option[RecipientDetailsFormInput] = None,
-                      dateOfMarriage: Option[DateOfMarriageFormInput] = None)
+  transferor: Option[UserRecord],
+  recipient: Option[RecipientRecord],
+  notification: Option[NotificationRecord],
+  relationshipCreated: Option[Boolean] = None,
+  selectedYears: Option[List[Int]] = None,
+  recipientDetailsFormData: Option[RecipientDetailsFormInput] = None,
+  dateOfMarriage: Option[DateOfMarriageFormInput] = None
+)
 
 object UserAnswersCacheData {
   implicit val formats: Format[UserAnswersCacheData] = Json.format[UserAnswersCacheData]
 }
 
-
-case class EligibilityCheckCacheData(loggedInUserInfo: Option[LoggedInUserInfo] = None,
-                                     roleRecord: Option[String] = None,
-                                     activeRelationshipRecord: Option[RelationshipRecord] = None,
-                                     historicRelationships: Option[Seq[RelationshipRecord]] = None,
-                                     notification: Option[NotificationRecord],
-                                     relationshipEndReasonRecord: Option[EndRelationshipReason] = None,
-                                     relationshipUpdated: Option[Boolean] = None)
+case class EligibilityCheckCacheData(
+  loggedInUserInfo: Option[LoggedInUserInfo] = None,
+  roleRecord: Option[String] = None,
+  activeRelationshipRecord: Option[RelationshipRecord] = None,
+  historicRelationships: Option[Seq[RelationshipRecord]] = None,
+  notification: Option[NotificationRecord],
+  relationshipEndReasonRecord: Option[EndRelationshipReason] = None,
+  relationshipUpdated: Option[Boolean] = None
+)
 
 object EligibilityCheckCacheData {
   implicit val formats: Format[EligibilityCheckCacheData] = Json.format[EligibilityCheckCacheData]

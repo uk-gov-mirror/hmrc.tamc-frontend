@@ -24,21 +24,21 @@ class ResponseStatusTest extends BaseTest {
   "ResponseStatus" should {
     "serialize to JSON correctly" in {
       val responseStatus = ResponseStatus("404")
-      val json: JsValue = Json.toJson(responseStatus)
+      val json: JsValue  = Json.toJson(responseStatus)
 
       json mustBe Json.parse("""{"status_code":"404"}""")
     }
 
     "deserialize from JSON correctly" in {
-      val json: JsValue = Json.parse("""{"status_code":"404"}""")
+      val json: JsValue  = Json.parse("""{"status_code":"404"}""")
       val responseStatus = json.as[ResponseStatus]
 
       responseStatus mustBe ResponseStatus("404")
     }
 
     "handle serialization and deserialization symmetrically" in {
-      val responseStatus = ResponseStatus("200")
-      val serializedJson = Json.toJson(responseStatus)
+      val responseStatus             = ResponseStatus("200")
+      val serializedJson             = Json.toJson(responseStatus)
       val deserializedResponseStatus = serializedJson.as[ResponseStatus]
 
       deserializedResponseStatus mustBe responseStatus

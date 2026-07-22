@@ -21,31 +21,32 @@ import controllers.BaseController
 import controllers.auth.StandardAuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.UpdateRelationshipService
-import utils.{UpdateRelationshipErrorHandler, LoggerHelper}
+import utils.{LoggerHelper, UpdateRelationshipErrorHandler}
 import viewModels.ConfirmUpdateViewModelImpl
 
 import scala.concurrent.ExecutionContext
 
-class ConfirmChangeController @Inject()(authenticate: StandardAuthJourney,
-                                        updateRelationshipService: UpdateRelationshipService,
-                                        cc: MessagesControllerComponents,
-                                        confirmUpdateV: views.html.coc.confirmUpdate,
-                                        confirmUpdateViewModelImpl: ConfirmUpdateViewModelImpl,
-                                        errorHandler: UpdateRelationshipErrorHandler)
-                                       (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class ConfirmChangeController @Inject() (
+  authenticate: StandardAuthJourney,
+  updateRelationshipService: UpdateRelationshipService,
+  cc: MessagesControllerComponents,
+  confirmUpdateV: views.html.coc.confirmUpdate,
+  confirmUpdateViewModelImpl: ConfirmUpdateViewModelImpl,
+  errorHandler: UpdateRelationshipErrorHandler
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
-  def confirmUpdate: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
-    implicit request =>
-      updateRelationshipService.getConfirmationUpdateAnswers map { confirmationUpdateAnswers =>
-        Ok(confirmUpdateV(confirmUpdateViewModelImpl(confirmationUpdateAnswers)))
-      } recover errorHandler.handleError
+  def confirmUpdate: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
+    updateRelationshipService.getConfirmationUpdateAnswers map { confirmationUpdateAnswers =>
+      Ok(confirmUpdateV(confirmUpdateViewModelImpl(confirmationUpdateAnswers)))
+    } recover errorHandler.handleError
   }
 
-  def submitConfirmUpdate: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
-    implicit request =>
-      updateRelationshipService.updateRelationship(request.nino) map {
-        _ => Redirect(controllers.UpdateRelationship.routes.FinishedChangeController.finishUpdate())
-      } recover errorHandler.handleError
+  def submitConfirmUpdate: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
+    updateRelationshipService.updateRelationship(request.nino) map { _ =>
+      Redirect(controllers.UpdateRelationship.routes.FinishedChangeController.finishUpdate())
+    } recover errorHandler.handleError
   }
 
 }

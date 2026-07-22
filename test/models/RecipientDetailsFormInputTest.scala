@@ -17,7 +17,7 @@
 package models
 
 import org.scalatest.matchers.must.Matchers.mustBe
-import play.api.libs.json.{JsValue, Json, JsError}
+import play.api.libs.json.{JsError, JsValue, Json}
 import uk.gov.hmrc.domain.Nino
 import utils.BaseTest
 
@@ -73,7 +73,7 @@ class RecipientDetailsFormInputTest extends BaseTest {
         nino = Nino("BB654321B")
       )
 
-      val json = Json.toJson(originalInput)
+      val json              = Json.toJson(originalInput)
       val deserializedInput = json.as[RecipientDetailsFormInput]
 
       deserializedInput mustBe originalInput
@@ -93,7 +93,7 @@ class RecipientDetailsFormInputTest extends BaseTest {
       result match {
         case JsError(errors) =>
           errors.nonEmpty mustBe true
-        case _ =>
+        case _               =>
           fail("Expected JsError for invalid JSON")
       }
     }
@@ -113,11 +113,10 @@ class RecipientDetailsFormInputTest extends BaseTest {
       result.isError mustBe true
       result match {
         case JsError(errors) =>
-          errors.head._2.head.message should include ("Other")
-        case _ =>
+          errors.head._2.head.message should include("Other")
+        case _               =>
           fail("Expected JsError for invalid gender field")
       }
     }
   }
 }
-

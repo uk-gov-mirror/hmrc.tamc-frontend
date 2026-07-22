@@ -39,12 +39,12 @@ import scala.concurrent.Future
 
 class ConfirmEmailControllerTest extends ControllerBaseTest {
 
-  val currentTaxYear: Int = time.TaxYear.current.startYear
-  val mockTransferService: TransferService = mock[TransferService]
-  val mockCachingService: CachingService = mock[CachingService]
-  val mockTimeService: TimeService = mock[TimeService]
+  val currentTaxYear: Int                    = time.TaxYear.current.startYear
+  val mockTransferService: TransferService   = mock[TransferService]
+  val mockCachingService: CachingService     = mock[CachingService]
+  val mockTimeService: TimeService           = mock[TimeService]
   val notificationRecord: NotificationRecord = NotificationRecord(EmailAddress("test@test.com"))
-  val applicationConfig: ApplicationConfig = instanceOf[ApplicationConfig]
+  val applicationConfig: ApplicationConfig   = instanceOf[ApplicationConfig]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
@@ -66,7 +66,7 @@ class ConfirmEmailControllerTest extends ControllerBaseTest {
   "confirmYourEmail" should {
     "return a success" when {
       "an email is recovered from the cache" in {
-        val email = "test@test.com"
+        val email  = "test@test.com"
         when(mockCachingService.get[NotificationRecord](any())(any()))
           .thenReturn(Future.successful(Some(NotificationRecord(EmailAddress(email)))))
         val result = controller.confirmYourEmail()(request)
@@ -86,7 +86,7 @@ class ConfirmEmailControllerTest extends ControllerBaseTest {
     "return bad request" when {
       "an invalid form is submitted" in {
         val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody("transferor-email" -> "not an email")
-        val result = controller.confirmYourEmailAction()(request)
+        val result  = controller.confirmYourEmailAction()(request)
         status(result) shouldBe BAD_REQUEST
       }
     }
@@ -96,7 +96,7 @@ class ConfirmEmailControllerTest extends ControllerBaseTest {
         val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody("transferor-email" -> "test@test.com")
         when(mockTransferService.upsertTransferorNotification(ArgumentMatchers.eq(notificationRecord))(any()))
           .thenReturn(Future.successful(notificationRecord))
-        val result = controller.confirmYourEmailAction()(request)
+        val result  = controller.confirmYourEmailAction()(request)
         status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(controllers.transfer.routes.ConfirmController.confirm().url)
       }

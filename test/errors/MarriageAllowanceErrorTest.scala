@@ -25,7 +25,7 @@ import utils.BaseTest
 class MarriageAllowanceErrorTest extends BaseTest with GuiceOneAppPerSuite {
   "MarriageAllowanceError" should {
     "serialize to JSON correctly" in {
-      val error = MarriageAllowanceError(Some(ResponseStatus("500")), None, None)
+      val error         = MarriageAllowanceError(Some(ResponseStatus("500")), None, None)
       val json: JsValue = Json.toJson(error)
 
       json mustBe Json.parse("""{"status":{"status_code":"500"}}""")
@@ -33,14 +33,14 @@ class MarriageAllowanceErrorTest extends BaseTest with GuiceOneAppPerSuite {
 
     "deserialize from JSON correctly" in {
       val json: JsValue = Json.parse("""{"status":{"status_code":"500"}}""")
-      val error = json.as[MarriageAllowanceError]
+      val error         = json.as[MarriageAllowanceError]
 
       error mustBe MarriageAllowanceError(Some(ResponseStatus("500")), None, None)
     }
 
     "handle serialization and deserialization symmetrically" in {
-      val error = MarriageAllowanceError(Some(ResponseStatus("403")), None, None)
-      val serializedJson = Json.toJson(error)
+      val error             = MarriageAllowanceError(Some(ResponseStatus("403")), None, None)
+      val serializedJson    = Json.toJson(error)
       val deserializedError = serializedJson.as[MarriageAllowanceError]
 
       deserializedError mustBe error

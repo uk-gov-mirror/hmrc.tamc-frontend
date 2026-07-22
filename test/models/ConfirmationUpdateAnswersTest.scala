@@ -24,28 +24,34 @@ import utils.UnitSpec
 
 class ConfirmationUpdateAnswersTest extends UnitSpec {
 
-  val loggedInUser = LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some("first"), Some("surname"))))
-  val relationshipRecords = RelationshipRecords(activeRecipientRelationshipRecord, Seq.empty[RelationshipRecord], loggedInUser)
-  val email = "email@email.com"
-  val dateOfDivorce = Some(LocalDate.now().minusDays(1))
+  val loggedInUser                 = LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some("first"), Some("surname"))))
+  val relationshipRecords          =
+    RelationshipRecords(activeRecipientRelationshipRecord, Seq.empty[RelationshipRecord], loggedInUser)
+  val email                        = "email@email.com"
+  val dateOfDivorce                = Some(LocalDate.now().minusDays(1))
   val marriageAllowanceEndingDates = MarriageAllowanceEndingDates(LocalDate.now(), LocalDate.now())
 
-  def createCacheData(relRecords: Option[RelationshipRecords] = Some(relationshipRecords),
-                      divorceDate: Option[LocalDate] = dateOfDivorce,
-                      emailAddress: Option[String] = Some(email),
-                      maEndingDates: Option[MarriageAllowanceEndingDates] = Some(marriageAllowanceEndingDates)): ConfirmationUpdateAnswersCacheData = {
-
+  def createCacheData(
+    relRecords: Option[RelationshipRecords] = Some(relationshipRecords),
+    divorceDate: Option[LocalDate] = dateOfDivorce,
+    emailAddress: Option[String] = Some(email),
+    maEndingDates: Option[MarriageAllowanceEndingDates] = Some(marriageAllowanceEndingDates)
+  ): ConfirmationUpdateAnswersCacheData =
     ConfirmationUpdateAnswersCacheData(relRecords, divorceDate, emailAddress, maEndingDates)
-  }
 
   "ConfirmationUpdateAnswers" should {
 
     "create a ConfirmationUpdateAnswers object given all cache data" in {
 
-      val cacheData = createCacheData()
+      val cacheData            = createCacheData()
       val confirmUpdateAnswers = ConfirmationUpdateAnswers(cacheData)
 
-      confirmUpdateAnswers shouldBe ConfirmationUpdateAnswers(loggedInUser, dateOfDivorce, email, marriageAllowanceEndingDates)
+      confirmUpdateAnswers shouldBe ConfirmationUpdateAnswers(
+        loggedInUser,
+        dateOfDivorce,
+        email,
+        marriageAllowanceEndingDates
+      )
 
     }
 

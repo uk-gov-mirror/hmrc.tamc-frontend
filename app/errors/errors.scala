@@ -20,10 +20,10 @@ import models.ResponseStatus
 import play.api.libs.json.{Json, OFormat}
 
 case class MarriageAllowanceError(
-                                   status: Option[ResponseStatus],
-                                   statusCode: Option[Int],
-                                   message: Option[String]
-                                 )
+  status: Option[ResponseStatus],
+  statusCode: Option[Int],
+  message: Option[String]
+)
 object MarriageAllowanceError {
   implicit val format: OFormat[MarriageAllowanceError] = Json.format[MarriageAllowanceError]
 }
@@ -65,16 +65,16 @@ sealed abstract class ServiceError extends RuntimeException
 
 object ErrorResponseStatus {
 
-  val CITIZEN_NOT_FOUND = "TAMC:ERROR:CITIZEN-NOT-FOUND"
-  val BAD_REQUEST = "TAMC:ERROR:BAD-REQUEST"
-  val SERVER_ERROR = "ERROR:500"
-  val SERVICE_UNAVILABLE = "ERROR:503"
+  val CITIZEN_NOT_FOUND          = "TAMC:ERROR:CITIZEN-NOT-FOUND"
+  val BAD_REQUEST                = "TAMC:ERROR:BAD-REQUEST"
+  val SERVER_ERROR               = "ERROR:500"
+  val SERVICE_UNAVILABLE         = "ERROR:503"
   val CANNOT_CREATE_RELATIONSHIP = "TAMC:ERROR:CANNOT-CREATE-RELATIONSHIP"
   val CANNOT_UPDATE_RELATIONSHIP = "TAMC:ERROR:CANNOT-UPDATE-RELATIONSHIP"
-  val TRANSFEROR_NOT_FOUND = "TAMC:ERROR:TRANSFEROR-NOT-FOUND"
-  val RELATION_MIGHT_BE_CREATED = "TAMC:ERROR:RELATION-MIGHT-BE-CREATED"
-  val RECIPIENT_DECEASED = "TAMC:ERROR:RECIPIENT-DECEASED"
-  val OTHER_ERROR = "TAMC:ERROR:OTHER-ERROR"
-  val RECIPIENT_NOT_FOUND = "TAMC:ERROR:RECIPIENT-NOT-FOUND"
-  val TRANSFEROR_DECEASED = "TAMC:ERROR:TRANSFERER-DECEASED"
+  val TRANSFEROR_NOT_FOUND       = "TAMC:ERROR:TRANSFEROR-NOT-FOUND"
+  val RELATION_MIGHT_BE_CREATED  = "TAMC:ERROR:RELATION-MIGHT-BE-CREATED"
+  val RECIPIENT_DECEASED         = "TAMC:ERROR:RECIPIENT-DECEASED"
+  val OTHER_ERROR                = "TAMC:ERROR:OTHER-ERROR"
+  val RECIPIENT_NOT_FOUND        = "TAMC:ERROR:RECIPIENT-NOT-FOUND"
+  val TRANSFEROR_DECEASED        = "TAMC:ERROR:TRANSFERER-DECEASED"
 }

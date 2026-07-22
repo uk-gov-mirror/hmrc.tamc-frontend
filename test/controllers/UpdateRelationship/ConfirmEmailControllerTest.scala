@@ -41,14 +41,14 @@ class ConfirmEmailControllerTest extends ControllerBaseTest with ControllerViewT
 
   val mockUpdateRelationshipService: UpdateRelationshipService = mock[UpdateRelationshipService]
 
-
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
       bind[UpdateRelationshipService].toInstance(mockUpdateRelationshipService),
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: ConfirmEmailController = app.injector.instanceOf[ConfirmEmailController]
 
@@ -66,7 +66,7 @@ class ConfirmEmailControllerTest extends ControllerBaseTest with ControllerViewT
         when(mockUpdateRelationshipService.getEmailAddress(any()))
           .thenReturn(Future.successful(Some(email)))
 
-        val result = controller.confirmEmail(request)
+        val result        = controller.confirmEmail(request)
         val populatedForm = emailForm.fill(email)
 
         status(result) shouldBe OK
@@ -96,20 +96,22 @@ class ConfirmEmailControllerTest extends ControllerBaseTest with ControllerViewT
   "confirmYourEmailActionUpdate" should {
     "redirect to the confirmUpdate page" in {
       val emailAddress = EmailAddress("example@example.com")
-      when(mockUpdateRelationshipService.saveEmailAddress(ArgumentMatchers.eq(emailAddress))(any())).
-        thenReturn(Future.successful(emailAddress))
+      when(mockUpdateRelationshipService.saveEmailAddress(ArgumentMatchers.eq(emailAddress))(any()))
+        .thenReturn(Future.successful(emailAddress))
 
       val request = buildFakePostRequest("transferor-email" -> emailAddress)
-      val result = controller.confirmYourEmailActionUpdate()(request)
+      val result  = controller.confirmYourEmailActionUpdate()(request)
 
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.ConfirmChangeController.confirmUpdate().url)
+      status(result)           shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(
+        controllers.UpdateRelationship.routes.ConfirmChangeController.confirmUpdate().url
+      )
     }
 
     "return a bad request" when {
       "a form error has occurred" in {
         val request = buildFakePostRequest("transferor-email" -> "")
-        val result = controller.confirmYourEmailActionUpdate()(request)
+        val result  = controller.confirmYourEmailActionUpdate()(request)
 
         status(result) shouldBe BAD_REQUEST
       }

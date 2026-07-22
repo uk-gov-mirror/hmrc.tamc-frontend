@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import controllers.actions.UnauthenticatedActionTransformer
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 
-class AuthorisationController @Inject()(
+class AuthorisationController @Inject() (
   unauthenticatedAction: UnauthenticatedActionTransformer,
   appConfig: ApplicationConfig,
   cc: MessagesControllerComponents,
@@ -31,17 +31,15 @@ class AuthorisationController @Inject()(
 
   val logoutUrl: String = appConfig.logoutUrl
 
-  def notAuthorised: Action[AnyContent] = unauthenticatedAction {
-    implicit request =>
-      Ok(otherWaysView())
+  def notAuthorised: Action[AnyContent] = unauthenticatedAction { implicit request =>
+    Ok(otherWaysView())
   }
 
   def logout: Action[AnyContent] = unauthenticatedAction {
     Redirect(logoutUrl).withNewSession
   }
 
-  def sessionTimeout: Action[AnyContent] = unauthenticatedAction {
-    implicit request =>
-      Ok(sessionTimeoutView())
+  def sessionTimeout: Action[AnyContent] = unauthenticatedAction { implicit request =>
+    Ok(sessionTimeoutView())
   }
 }

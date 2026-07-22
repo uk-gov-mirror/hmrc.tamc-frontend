@@ -27,103 +27,114 @@ import java.time.LocalDate
 
 class RegistrationFormTest extends UnitSpec with GuiceOneServerPerSuite {
 
-  val applicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val applicationConfig                       = app.injector.instanceOf[ApplicationConfig]
   lazy val registrationForm: RegistrationForm = app.injector.instanceOf[RegistrationForm]
-  implicit val messages: MessagesImpl = MessagesImpl(Lang("en"), app.injector.instanceOf[MessagesApi])
+  implicit val messages: MessagesImpl         = MessagesImpl(Lang("en"), app.injector.instanceOf[MessagesApi])
 
   ".dateOfMarriageValidator" should {
 
     "bind a valid date successfully" in {
       val formInput = Map[String, String](
-        "day" -> "12",
+        "day"   -> "12",
         "month" -> "02",
-        "year" -> "2019"
+        "year"  -> "2019"
       )
-      val res = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
+      val res       = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
       res shouldBe Right(LocalDate.of(2019, 2, 12))
     }
 
     "fail to bind a date which is entirely absent" in {
 
       val formInput = Map.empty[String, String]
-      val res = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
+      val res       = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
 
-      res shouldBe Left(Seq(
-        FormError("", "pages.form.field.dom.error.enter_a_date", Nil)
-      ))
+      res shouldBe Left(
+        Seq(
+          FormError("", "pages.form.field.dom.error.enter_a_date", Nil)
+        )
+      )
     }
 
     "fail to bind a date is partially absent" in {
       val formInput = Map[String, String](
-        "day" -> "12",
+        "day"  -> "12",
         "year" -> "2019"
       )
-      val res = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
+      val res       = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
 
-      res shouldBe Left(Seq(
-        FormError("", "pages.form.field.dom.error.must.include.month", Nil)
-      ))
+      res shouldBe Left(
+        Seq(
+          FormError("", "pages.form.field.dom.error.must.include.month", Nil)
+        )
+      )
     }
 
     "fail to bind a date which is earlier the minimum configured date" in {
 
       val earliestDate = applicationConfig.TAMC_MIN_DATE
-      val checkDate = earliestDate.minusDays(1)
+      val checkDate    = earliestDate.minusDays(1)
 
       val formInput = Map[String, String](
-        "day" -> checkDate.getDayOfMonth.toString,
+        "day"   -> checkDate.getDayOfMonth.toString,
         "month" -> checkDate.getMonthValue.toString,
-        "year" -> checkDate.getYear.toString
+        "year"  -> checkDate.getYear.toString
       )
-      val res = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
+      val res       = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
 
-      res shouldBe Left(Seq(
-        FormError("", "pages.form.field.dom.error.invalid.year", Seq(LocalDate.now().getYear.toString)))
+      res shouldBe Left(
+        Seq(FormError("", "pages.form.field.dom.error.invalid.year", Seq(LocalDate.now().getYear.toString)))
       )
     }
 
     "fail to bind a date which is later than today + 1" in {
 
-      val today = LocalDate.now()
+      val today   = LocalDate.now()
       val tooLate = today.plusDays(2)
 
       val formInput = Map[String, String](
-        "day" -> tooLate.getDayOfMonth.toString,
+        "day"   -> tooLate.getDayOfMonth.toString,
         "month" -> s"0${tooLate.getMonthValue.toString}",
-        "year" -> tooLate.getYear.toString
+        "year"  -> tooLate.getYear.toString
       )
-      val res = registrationForm.dateOfMarriageValidator(today).bind(formInput)
+      val res       = registrationForm.dateOfMarriageValidator(today).bind(formInput)
 
-      res shouldBe Left(Seq(
-        FormError("", messages("pages.form.field.dom.error.max-date"), Nil))
-      )
+      res shouldBe Left(Seq(FormError("", messages("pages.form.field.dom.error.max-date"), Nil)))
     }
 
     "fail to bind a date containing non numeric" in {
 
       val formInput = Map[String, String](
-        "day" -> "12",
+        "day"   -> "12",
         "month" -> "12",
-        "year" -> "2o19"
+        "year"  -> "2o19"
       )
-      val res = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
+      val res       = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
 
-      res shouldBe Left(Seq(
-        FormError("", "pages.form.field.dom.error.enter_numbers", Nil)
-      ))
+      res shouldBe Left(
+        Seq(
+          FormError("", "pages.form.field.dom.error.enter_numbers", Nil)
+        )
+      )
     }
 
     "fail to bind a numeric, but invalid date" in {
 
-      val formInput = Map[String, String](
-        "day" -> "30",
+      val formInput                              = Map[String, String](
+        "day"   -> "30",
         "month" -> "02",
-        "year" -> "2018"
+        "year"  -> "2018"
       )
-      val res: Either[Seq[FormError], LocalDate] = registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
+      val res: Either[Seq[FormError], LocalDate] =
+        registrationForm.dateOfMarriageValidator(LocalDate.now()).bind(formInput)
 
-      res shouldBe Left(Seq(
-        FormError("", "pages.form.field.dom.error.invalid.day", Seq(dayRange(formInput("month").toInt, formInput("year").toInt))))
+      res shouldBe Left(
+        Seq(
+          FormError(
+            "",
+            "pages.form.field.dom.error.invalid.day",
+            Seq(dayRange(formInput("month").toInt, formInput("year").toInt))
+          )
+        )
       )
     }
   }

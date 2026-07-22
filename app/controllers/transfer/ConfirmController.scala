@@ -25,13 +25,15 @@ import utils.{LoggerHelper, TransferErrorHandler}
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class ConfirmController @Inject()(
-                                   errorHandler: TransferErrorHandler,
-                                   authenticate: StandardAuthJourney,
-                                   registrationService: TransferService,
-                                   cc: MessagesControllerComponents,
-                                   confirmV: views.html.confirm)
-                                 (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class ConfirmController @Inject() (
+  errorHandler: TransferErrorHandler,
+  authenticate: StandardAuthJourney,
+  registrationService: TransferService,
+  cc: MessagesControllerComponents,
+  confirmV: views.html.confirm
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
   def confirm: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
     registrationService.getConfirmationData(request.nino) map { data =>

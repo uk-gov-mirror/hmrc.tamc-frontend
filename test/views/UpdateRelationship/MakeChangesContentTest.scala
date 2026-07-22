@@ -30,13 +30,15 @@ import java.util.Locale
 
 class MakeChangesContentTest extends BaseTest with Injecting with NinoGenerator with CreateRelationshipRecordsHelper {
 
-  val view: reason_for_change = inject[reason_for_change]
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  val view: reason_for_change                       = inject[reason_for_change]
+  implicit val request: AuthenticatedUserRequest[?] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
   override implicit lazy val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
-  lazy val nino: String = generateNino().nino
+  lazy val nino: String                             = generateNino().nino
 
   private val relationshipRecords = createRelationshipRecords()
-  val doc: Document = Jsoup.parse(view(MakeChangesDecisionForm.form(), relationshipRecords.primaryRecord.role).toString())
+  val doc: Document               =
+    Jsoup.parse(view(MakeChangesDecisionForm.form(), relationshipRecords.primaryRecord.role).toString())
 
   "Make change - get view" should {
 
@@ -45,7 +47,7 @@ class MakeChangesContentTest extends BaseTest with Injecting with NinoGenerator 
     }
 
     "render the hidden user type tag" in {
-      doc.select("#ma-user-type").size() shouldBe 1
+      doc.select("#ma-user-type").size()                 shouldBe 1
       doc.select("#ma-user-type").attr("data-user-type") shouldBe "transferor"
     }
 
@@ -62,7 +64,9 @@ class MakeChangesContentTest extends BaseTest with Injecting with NinoGenerator 
     }
 
     "Display all correct page text" in {
-      doc.getElementsByTag("p").eachText().toArray() shouldBe Array("Beta This is a new service. Help us improve it and give your feedback (opens in new tab).")
+      doc.getElementsByTag("p").eachText().toArray() shouldBe Array(
+        "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."
+      )
     }
   }
 

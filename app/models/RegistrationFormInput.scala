@@ -23,19 +23,18 @@ import play.api.libs.json._
 import uk.gov.hmrc.domain.Nino
 
 object RegistrationFormInput {
-  private val pattern = "dd/MM/yyyy"
+  private val pattern                                    = "dd/MM/yyyy"
   private def writes(pattern: String): Writes[LocalDate] = {
     val datePattern = DateTimeFormatter.ofPattern(pattern)
 
-    Writes[LocalDate] { localDate => JsString(localDate.format(datePattern))}
+    Writes[LocalDate](localDate => JsString(localDate.format(datePattern)))
   }
 
-  implicit val dateFormat: Format[LocalDate] = Format[LocalDate](Reads.localDateReads(pattern), writes(pattern))
+  implicit val dateFormat: Format[LocalDate]           = Format[LocalDate](Reads.localDateReads(pattern), writes(pattern))
   implicit val formats: OFormat[RegistrationFormInput] = Json.format[RegistrationFormInput]
 
-  def unapply(input: RegistrationFormInput): Option[(String, String, Gender, Nino, LocalDate)] = {
+  def unapply(input: RegistrationFormInput): Option[(String, String, Gender, Nino, LocalDate)] =
     Some((input.name, input.lastName, input.gender, input.nino, input.dateOfMarriage))
-  }
 }
 
 case class RegistrationFormInput(name: String, lastName: String, gender: Gender, nino: Nino, dateOfMarriage: LocalDate)

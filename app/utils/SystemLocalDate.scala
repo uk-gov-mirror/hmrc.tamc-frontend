@@ -21,6 +21,6 @@ import config.ApplicationConfig
 
 import java.time.LocalDate
 
-class SystemLocalDate @Inject()(applicationConfig: ApplicationConfig) {
+class SystemLocalDate @Inject() (applicationConfig: ApplicationConfig) {
   def now(): LocalDate = applicationConfig.currentLocalDate()
 }

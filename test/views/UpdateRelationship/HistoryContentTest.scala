@@ -32,53 +32,64 @@ import java.text.NumberFormat
 import java.time.LocalDate
 import java.util.Locale
 
-class HistoryContentTest extends BaseTest with Injecting with NinoGenerator{
+class HistoryContentTest extends BaseTest with Injecting with NinoGenerator {
 
-  val appConfig: ApplicationConfig = inject[ApplicationConfig]
-  val view: history_summary = inject[history_summary]
+  val appConfig: ApplicationConfig                             = inject[ApplicationConfig]
+  val view: history_summary                                    = inject[history_summary]
   val historySummaryViewModelImpl: HistorySummaryViewModelImpl = instanceOf[HistorySummaryViewModelImpl]
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  lazy val nino: String = generateNino().nino
-  override implicit lazy val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
-  val citizenName: CitizenName = CitizenName(Some("Test"), Some("User"))
-  val loggedInUserInfo: LoggedInUserInfo = LoggedInUserInfo(
-    cid = 1122L,
-    timestamp = LocalDate.now().toString,
-    has_allowance = None,
-    name = Some(citizenName))
-  val maxBenefitCY: String = NumberFormat.getIntegerInstance().format(appConfig.MAX_BENEFIT(TaxYear.current.startYear))
-  val maxAllowanceTransferCY: String = NumberFormat.getIntegerInstance().format(appConfig.MAX_ALLOWED_PERSONAL_ALLOWANCE_TRANSFER(TaxYear.current.startYear))
+  implicit val request: AuthenticatedUserRequest[?]            =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  lazy val nino: String                                        = generateNino().nino
+  override implicit lazy val messages: MessagesImpl            = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
+  val citizenName: CitizenName                                 = CitizenName(Some("Test"), Some("User"))
+  val loggedInUserInfo: LoggedInUserInfo                       =
+    LoggedInUserInfo(cid = 1122L, timestamp = LocalDate.now().toString, has_allowance = None, name = Some(citizenName))
+  val maxBenefitCY: String                                     = NumberFormat.getIntegerInstance().format(appConfig.MAX_BENEFIT(TaxYear.current.startYear))
+  val maxAllowanceTransferCY: String                           = NumberFormat
+    .getIntegerInstance()
+    .format(appConfig.MAX_ALLOWED_PERSONAL_ALLOWANCE_TRANSFER(TaxYear.current.startYear))
 
   val userRecord: Seq[(Role, Boolean, String)] = Seq(
-    (Transferor, true, "Your Marriage Allowance claim has ended. " +
-      s"You will keep the tax-free allowances transferred by you until 5 April ${TaxYear.current.finishes.getYear}."),
+    (
+      Transferor,
+      true,
+      "Your Marriage Allowance claim has ended. " +
+        s"You will keep the tax-free allowances transferred by you until 5 April ${TaxYear.current.finishes.getYear}."
+    ),
     (Transferor, false, "You are currently helping your partner benefit from Marriage Allowance."),
-    (Recipient, true, "Your Marriage Allowance claim has ended. " +
-      s"You will keep the tax-free allowances transferred to you until 5 April ${TaxYear.current.finishes.getYear}."),
-    (Recipient, false, s"Your partner is currently using Marriage Allowance to transfer £" +
-      s"$maxAllowanceTransferCY of their Personal Allowance to you. " +
-      s"This can reduce the tax you pay by up to £$maxBenefitCY a year.")
+    (
+      Recipient,
+      true,
+      "Your Marriage Allowance claim has ended. " +
+        s"You will keep the tax-free allowances transferred to you until 5 April ${TaxYear.current.finishes.getYear}."
+    ),
+    (
+      Recipient,
+      false,
+      s"Your partner is currently using Marriage Allowance to transfer £" +
+        s"$maxAllowanceTransferCY of their Personal Allowance to you. " +
+        s"This can reduce the tax you pay by up to £$maxBenefitCY a year."
     )
+  )
 
   "History page" when {
-    userRecord.foreach {
-      case (role, mACancelled, content) =>
-        s"Page Header & caption & $content - are displayed for $mACancelled records when $role checks summary" in {
-          val doc = Jsoup.parse(view(historySummaryViewModelImpl(role, mACancelled, loggedInUserInfo)).toString())
+    userRecord.foreach { case (role, mACancelled, content) =>
+      s"Page Header & caption & $content - are displayed for $mACancelled records when $role checks summary" in {
+        val doc = Jsoup.parse(view(historySummaryViewModelImpl(role, mACancelled, loggedInUserInfo)).toString())
 
-          val pageHeading = doc.getElementById("pageHeading").text()
-          val caption = doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text()
-          val paragraphs = doc.getElementsByClass("govuk-body").text()
-          val button = doc.getElementsByClass("govuk-button").text()
+        val pageHeading = doc.getElementById("pageHeading").text()
+        val caption     = doc.getElementsByClass("govuk-caption-xl hmrc-caption-xl").text()
+        val paragraphs  = doc.getElementsByClass("govuk-body").text()
+        val button      = doc.getElementsByClass("govuk-button").text()
 
-          if (mACancelled) {
-            button shouldBe "Check your Marriage Allowance claims"
-          } else button shouldBe "Check or update your Marriage Allowance"
+        if (mACancelled) {
+          button shouldBe "Check your Marriage Allowance claims"
+        } else button shouldBe "Check or update your Marriage Allowance"
 
-          pageHeading shouldBe "Test User"
-          paragraphs shouldBe content
-          caption `contains` "Your Marriage Allowance summary"
-        }
+        pageHeading shouldBe "Test User"
+        paragraphs  shouldBe content
+        caption `contains` "Your Marriage Allowance summary"
+      }
     }
   }
 

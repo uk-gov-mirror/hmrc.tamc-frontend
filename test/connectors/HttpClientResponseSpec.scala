@@ -32,9 +32,9 @@ import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Futu
 
 class HttpClientResponseSpec extends AnyWordSpec with Matchers {
   implicit val ec: ExecutionContextExecutor = ExecutionContext.global
-  val mockHttpResponse: HttpResponse = mock[HttpResponse]
-  val httpClientResponse = new HttpClientResponse
-  val mockLogger: Logger = mock[Logger]
+  val mockHttpResponse: HttpResponse        = mock[HttpResponse]
+  val httpClientResponse                    = new HttpClientResponse
+  val mockLogger: Logger                    = mock[Logger]
 
   "HttpClientResponse" should {
     "return HttpResponse for successful response" in {
@@ -60,8 +60,8 @@ class HttpClientResponseSpec extends AnyWordSpec with Matchers {
       SERVICE_UNAVAILABLE,
       LOCKED,
       UNAUTHORIZED
-      ).foreach { error =>
-        s"hand $error and log info" in {
+    ).foreach { error =>
+      s"hand $error and log info" in {
         val returnedError = UpstreamErrorResponse("Error Message", error)
 
         val response: Future[Either[UpstreamErrorResponse, HttpResponse]] =
@@ -78,7 +78,7 @@ class HttpClientResponseSpec extends AnyWordSpec with Matchers {
     }
     "return BAD_GATEWAY when the response is a HttpException" in {
 
-      val exception = new HttpException("Some Error", BAD_GATEWAY)
+      val exception                                                     = new HttpException("Some Error", BAD_GATEWAY)
       val response: Future[Either[UpstreamErrorResponse, HttpResponse]] =
         Future.failed(exception)
 
@@ -88,7 +88,7 @@ class HttpClientResponseSpec extends AnyWordSpec with Matchers {
 
     "return exception when the response is a generic exception" in {
 
-      val exception = new Exception("Some Error")
+      val exception                                                     = new Exception("Some Error")
       val response: Future[Either[UpstreamErrorResponse, HttpResponse]] =
         Future.failed(exception)
 
@@ -96,7 +96,7 @@ class HttpClientResponseSpec extends AnyWordSpec with Matchers {
         httpClientResponse.read(response).value
       }.map { ex =>
         ex.getMessage shouldBe "Some Error"
-       }
+      }
     }
   }
 }

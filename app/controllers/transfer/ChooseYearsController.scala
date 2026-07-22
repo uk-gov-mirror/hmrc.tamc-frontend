@@ -31,16 +31,16 @@ import java.time.{Clock, LocalDate}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ChooseYearsController @Inject()(
-                                       authenticate: StandardAuthJourney,
-                                       cachingService: CachingService,
-                                       cc: MessagesControllerComponents,
-                                       chooseYearsView: views.html.multiyear.transfer.choose_eligible_years,
-                                       formProvider: ChooseYearForm,
-                                       errorHandler: TransferErrorHandler,
-                                       clock: Clock
-                                     )(implicit ec: ExecutionContext)
-  extends BaseController(cc)
+class ChooseYearsController @Inject() (
+  authenticate: StandardAuthJourney,
+  cachingService: CachingService,
+  cc: MessagesControllerComponents,
+  chooseYearsView: views.html.multiyear.transfer.choose_eligible_years,
+  formProvider: ChooseYearForm,
+  errorHandler: TransferErrorHandler,
+  clock: Clock
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
     with LoggerHelper
     with CurrentTaxYear {
 
@@ -55,7 +55,7 @@ class ChooseYearsController @Inject()(
       case Some(data) =>
         val selectedYears: Seq[String] = data.split(",").toSeq
         Ok(chooseYearsView(form.fill(selectedYears), currentTaxYear))
-      case None =>
+      case None       =>
         Ok(chooseYearsView(form, currentTaxYear))
     } recover errorHandler.handleError
   }
@@ -64,8 +64,7 @@ class ChooseYearsController @Inject()(
     form
       .bindFromRequest()
       .fold(
-        formWithErrors =>
-          Future.successful(BadRequest(chooseYearsView(formWithErrors, currentTaxYear))),
+        formWithErrors => Future.successful(BadRequest(chooseYearsView(formWithErrors, currentTaxYear))),
         selectedYears => {
           val cacheString = selectedYears.mkString(",")
 

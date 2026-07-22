@@ -25,42 +25,48 @@ trait ViewTestUtils extends Matchers {
 
   type LazyDocument = () => Document
 
-  def checkDocTitle(expectedTitle: String)(implicit doc: LazyDocument): Assertion = {
+  def checkDocTitle(expectedTitle: String)(implicit doc: LazyDocument): Assertion =
     doc().title() shouldBe expectedTitle
-  }
 
-  def checkPageTitle(expectedTitle: String, selector: String = "#page-title", replaceNbsp: Boolean = false)(implicit doc: LazyDocument): Assertion = {
-    val result = doc().select(selector).text()
-    val finalText = (if (replaceNbsp) result.replaceNbsp else result)
+  def checkPageTitle(expectedTitle: String, selector: String = "#page-title", replaceNbsp: Boolean = false)(implicit
+    doc: LazyDocument
+  ): Assertion = {
+    val result    = doc().select(selector).text()
+    val finalText = if (replaceNbsp) result.replaceNbsp else result
     assert(finalText.contains(expectedTitle), s"The title of the page, '$finalText', did not match '$expectedTitle'.")
   }
 
-  def checkTextInElement(expectedText: String, selector: String, replaceNbsp: Boolean = false)(implicit doc: LazyDocument): Assertion = {
+  def checkTextInElement(expectedText: String, selector: String, replaceNbsp: Boolean = false)(implicit
+    doc: LazyDocument
+  ): Assertion = {
     val element = doc().select(selector).text()
     (if (replaceNbsp) element.replaceNbsp else element) shouldBe expectedText
   }
 
-  def checkElementExists(selector: String)(implicit doc: LazyDocument): Assertion = {
+  def checkElementExists(selector: String)(implicit doc: LazyDocument): Assertion =
     assert(doc().select(selector).size() > 0, s"The element with the selector '$selector' does exist.")
-  }
 
-  def checkElementDoesNotExist(selector: String)(implicit doc: LazyDocument): Assertion = {
+  def checkElementDoesNotExist(selector: String)(implicit doc: LazyDocument): Assertion =
     doc().select(selector).size() shouldBe 0
-  }
 
-  def checkElementContainsClass(clazz: String, selector: String)(implicit doc: LazyDocument): Assertion = {
-    assert(doc().select(selector).hasClass(clazz), s"The element with selector '$selector' does not contain the class '$clazz'.")
-  }
+  def checkElementContainsClass(clazz: String, selector: String)(implicit doc: LazyDocument): Assertion =
+    assert(
+      doc().select(selector).hasClass(clazz),
+      s"The element with selector '$selector' does not contain the class '$clazz'."
+    )
 
-  def checkElementForAttribute(attribute: String, selector: String)(implicit doc: LazyDocument): Assertion = {
-    assert(doc().select(selector).hasAttr(attribute), s"The element with the selector '$selector' does not contain the attribute '$attribute'.")
-  }
+  def checkElementForAttribute(attribute: String, selector: String)(implicit doc: LazyDocument): Assertion =
+    assert(
+      doc().select(selector).hasAttr(attribute),
+      s"The element with the selector '$selector' does not contain the attribute '$attribute'."
+    )
 
-  def checkInputValue(value: String, selector: String)(implicit doc: LazyDocument): Assertion = {
-    assert(doc().select(selector).`val`() == value, s"The element with the selector '$selector' does not contain the value '$value'.")
-  }
+  def checkInputValue(value: String, selector: String)(implicit doc: LazyDocument): Assertion =
+    assert(
+      doc().select(selector).`val`() == value,
+      s"The element with the selector '$selector' does not contain the value '$value'."
+    )
 
-  def selectFirst(selector: String)(implicit doc: LazyDocument): Element = {
+  def selectFirst(selector: String)(implicit doc: LazyDocument): Element =
     doc().selectFirst(selector)
-  }
 }

@@ -34,7 +34,7 @@ class ChangeRelationshipTest extends BaseTest {
         dateOfDivorce = Some(LocalDate.of(2023, 11, 1))
       )
 
-      val json = Json.toJson(changeRelationship)
+      val json         = Json.toJson(changeRelationship)
       val expectedJson = Json.parse(
         """
           {
@@ -104,7 +104,7 @@ class ChangeRelationshipTest extends BaseTest {
         dateOfDivorce = None
       )
 
-      val json = Json.toJson(changeRelationship)
+      val json         = Json.toJson(changeRelationship)
       val expectedJson = Json.parse(
         """
           {}

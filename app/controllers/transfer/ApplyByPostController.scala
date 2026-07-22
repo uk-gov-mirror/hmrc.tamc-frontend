@@ -26,13 +26,14 @@ import utils.LoggerHelper
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class ApplyByPostController @Inject()(
-                                       authenticate: StandardAuthJourney,
-                                       cachingService: CachingService,
-                                       applyByPostView: views.html.multiyear.transfer.apply_by_post,
-                                       cc: MessagesControllerComponents
-                                     )
-                                     (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class ApplyByPostController @Inject() (
+  authenticate: StandardAuthJourney,
+  cachingService: CachingService,
+  applyByPostView: views.html.multiyear.transfer.apply_by_post,
+  cc: MessagesControllerComponents
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
   def applyByPost: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
     cachingService

@@ -40,12 +40,12 @@ import scala.concurrent.Future
 
 class ExtraYearsControllerTest extends ControllerBaseTest {
 
-  val currentTaxYear: Int = time.TaxYear.current.startYear
-  val mockTransferService: TransferService = mock[TransferService]
-  val mockCachingService: CachingService = mock[CachingService]
-  val mockTimeService: TimeService = mock[TimeService]
+  val currentTaxYear: Int                    = time.TaxYear.current.startYear
+  val mockTransferService: TransferService   = mock[TransferService]
+  val mockCachingService: CachingService     = mock[CachingService]
+  val mockTimeService: TimeService           = mock[TimeService]
   val notificationRecord: NotificationRecord = NotificationRecord(EmailAddress("test@test.com"))
-  val applicationConfig: ApplicationConfig = instanceOf[ApplicationConfig]
+  val applicationConfig: ApplicationConfig   = instanceOf[ApplicationConfig]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
@@ -85,11 +85,13 @@ class ExtraYearsControllerTest extends ControllerBaseTest {
 
     "return success" when {
       "furtherYears is not empty" in {
-        val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(
-          "selectedYear"              -> "2015",
-          "furtherYears"              -> "2014,2013",
-          "yearAvailableForSelection" -> "2014"
-        )
+        val request = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "selectedYear"              -> "2015",
+            "furtherYears"              -> "2014,2013",
+            "yearAvailableForSelection" -> "2014"
+          )
         when(mockTransferService.getCurrentAndPreviousYearsEligibility(any(), any()))
           .thenReturn(
             Future.successful(
@@ -109,18 +111,20 @@ class ExtraYearsControllerTest extends ControllerBaseTest {
           )(any(), any())
         )
           .thenReturn(Future.successful(Nil))
-        val result = controller.extraYearsAction()(request)
+        val result  = controller.extraYearsAction()(request)
         status(result) shouldBe OK
       }
     }
 
     "redirect" when {
       "further years is empty" in {
-        val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(
-          "selectedYear"              -> "2015",
-          "furtherYears"              -> "",
-          "yearAvailableForSelection" -> "2014"
-        )
+        val request = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "selectedYear"              -> "2015",
+            "furtherYears"              -> "",
+            "yearAvailableForSelection" -> "2014"
+          )
         when(mockTransferService.getCurrentAndPreviousYearsEligibility(any(), any()))
           .thenReturn(
             Future.successful(
@@ -140,9 +144,11 @@ class ExtraYearsControllerTest extends ControllerBaseTest {
           )(any(), any())
         )
           .thenReturn(Future.successful(Nil))
-        val result = controller.extraYearsAction()(request)
+        val result  = controller.extraYearsAction()(request)
         status(result)           shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.transfer.routes.ConfirmEmailController.confirmYourEmail().url)
+        redirectLocation(result) shouldBe Some(
+          controllers.transfer.routes.ConfirmEmailController.confirmYourEmail().url
+        )
       }
     }
   }

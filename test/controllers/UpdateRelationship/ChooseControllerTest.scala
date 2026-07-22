@@ -40,14 +40,14 @@ class ChooseControllerTest extends ControllerBaseTest with ControllerViewTestHel
 
   val mockUpdateRelationshipService: UpdateRelationshipService = mock[UpdateRelationshipService]
 
-
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
       bind[UpdateRelationshipService].toInstance(mockUpdateRelationshipService),
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: ChooseController = app.injector.instanceOf[ChooseController]
 
@@ -60,7 +60,7 @@ class ChooseControllerTest extends ControllerBaseTest with ControllerViewTestHel
 
   "decision" should {
     "display the decision page with cached data" in {
-      val cacheData = Some("checkMarriageAllowanceClaim")
+      val cacheData         = Some("checkMarriageAllowanceClaim")
       val validFormWithData = CheckClaimOrCancelDecisionForm.form().fill(cacheData)
       when(mockUpdateRelationshipService.getCheckClaimOrCancelDecision(any())).thenReturn(Future.successful(cacheData))
 
@@ -75,7 +75,7 @@ class ChooseControllerTest extends ControllerBaseTest with ControllerViewTestHel
 
         when(mockUpdateRelationshipService.getCheckClaimOrCancelDecision(any())).thenReturn(Future.successful(None))
         val validForm = CheckClaimOrCancelDecisionForm.form()
-        val result = controller.decision(request)
+        val result    = controller.decision(request)
 
         status(result) shouldBe OK
         result `rendersTheSameViewAs` decisionView(validForm)
@@ -85,7 +85,7 @@ class ChooseControllerTest extends ControllerBaseTest with ControllerViewTestHel
 
         when(mockUpdateRelationshipService.getCheckClaimOrCancelDecision(any()))
           .thenReturn(failedFuture)
-        val result = controller.decision(request)
+        val result    = controller.decision(request)
         val validForm = CheckClaimOrCancelDecisionForm.form()
 
         status(result) shouldBe OK
@@ -98,13 +98,15 @@ class ChooseControllerTest extends ControllerBaseTest with ControllerViewTestHel
     "redirect to the claims page" when {
       "a user selects the checkMarriageAllowanceClaim option" in {
         val userAnswer = CheckClaimOrCancelDecisionForm.CheckMarriageAllowanceClaim
-        val request = FakeRequest().withFormUrlEncodedBody(CheckClaimOrCancelDecisionForm.DecisionChoice -> userAnswer).withMethod("POST")
+        val request    = FakeRequest()
+          .withFormUrlEncodedBody(CheckClaimOrCancelDecisionForm.DecisionChoice -> userAnswer)
+          .withMethod("POST")
         when(mockUpdateRelationshipService.saveCheckClaimOrCancelDecision(ArgumentMatchers.eq(userAnswer))(any()))
           .thenReturn(Future.successful(userAnswer))
 
         val result = controller.submitDecision(request)
 
-        status(result) shouldBe SEE_OTHER
+        status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.ClaimsController.claims().url)
       }
     }
@@ -114,32 +116,39 @@ class ChooseControllerTest extends ControllerBaseTest with ControllerViewTestHel
     "redirect to the make change page" when {
       "a user selects the stopMarriageAllowance option" in {
         val userAnswer = CheckClaimOrCancelDecisionForm.StopMarriageAllowance
-        val request = FakeRequest().withFormUrlEncodedBody(
-          CheckClaimOrCancelDecisionForm.DecisionChoice -> userAnswer
-        ).withMethod("POST")
+        val request    = FakeRequest()
+          .withFormUrlEncodedBody(
+            CheckClaimOrCancelDecisionForm.DecisionChoice -> userAnswer
+          )
+          .withMethod("POST")
 
         when(mockUpdateRelationshipService.saveCheckClaimOrCancelDecision(ArgumentMatchers.eq(userAnswer))(any()))
           .thenReturn(Future.successful(CheckClaimOrCancelDecisionForm.StopMarriageAllowance))
 
         val result = controller.submitDecision(request)
 
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.MakeChangesController.makeChange().url)
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(
+          controllers.UpdateRelationship.routes.MakeChangesController.makeChange().url
+        )
       }
     }
 
     "return a bad request" when {
       "the form submission has a blank value POST method" in {
-        val request = FakeRequest().withFormUrlEncodedBody(CheckClaimOrCancelDecisionForm.DecisionChoice -> "").withMethod("POST")
-        val result = controller.submitDecision(request)
+        val request =
+          FakeRequest().withFormUrlEncodedBody(CheckClaimOrCancelDecisionForm.DecisionChoice -> "").withMethod("POST")
+        val result  = controller.submitDecision(request)
         status(result) shouldBe BAD_REQUEST
       }
     }
 
     "redirect to the decision page" when {
       "there is an unexpected error" in {
-        val request = FakeRequest().withFormUrlEncodedBody(CheckClaimOrCancelDecisionForm.DecisionChoice -> "Test").withMethod("POST")
-        val result = controller.submitDecision(request)
+        val request = FakeRequest()
+          .withFormUrlEncodedBody(CheckClaimOrCancelDecisionForm.DecisionChoice -> "Test")
+          .withMethod("POST")
+        val result  = controller.submitDecision(request)
         redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.ChooseController.decision().url)
       }
     }

@@ -59,7 +59,7 @@ class DateOfMarriageFormInputTest extends BaseTest {
         dateOfMarriage = LocalDate.of(2021, 5, 12)
       )
 
-      val json = Json.toJson(originalFormInput)
+      val json                  = Json.toJson(originalFormInput)
       val deserializedFormInput = json.as[DateOfMarriageFormInput]
 
       deserializedFormInput mustBe originalFormInput
@@ -79,7 +79,7 @@ class DateOfMarriageFormInputTest extends BaseTest {
         case e: JsError =>
           e.errors.nonEmpty mustBe true
           e.errors.head._1.toString() should include("dateOfMarriage")
-        case _ =>
+        case _          =>
           fail("Expected JsError for missing required field")
       }
     }
@@ -97,7 +97,7 @@ class DateOfMarriageFormInputTest extends BaseTest {
       result match {
         case JsError(errors) =>
           errors.head._2.head.message should include("error.expected.date.isoformat")
-        case _ =>
+        case _               =>
           fail("Expected JsError for invalid date format")
       }
     }

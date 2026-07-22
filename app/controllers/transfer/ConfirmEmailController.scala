@@ -28,30 +28,35 @@ import utils.{LoggerHelper, TransferErrorHandler}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ConfirmEmailController @Inject()(
-                                        errorHandler: TransferErrorHandler,
-                                        authenticate: StandardAuthJourney,
-                                        registrationService: TransferService,
-                                        cachingService: CachingService,
-                                        cc: MessagesControllerComponents,
-                                        email: views.html.multiyear.transfer.email)
-                                      (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class ConfirmEmailController @Inject() (
+  errorHandler: TransferErrorHandler,
+  authenticate: StandardAuthJourney,
+  registrationService: TransferService,
+  cachingService: CachingService,
+  cc: MessagesControllerComponents,
+  email: views.html.multiyear.transfer.email
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
   def confirmYourEmail: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
     cachingService.get[NotificationRecord](CACHE_NOTIFICATION_RECORD) map {
       case Some(NotificationRecord(transferorEmail)) =>
         Ok(email(emailForm.fill(transferorEmail)))
-      case None => Ok(email(emailForm))
+      case None                                      => Ok(email(emailForm))
     }
   }
 
-  def confirmYourEmailAction: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
-    emailForm.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest(email(formWithErrors))),
-      transferorEmail =>
-        registrationService.upsertTransferorNotification(NotificationRecord(transferorEmail)) map { _ =>
-          Redirect(controllers.transfer.routes.ConfirmController.confirm())
-        }
-    ) recover errorHandler.handleError
+  def confirmYourEmailAction: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
+    implicit request =>
+      emailForm
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(email(formWithErrors))),
+          transferorEmail =>
+            registrationService.upsertTransferorNotification(NotificationRecord(transferorEmail)) map { _ =>
+              Redirect(controllers.transfer.routes.ConfirmController.confirm())
+            }
+        ) recover errorHandler.handleError
   }
 }

@@ -18,7 +18,7 @@ package models
 
 import models.pertaxAuth.PertaxErrorView
 import org.scalatest.matchers.must.Matchers.mustBe
-import play.api.libs.json.{JsValue, Json, JsError}
+import play.api.libs.json.{JsError, JsValue, Json}
 import utils.BaseTest
 
 class PertaxErrorViewTest extends BaseTest {
@@ -55,7 +55,7 @@ class PertaxErrorViewTest extends BaseTest {
     "serialize and deserialize symmetrically" in {
       val originalErrorView = PertaxErrorView(statusCode = 400, url = "/bad-request")
 
-      val json = Json.toJson(originalErrorView)
+      val json                  = Json.toJson(originalErrorView)
       val deserializedErrorView = json.as[PertaxErrorView]
 
       deserializedErrorView mustBe originalErrorView
@@ -75,10 +75,9 @@ class PertaxErrorViewTest extends BaseTest {
       result match {
         case error: JsError =>
           error.errors.nonEmpty mustBe true
-        case _ =>
+        case _              =>
           fail("Expected JsError for invalid JSON")
       }
     }
   }
 }
-

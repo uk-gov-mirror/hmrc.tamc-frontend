@@ -38,13 +38,13 @@ import java.time.LocalDate
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-
 class DateOfMarriageTest extends BaseTest with NinoGenerator {
 
-  lazy val nino: String = generateNino().nino
-  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  val mockTransferService: TransferService = mock[TransferService]
-  val dateOfMarriageController: DateOfMarriageController = app.injector.instanceOf[DateOfMarriageController]
+  lazy val nino: String                                                  = generateNino().nino
+  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  val mockTransferService: TransferService                               = mock[TransferService]
+  val dateOfMarriageController: DateOfMarriageController                 = app.injector.instanceOf[DateOfMarriageController]
 
   implicit val duration: Timeout = 20 seconds
 
@@ -53,7 +53,7 @@ class DateOfMarriageTest extends BaseTest with NinoGenerator {
       bind[TransferService].toInstance(mockTransferService),
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[UnauthenticatedActionTransformer].to[MockUnauthenticatedAction],
-      bind[PertaxAuthAction].to[FakePertaxAuthAction],
+      bind[PertaxAuthAction].to[FakePertaxAuthAction]
     )
     .build()
 
@@ -61,16 +61,20 @@ class DateOfMarriageTest extends BaseTest with NinoGenerator {
 
     "display form error message (date of marriage is before 1900)" in {
       val localDate = LocalDate.now()
-      val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(
-        "dateOfMarriage.day" -> "01",
-        "dateOfMarriage.month" -> "01",
-        "dateOfMarriage.year" -> "1899"
-      )
-      val result = dateOfMarriageController.dateOfMarriageAction(request)
+      val request   = FakeRequest()
+        .withMethod("POST")
+        .withFormUrlEncodedBody(
+          "dateOfMarriage.day"   -> "01",
+          "dateOfMarriage.month" -> "01",
+          "dateOfMarriage.year"  -> "1899"
+        )
+      val result    = dateOfMarriageController.dateOfMarriageAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementsByAttribute("action").toString should include("/marriage-allowance-application/date-of-marriage")
+      document.getElementsByAttribute("action").toString should include(
+        "/marriage-allowance-application/date-of-marriage"
+      )
 
       val form = document.getElementById("date-of-marriage-form")
       form.toString should include("/marriage-allowance-application/date-of-marriage")
@@ -79,46 +83,62 @@ class DateOfMarriageTest extends BaseTest with NinoGenerator {
       field.text should include("When did you marry or form a civil partnership with your partner?")
 
       val error = field.getElementsByClass("govuk-error-message")
-      error.size() shouldBe 1
+      error.size()                                                   shouldBe 1
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("dateOfMarriage-error").text shouldBe s"Error: The year must be a number between 1900 and ${localDate.getYear}"
-      document.getElementsByClass("govuk-back-link").attr("href") shouldBe controllers.routes.HowItWorksController.howItWorks().url
+      document
+        .getElementById("dateOfMarriage-error")
+        .text                                                        shouldBe s"Error: The year must be a number between 1900 and ${localDate.getYear}"
+      document.getElementsByClass("govuk-back-link").attr("href")    shouldBe controllers.routes.HowItWorksController
+        .howItWorks()
+        .url
     }
 
     "display form error message (date of marriage is after today’s date)" in {
       val localDate = LocalDate.now().plusYears(1)
-      val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(
-        "dateOfMarriage.day" -> "01",
-        "dateOfMarriage.month" -> "01",
-        "dateOfMarriage.year" -> s"${localDate.getYear}"
-      )
-      val result = dateOfMarriageController.dateOfMarriageAction(request)
+      val request   = FakeRequest()
+        .withMethod("POST")
+        .withFormUrlEncodedBody(
+          "dateOfMarriage.day"   -> "01",
+          "dateOfMarriage.month" -> "01",
+          "dateOfMarriage.year"  -> s"${localDate.getYear}"
+        )
+      val result    = dateOfMarriageController.dateOfMarriageAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementsByAttribute("action").toString should include("/marriage-allowance-application/date-of-marriage")
+      document.getElementsByAttribute("action").toString should include(
+        "/marriage-allowance-application/date-of-marriage"
+      )
 
       val form = document.getElementById("date-of-marriage-form")
-      form.toString should include("/marriage-allowance-application/date-of-marriage")
-      form.getElementById("dateOfMarriageFieldset").text should include("When did you marry or form a civil partnership with your partner?")
+      form.toString                                      should include("/marriage-allowance-application/date-of-marriage")
+      form.getElementById("dateOfMarriageFieldset").text should include(
+        "When did you marry or form a civil partnership with your partner?"
+      )
 
       val error = form.getElementsByClass("govuk-error-message")
-      error.size() shouldBe 1
+      error.size()                                                   shouldBe 1
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("dateOfMarriage-error").text shouldBe s"Error: The date of marriage or civil partnership must be today or in the past"
+      document
+        .getElementById("dateOfMarriage-error")
+        .text                                                        shouldBe s"Error: The date of marriage or civil partnership must be today or in the past"
     }
 
     "display form error message (date of marriage is left empty)" in {
-      val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(
-        "dateOfMarriage.day" -> "",
-        "dateOfMarriage.month" -> "",
-        "dateOfMarriage.year" -> ""
-      )
-      val result = dateOfMarriageController.dateOfMarriageAction(request)
+      val request = FakeRequest()
+        .withMethod("POST")
+        .withFormUrlEncodedBody(
+          "dateOfMarriage.day"   -> "",
+          "dateOfMarriage.month" -> "",
+          "dateOfMarriage.year"  -> ""
+        )
+      val result  = dateOfMarriageController.dateOfMarriageAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementsByAttribute("action").toString should include("/marriage-allowance-application/date-of-marriage")
+      document.getElementsByAttribute("action").toString should include(
+        "/marriage-allowance-application/date-of-marriage"
+      )
 
       val form = document.getElementById("date-of-marriage-form")
       form.toString should include("/marriage-allowance-application/date-of-marriage")
@@ -126,16 +146,16 @@ class DateOfMarriageTest extends BaseTest with NinoGenerator {
       val field = form.getElementById("dateOfMarriageFieldset")
       field.text should include("When did you marry or form a civil partnership with your partner?")
 
-      val error = field.getElementsByClass("govuk-error-message")
+      val error     = field.getElementsByClass("govuk-error-message")
       val labelName = form.select("fieldset[id=dateOfMarriageFieldset]").first()
       error.size() shouldBe 1
       labelName
         .getElementsByClass("govuk-error-message")
         .first()
-        .text() shouldBe "Error: Enter the date of your marriage or civil partnership"
+        .text()    shouldBe "Error: Enter the date of your marriage or civil partnership"
       document
         .getElementById("dateOfMarriage-error")
-        .text() shouldBe "Error: Enter the date of your marriage or civil partnership"
+        .text()    shouldBe "Error: Enter the date of your marriage or civil partnership"
     }
   }
 }

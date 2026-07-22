@@ -31,10 +31,10 @@ import utils.viewHelpers.JSoupMatchers
 
 trait TamcViewTest extends UnitSpec with I18nSupport with GuiceOneAppPerSuite with JSoupMatchers {
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messagesApi: MessagesApi                   = app.injector.instanceOf[MessagesApi]
   implicit val partialRetriever: MockFormPartialRetriever = mock[MockFormPartialRetriever]
-  implicit val request: Request[AnyContent] = FakeRequest()
-  implicit val authRequest: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(
+  implicit val request: Request[AnyContent]               = FakeRequest()
+  implicit val authRequest: AuthenticatedUserRequest[?]   = AuthenticatedUserRequest(
     request,
     Some(ConfidenceLevel.L200),
     isSA = false,
@@ -48,15 +48,12 @@ trait TamcViewTest extends UnitSpec with I18nSupport with GuiceOneAppPerSuite wi
 
   def doc(view: Html): Document = Jsoup.parse(view.toString())
 
-  def pageWithTitle(titleText: String): Unit = {
+  def pageWithTitle(titleText: String): Unit =
     "have a static title" in {
       doc.title should include(titleText)
     }
-  }
 
-  def pageWithCombinedHeader(
-                              preHeaderText: String,
-                              mainHeaderText: String): Unit = {
+  def pageWithCombinedHeader(preHeaderText: String, mainHeaderText: String): Unit = {
     "have an accessible pre heading" in {
       doc should havePreHeadingWithText(preHeaderText)
     }
@@ -65,19 +62,14 @@ trait TamcViewTest extends UnitSpec with I18nSupport with GuiceOneAppPerSuite wi
     }
   }
 
-  def pageWithHeader(headerText: String): Unit = {
-
+  def pageWithHeader(headerText: String): Unit =
     "have a static h1 header" in {
       doc should haveHeadingWithText(headerText)
     }
-  }
 
-  def pageWithH2Header(headerText: String): Unit = {
-
+  def pageWithH2Header(headerText: String): Unit =
     "have a static h2 header" in {
       doc should haveHeadingH2WithText(headerText)
     }
-  }
-
 
 }

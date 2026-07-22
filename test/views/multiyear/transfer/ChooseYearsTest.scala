@@ -38,24 +38,26 @@ import java.time.LocalDate
 class ChooseYearsTest extends BaseTest with NinoGenerator {
 
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  lazy val nino: String = generateNino().nino
+  lazy val nino: String                = generateNino().nino
 
-  val form: Form[Seq[String]] = new ChooseYearForm().apply()
-  lazy val dateOfMarriageForm: DateOfMarriageFormInput = DateOfMarriageFormInput(currentTaxYearDate)
-  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  override implicit lazy val messages: Messages = instanceOf[MessagesApi].asScala.preferred(FakeRequest(): Request[AnyContent])
-  val languageUtilsImpl: LanguageUtilsImpl = instanceOf[LanguageUtilsImpl]
-  lazy val chooseYearsView: choose_eligible_years = instanceOf[choose_eligible_years]
+  val form: Form[Seq[String]]                                            = new ChooseYearForm().apply()
+  lazy val dateOfMarriageForm: DateOfMarriageFormInput                   = DateOfMarriageFormInput(currentTaxYearDate)
+  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  override implicit lazy val messages: Messages                          =
+    instanceOf[MessagesApi].asScala.preferred(FakeRequest(): Request[AnyContent])
+  val languageUtilsImpl: LanguageUtilsImpl                               = instanceOf[LanguageUtilsImpl]
+  lazy val chooseYearsView: choose_eligible_years                        = instanceOf[choose_eligible_years]
 
-  val currentTaxYear: TaxYear = TaxYear.current
+  val currentTaxYear: TaxYear       = TaxYear.current
   val currentTaxYearDate: LocalDate = currentTaxYear.starts
 
   implicit val doc: Document = Jsoup.parse(chooseYearsView(form, currentTaxYearDate).toString())
 
   val dateOfMarriageWithNBSP: String = languageUtilsImpl.apply().ukDateTransformer(dateOfMarriageForm.dateOfMarriage)
-  val dateOfMarriage: String = dateOfMarriageWithNBSP.replace("\u00A0", " ")
+  val dateOfMarriage: String         = dateOfMarriageWithNBSP.replace("\u00A0", " ")
 
-  val currentTaxYearWithNBSP: String = languageUtilsImpl.apply().ukDateTransformer(currentTaxYearDate)
+  val currentTaxYearWithNBSP: String  = languageUtilsImpl.apply().ukDateTransformer(currentTaxYearDate)
   val currentTaxYearStartDate: String = dateOfMarriageWithNBSP.replace("\u00A0", " ")
 
   "chooseYears" should {
@@ -76,7 +78,8 @@ class ChooseYearsTest extends BaseTest with NinoGenerator {
     "display correct checkbox items" in {
       doc.getElementsByClass("govuk-checkboxes__item").eachText().toArray shouldBe Array(
         s"Previous tax years, on or before $currentTaxYearStartDate",
-        s"Current tax year onwards, from $currentTaxYearStartDate")
+        s"Current tax year onwards, from $currentTaxYearStartDate"
+      )
     }
 
     "display continue button" in {

@@ -25,25 +25,25 @@ import java.time.LocalDate
 
 class RelationshipRecordsTest extends BaseTest with GuiceOneAppPerSuite {
 
-  val loggedInUserInfo = LoggedInUserInfo(1, "TimeStamp", name = Some(CitizenName(Some("Test"), Some("User"))))
-  val nonPrimaryRelationships = Seq(inactiveRecipientRelationshipRecord2, inactiveTransferorRelationshipRecord1)
-  val primaryRecipientRelationship = activeRecipientRelationshipRecord
+  val loggedInUserInfo              = LoggedInUserInfo(1, "TimeStamp", name = Some(CitizenName(Some("Test"), Some("User"))))
+  val nonPrimaryRelationships       = Seq(inactiveRecipientRelationshipRecord2, inactiveTransferorRelationshipRecord1)
+  val primaryRecipientRelationship  = activeRecipientRelationshipRecord
   val primaryTransferorRelationship = activeTransferorRelationshipRecord2
-  lazy val localDate: LocalDate = instanceOf[SystemLocalDate].now()
+  lazy val localDate: LocalDate     = instanceOf[SystemLocalDate].now()
 
   "hasMarriageAllowanceBeenCancelled" should {
     "return true if endDate is present in primary record (active record)" in {
-      val relationship = RelationshipRecords(primaryRecipientRelationship.copy(participant1EndDate = Some("20200101")),
+      val relationship = RelationshipRecords(
+        primaryRecipientRelationship.copy(participant1EndDate = Some("20200101")),
         nonPrimaryRelationships,
-        loggedInUserInfo)
+        loggedInUserInfo
+      )
 
       relationship.hasMarriageAllowanceBeenCancelled shouldBe true
     }
 
     "return false if endDate is not present in primary record" in {
-      val relationship = RelationshipRecords(primaryRecipientRelationship,
-        nonPrimaryRelationships,
-        loggedInUserInfo)
+      val relationship = RelationshipRecords(primaryRecipientRelationship, nonPrimaryRelationships, loggedInUserInfo)
 
       relationship.hasMarriageAllowanceBeenCancelled shouldBe false
     }
@@ -51,25 +51,21 @@ class RelationshipRecordsTest extends BaseTest with GuiceOneAppPerSuite {
 
   "recipientInformation" should {
     "return Recipient Information from primaryRecord if role is Transferor" in {
-      val expectedInstanceIdentifier = primaryTransferorRelationship.otherParticipantInstanceIdentifier
-      val expectedTimestamp = primaryTransferorRelationship.otherParticipantUpdateTimestamp
+      val expectedInstanceIdentifier   = primaryTransferorRelationship.otherParticipantInstanceIdentifier
+      val expectedTimestamp            = primaryTransferorRelationship.otherParticipantUpdateTimestamp
       val expectedRecipientInformation = RecipientInformation(expectedInstanceIdentifier, expectedTimestamp)
 
-      val relationship = RelationshipRecords(primaryTransferorRelationship,
-        nonPrimaryRelationships,
-        loggedInUserInfo)
+      val relationship = RelationshipRecords(primaryTransferorRelationship, nonPrimaryRelationships, loggedInUserInfo)
 
       relationship.recipientInformation shouldBe expectedRecipientInformation
     }
 
     "return Recipient Information from loggedInUser if role is Recipient" in {
-      val expectedInstanceIdentifier = loggedInUserInfo.cid.toString
-      val expectedTimestamp = loggedInUserInfo.timestamp
+      val expectedInstanceIdentifier   = loggedInUserInfo.cid.toString
+      val expectedTimestamp            = loggedInUserInfo.timestamp
       val expectedRecipientInformation = RecipientInformation(expectedInstanceIdentifier, expectedTimestamp)
 
-      val relationship = RelationshipRecords(primaryRecipientRelationship,
-        nonPrimaryRelationships,
-        loggedInUserInfo)
+      val relationship = RelationshipRecords(primaryRecipientRelationship, nonPrimaryRelationships, loggedInUserInfo)
 
       relationship.recipientInformation shouldBe expectedRecipientInformation
     }
@@ -77,22 +73,18 @@ class RelationshipRecordsTest extends BaseTest with GuiceOneAppPerSuite {
 
   "transferorInformation" should {
     "return Transferor Information from primaryRecord if role is Recipient" in {
-      val expectedTimestamp = activeRecipientRelationshipRecord.otherParticipantUpdateTimestamp
+      val expectedTimestamp             = activeRecipientRelationshipRecord.otherParticipantUpdateTimestamp
       val expectedTransferorInformation = TransferorInformation(expectedTimestamp)
 
-      val relationship = RelationshipRecords(primaryRecipientRelationship,
-        nonPrimaryRelationships,
-        loggedInUserInfo)
+      val relationship = RelationshipRecords(primaryRecipientRelationship, nonPrimaryRelationships, loggedInUserInfo)
 
       relationship.transferorInformation shouldBe expectedTransferorInformation
     }
 
     "return Transferor Information from loggedInUser if role is Transferor" in {
-      val expectedTimestamp = loggedInUserInfo.timestamp
+      val expectedTimestamp             = loggedInUserInfo.timestamp
       val expectedTransferorInformation = TransferorInformation(expectedTimestamp)
-      val relationship = RelationshipRecords(primaryTransferorRelationship,
-        nonPrimaryRelationships,
-        loggedInUserInfo)
+      val relationship                  = RelationshipRecords(primaryTransferorRelationship, nonPrimaryRelationships, loggedInUserInfo)
 
       relationship.transferorInformation shouldBe expectedTransferorInformation
     }
@@ -101,8 +93,13 @@ class RelationshipRecordsTest extends BaseTest with GuiceOneAppPerSuite {
   "apply" should {
     "populate RelationshipRecord" in {
       val relationshipRecordList = RelationshipRecordList(
-        Seq(activeRecipientRelationshipRecord, inactiveRecipientRelationshipRecord2, inactiveTransferorRelationshipRecord1),
-        Some(loggedInUserInfo))
+        Seq(
+          activeRecipientRelationshipRecord,
+          inactiveRecipientRelationshipRecord2,
+          inactiveTransferorRelationshipRecord1
+        ),
+        Some(loggedInUserInfo)
+      )
 
       val relationship = RelationshipRecords(relationshipRecordList, localDate)
 
@@ -110,8 +107,8 @@ class RelationshipRecordsTest extends BaseTest with GuiceOneAppPerSuite {
     }
 
     "populate RelationshipRecord when non-primary records aren't present" in {
-      val relationshipRecordList = RelationshipRecordList(Seq(activeRecipientRelationshipRecord),
-        Some(loggedInUserInfo))
+      val relationshipRecordList =
+        RelationshipRecordList(Seq(activeRecipientRelationshipRecord), Some(loggedInUserInfo))
       val nonPrimaryRelationship = Seq()
 
       val relationship = RelationshipRecords(relationshipRecordList, localDate)
@@ -120,8 +117,10 @@ class RelationshipRecordsTest extends BaseTest with GuiceOneAppPerSuite {
     }
 
     "return a NoPrimaryError when no primary Record is found" in {
-      val relationshipRecordList = RelationshipRecordList(Seq(inactiveRecipientRelationshipRecord2, inactiveTransferorRelationshipRecord2),
-        Some(loggedInUserInfo))
+      val relationshipRecordList = RelationshipRecordList(
+        Seq(inactiveRecipientRelationshipRecord2, inactiveTransferorRelationshipRecord2),
+        Some(loggedInUserInfo)
+      )
 
       val relationship = intercept[NoPrimaryRecordError](RelationshipRecords(relationshipRecordList, localDate))
 
@@ -129,8 +128,10 @@ class RelationshipRecordsTest extends BaseTest with GuiceOneAppPerSuite {
     }
 
     "return a MultipleActiveRecordError when multiple primary Records are found" in {
-      val relationshipRecordList = RelationshipRecordList(Seq(activeTransferorRelationshipRecord2, activeRecipientRelationshipRecord),
-        Some(loggedInUserInfo))
+      val relationshipRecordList = RelationshipRecordList(
+        Seq(activeTransferorRelationshipRecord2, activeRecipientRelationshipRecord),
+        Some(loggedInUserInfo)
+      )
 
       val relationship = intercept[MultipleActiveRecordError](RelationshipRecords(relationshipRecordList, localDate))
 

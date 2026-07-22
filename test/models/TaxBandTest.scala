@@ -128,7 +128,7 @@ class TaxBandTest extends BaseTest {
         )
       )
 
-      val json = Json.toJson(original)
+      val json         = Json.toJson(original)
       val deserialized = json.as[CountryTaxBands]
 
       deserialized mustBe original

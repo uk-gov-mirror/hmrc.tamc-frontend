@@ -27,12 +27,13 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class UnauthenticatedActionTransformer @Inject()(
-                                                  val authConnector: AuthConnector,
-                                                  val parser: BodyParsers.Default
-                                                )(implicit val executionContext: ExecutionContext)
-  extends ActionTransformer[Request, UserRequest]
-    with ActionBuilder[UserRequest, AnyContent] with AuthorisedFunctions {
+class UnauthenticatedActionTransformer @Inject() (
+  val authConnector: AuthConnector,
+  val parser: BodyParsers.Default
+)(implicit val executionContext: ExecutionContext)
+    extends ActionTransformer[Request, UserRequest]
+    with ActionBuilder[UserRequest, AnyContent]
+    with AuthorisedFunctions {
 
   override protected def transform[A](request: Request[A]): Future[UserRequest[A]] = {
 
@@ -41,10 +42,17 @@ class UnauthenticatedActionTransformer @Inject()(
 
     authorised().retrieve(Retrievals.confidenceLevel and Retrievals.saUtr and Retrievals.credentials) {
       case cl ~ saUtr ~ credentials =>
-        Future.successful(UserRequest(request, Some(cl), isAuthenticated = true, credentials.map(_.providerType), isSA = saUtr.isDefined))
-    } recover {
-      case _: NoActiveSession | _: InsufficientConfidenceLevel =>
-        UserRequest(request, None, isAuthenticated = false, None, isSA = false)
+        Future.successful(
+          UserRequest(
+            request,
+            Some(cl),
+            isAuthenticated = true,
+            credentials.map(_.providerType),
+            isSA = saUtr.isDefined
+          )
+        )
+    } recover { case _: NoActiveSession | _: InsufficientConfidenceLevel =>
+      UserRequest(request, None, isAuthenticated = false, None, isSA = false)
     }
   }
 }

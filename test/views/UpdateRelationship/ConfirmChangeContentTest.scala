@@ -34,20 +34,27 @@ import java.util.Locale
 
 class ConfirmChangeContentTest extends BaseTest with Injecting with NinoGenerator {
 
-  val view: confirmUpdate = inject[confirmUpdate]
+  val view: confirmUpdate                                    = inject[confirmUpdate]
   val confirmUpdateViewModelImpl: ConfirmUpdateViewModelImpl = instanceOf[ConfirmUpdateViewModelImpl]
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  lazy val nino: String = generateNino().nino
-  override implicit lazy val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
-  val languageUtils: LanguageUtils = EnglishLangaugeUtils
+  implicit val request: AuthenticatedUserRequest[?]          =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  lazy val nino: String                                      = generateNino().nino
+  override implicit lazy val messages: MessagesImpl          = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
+  val languageUtils: LanguageUtils                           = EnglishLangaugeUtils
 
-  val firstName = "Firstname"
-  val surname = "Surname"
-  val loggedInUser: LoggedInUserInfo = LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some(firstName), Some(surname))))
-  val maEndingDates: MarriageAllowanceEndingDates = MarriageAllowanceEndingDates(TaxYear.current.finishes, TaxYear.current.next.starts)
-  val email = "email@email.com"
-  val doc: Document = Jsoup.parse(view(confirmUpdateViewModelImpl(ConfirmationUpdateAnswers(
-    loggedInUser, Some(LocalDate.now), email, maEndingDates))).toString())
+  val firstName                                   = "Firstname"
+  val surname                                     = "Surname"
+  val loggedInUser: LoggedInUserInfo              =
+    LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some(firstName), Some(surname))))
+  val maEndingDates: MarriageAllowanceEndingDates =
+    MarriageAllowanceEndingDates(TaxYear.current.finishes, TaxYear.current.next.starts)
+  val email                                       = "email@email.com"
+  val doc: Document                               =
+    Jsoup.parse(
+      view(
+        confirmUpdateViewModelImpl(ConfirmationUpdateAnswers(loggedInUser, Some(LocalDate.now), email, maEndingDates))
+      ).toString()
+    )
 
   "Confirm change page" should {
     "Display correct page heading" in {
@@ -72,8 +79,14 @@ class ConfirmChangeContentTest extends BaseTest with Injecting with NinoGenerato
         "Email"
       )
 
-      doc.getElementsByClass("govuk-summary-list_value")
-        .eachText().toArray contains Array("Firstname Surname", languageUtils.ukDateTransformer(LocalDate.now()), "email@email.com")
+      doc
+        .getElementsByClass("govuk-summary-list_value")
+        .eachText()
+        .toArray contains Array(
+        "Firstname Surname",
+        languageUtils.ukDateTransformer(LocalDate.now()),
+        "email@email.com"
+      )
     }
 
     "Display confirm button" in {

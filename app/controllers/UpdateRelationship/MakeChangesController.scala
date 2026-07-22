@@ -28,35 +28,38 @@ import utils.LoggerHelper
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class MakeChangesController @Inject()(authenticate: StandardAuthJourney,
-                                      updateRelationshipService: UpdateRelationshipService,
-                                      cc: MessagesControllerComponents,
-                                      reasonForChange: views.html.coc.reason_for_change)
-                                     (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class MakeChangesController @Inject() (
+  authenticate: StandardAuthJourney,
+  updateRelationshipService: UpdateRelationshipService,
+  cc: MessagesControllerComponents,
+  reasonForChange: views.html.coc.reason_for_change
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
-  def makeChange(): Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
-    implicit request =>
+  def makeChange(): Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
+    updateRelationshipService.getRelationshipRecords.flatMap { relationshipRecords =>
+      val role: Role = relationshipRecords.primaryRecord.role
 
-      updateRelationshipService.getRelationshipRecords.flatMap { relationshipRecords =>
-        val role: Role = relationshipRecords.primaryRecord.role
-
-        updateRelationshipService.getMakeChangesDecision.map {makeChangesData =>
+      updateRelationshipService.getMakeChangesDecision
+        .map { makeChangesData =>
           Ok(reasonForChange(MakeChangesDecisionForm.form().fill(makeChangesData), role))
-        }.recover {
-          case NonFatal(_) => Ok(reasonForChange(MakeChangesDecisionForm.form(), role))
         }
-      }
+        .recover { case NonFatal(_) =>
+          Ok(reasonForChange(MakeChangesDecisionForm.form(), role))
+        }
+    }
   }
 
-  def submitMakeChange(): Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
-    implicit request =>
-      updateRelationshipService.getRelationshipRecords.flatMap { relationshipRecords =>
-        val role: Role = relationshipRecords.primaryRecord.role
+  def submitMakeChange(): Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
+    updateRelationshipService.getRelationshipRecords.flatMap { relationshipRecords =>
+      val role: Role = relationshipRecords.primaryRecord.role
 
-        MakeChangesDecisionForm.form().bindFromRequest().fold(
-          formWithErrors => {
-            Future.successful(BadRequest(reasonForChange(formWithErrors, role)))
-          },
+      MakeChangesDecisionForm
+        .form()
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(reasonForChange(formWithErrors, role))),
           {
             case Some(MakeChangesDecisionForm.Divorce) =>
               updateRelationshipService.saveMakeChangeDecision(MakeChangesDecisionForm.Divorce) map { _ =>
@@ -73,12 +76,14 @@ class MakeChangesController @Inject()(authenticate: StandardAuthJourney,
                 Redirect(controllers.UpdateRelationship.routes.BereavementController.bereavement())
               }
 
-            case _ => Future.successful(Redirect(controllers.UpdateRelationship.routes.MakeChangesController.makeChange()))
-          })
-      }
+            case _ =>
+              Future.successful(Redirect(controllers.UpdateRelationship.routes.MakeChangesController.makeChange()))
+          }
+        )
+    }
   }
 
-  private def noLongerWantMarriageAllowanceRedirect(implicit request: Request[?]): Future[Result] = {
+  private def noLongerWantMarriageAllowanceRedirect(implicit request: Request[?]): Future[Result] =
     updateRelationshipService.getRelationshipRecords map { relationshipRecords =>
       if (relationshipRecords.primaryRecord.role == Recipient) {
         Redirect(controllers.UpdateRelationship.routes.StopAllowanceController.stopAllowance())
@@ -86,6 +91,5 @@ class MakeChangesController @Inject()(authenticate: StandardAuthJourney,
         Redirect(controllers.UpdateRelationship.routes.StopAllowanceController.cancel())
       }
     }
-  }
 
 }

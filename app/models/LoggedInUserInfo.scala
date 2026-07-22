@@ -22,4 +22,9 @@ object LoggedInUserInfo {
   implicit val formats: OFormat[LoggedInUserInfo] = Json.format[LoggedInUserInfo]
 }
 
-case class LoggedInUserInfo(cid: Cid, timestamp: Timestamp, has_allowance: Option[Boolean] = None, name: Option[CitizenName] = None)
+case class LoggedInUserInfo(
+  cid: Cid,
+  timestamp: Timestamp,
+  has_allowance: Option[Boolean] = None,
+  name: Option[CitizenName] = None
+)

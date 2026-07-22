@@ -31,12 +31,12 @@ trait ControllerViewTestHelper extends UnitSpec {
 
   implicit val authRequest: AuthenticatedUserRequest[AnyContent] = {
     val request: Request[AnyContent] = FakeRequest()
-    val nino = new Generator().nextNino
+    val nino                         = new Generator().nextNino
 
     AuthenticatedUserRequest(request, None, isSA = true, None, nino)
   }
 
-  implicit val failedFuture: Future[Nothing] = Future.failed(new RuntimeException("test"))
+  implicit val failedFuture: Future[Nothing]          = Future.failed(new RuntimeException("test"))
   implicit val partialRetriever: FormPartialRetriever = mock[MockFormPartialRetriever]
 
   implicit class ViewMatcherHelper(result: Future[Result]) {

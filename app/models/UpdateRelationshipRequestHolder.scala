@@ -18,7 +18,10 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class UpdateRelationshipRequestHolder(request: UpdateRelationshipRequest, notification: UpdateRelationshipNotificationRequest)
+case class UpdateRelationshipRequestHolder(
+  request: UpdateRelationshipRequest,
+  notification: UpdateRelationshipNotificationRequest
+)
 
 object UpdateRelationshipRequestHolder {
   implicit val formats: OFormat[UpdateRelationshipRequestHolder] = Json.format[UpdateRelationshipRequestHolder]

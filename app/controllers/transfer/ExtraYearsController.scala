@@ -28,13 +28,15 @@ import utils.{LoggerHelper, TransferErrorHandler}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ExtraYearsController @Inject()(
-                                      errorHandler: TransferErrorHandler,
-                                      authenticate: StandardAuthJourney,
-                                      registrationService: TransferService,
-                                      cc: MessagesControllerComponents,
-                                      singleYearSelect: views.html.multiyear.transfer.single_year_select)
-                                    (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class ExtraYearsController @Inject() (
+  errorHandler: TransferErrorHandler,
+  authenticate: StandardAuthJourney,
+  registrationService: TransferService,
+  cc: MessagesControllerComponents,
+  singleYearSelect: views.html.multiyear.transfer.single_year_select
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
   def extraYearsAction: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
     def toTaxYears(years: List[Int]): List[TaxYear] =
@@ -42,32 +44,34 @@ class ExtraYearsController @Inject()(
 
     registrationService.getCurrentAndPreviousYearsEligibility.flatMap {
       case CurrentAndPreviousYearsEligibility(_, extraYears, registrationInput, availableYears) =>
-        earlierYearsForm(extraYears.map(_.year)).bindFromRequest().fold(
-          hasErrors =>
-            Future {
-              BadRequest(
-                singleYearSelect(
-                  hasErrors.copy(errors =
-                    Seq(FormError("selectedYear", List("pages.form.field-required.applyForHistoricYears"), List()))
-                  ),
-                  registrationInput,
-                  extraYears
-                )
-              )
-            },
-          taxYears =>
-            registrationService
-              .updateSelectedYears(availableYears, taxYears.selectedYear, taxYears.yearAvailableForSelection)
-              .map { _ =>
-                if (taxYears.furtherYears.isEmpty) {
-                  Redirect(controllers.transfer.routes.ConfirmEmailController.confirmYourEmail())
-                } else {
-                  Ok(
-                    singleYearSelect(earlierYearsForm(), registrationInput, toTaxYears(taxYears.furtherYears))
+        earlierYearsForm(extraYears.map(_.year))
+          .bindFromRequest()
+          .fold(
+            hasErrors =>
+              Future {
+                BadRequest(
+                  singleYearSelect(
+                    hasErrors.copy(errors =
+                      Seq(FormError("selectedYear", List("pages.form.field-required.applyForHistoricYears"), List()))
+                    ),
+                    registrationInput,
+                    extraYears
                   )
+                )
+              },
+            taxYears =>
+              registrationService
+                .updateSelectedYears(availableYears, taxYears.selectedYear, taxYears.yearAvailableForSelection)
+                .map { _ =>
+                  if (taxYears.furtherYears.isEmpty) {
+                    Redirect(controllers.transfer.routes.ConfirmEmailController.confirmYourEmail())
+                  } else {
+                    Ok(
+                      singleYearSelect(earlierYearsForm(), registrationInput, toTaxYears(taxYears.furtherYears))
+                    )
+                  }
                 }
-              }
-        )
+          )
     } recover errorHandler.handleError
   }
 }

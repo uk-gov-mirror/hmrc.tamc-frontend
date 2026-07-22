@@ -28,20 +28,19 @@ class MakeChangesDecisionFormTest extends BaseTest {
       MakeChangesDecisionForm.Cancel
     )
 
-    decisions.foreach {
-      decision =>
-        s"bind a valid decision <- '$decision'" in {
-          val formInput = Map[String, String](
-            MakeChangesDecisionForm.StopMAChoice -> decision
-          )
+    decisions.foreach { decision =>
+      s"bind a valid decision <- '$decision'" in {
+        val formInput = Map[String, String](
+          MakeChangesDecisionForm.StopMAChoice -> decision
+        )
 
-          val form = MakeChangesDecisionForm.form().bind(formInput)
-          val errors = form.errors
-          val value = form.data
+        val form   = MakeChangesDecisionForm.form().bind(formInput)
+        val errors = form.errors
+        val value  = form.data
 
-          errors shouldBe Seq()
-          value shouldBe formInput
-        }
+        errors shouldBe Seq()
+        value  shouldBe formInput
+      }
     }
 
     "not bind and display error message when no decision value is given" in {
@@ -49,9 +48,9 @@ class MakeChangesDecisionFormTest extends BaseTest {
         MakeChangesDecisionForm.StopMAChoice -> ""
       )
 
-      val form = MakeChangesDecisionForm.form().bind(formInput)
+      val form   = MakeChangesDecisionForm.form().bind(formInput)
       val errors = form.errors
-      val value = form.data
+      val value  = form.data
 
       errors shouldBe Seq(
         FormError(
@@ -59,7 +58,7 @@ class MakeChangesDecisionFormTest extends BaseTest {
           Seq("pages.makeChanges.error.mandatory.value")
         )
       )
-      value shouldBe formInput
+      value  shouldBe formInput
     }
   }
 }

@@ -26,7 +26,7 @@ object EmailAddressGenerators {
     val index = newIndex
     for (_ <- List.range(1, index)) yield {
       val mailbox = randomString(1)
-      val domain = randomString(2)
+      val domain  = randomString(2)
       s"$mailbox@$domain"
     }
   }
@@ -34,7 +34,7 @@ object EmailAddressGenerators {
   private def randomString(dotsNumber: Int): String = {
     val result = for (_ <- List.range(0, dotsNumber)) yield {
       val index = newIndex
-      val res = random.alphanumeric.take(index).filter(!_.isDigit).mkString.toLowerCase
+      val res   = random.alphanumeric.take(index).filter(!_.isDigit).mkString.toLowerCase
       res
     }
 

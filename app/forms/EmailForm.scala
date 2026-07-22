@@ -23,13 +23,11 @@ import utils.emailAddressFormatters.PlayFormFormatter.{emailMaxLength, valueIsPr
 
 import scala.util.{Success, Try}
 
-
 object EmailForm {
 
   val emailForm: Form[EmailAddress] = Form("transferor-email" -> email)
 
-  private def messageCustomizer(messageKey: String): String = s"pages.form.field.transferor-email.${messageKey}"
-
+  private def messageCustomizer(messageKey: String): String = s"pages.form.field.transferor-email.$messageKey"
 
   private val formatPatternRegex: String =
     """^([a-zA-Z0-9!#$%&’'*+/=?^_`{|}~-]+[\.]?)+([a-zA-Z0-9!#$%&’'*+/=?^_`{|}~-]+)@([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9]{2,})+)$"""
@@ -44,13 +42,11 @@ object EmailForm {
         emailMaxLength(maxLength = 100, error = messageCustomizer("error.maxLength"))
       }
 
-  private def validEmail(formatError: String,
-                         name: String = "constraint.emailFormat"): Constraint[String] =
-    Constraint[String](name) {
-      email =>
-        Try(EmailAddress(email)) match {
-          case Success(string) if string.matches(formatPatternRegex)  => Valid
-          case _ => Invalid(ValidationError(formatError))
-        }
+  private def validEmail(formatError: String, name: String = "constraint.emailFormat"): Constraint[String] =
+    Constraint[String](name) { email =>
+      Try(EmailAddress(email)) match {
+        case Success(string) if string.matches(formatPatternRegex) => Valid
+        case _                                                     => Invalid(ValidationError(formatError))
+      }
     }
 }

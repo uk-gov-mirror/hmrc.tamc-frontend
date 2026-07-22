@@ -56,20 +56,20 @@ class CurrentYearInputTest extends BaseTest {
     }
 
     "match correctly in a pattern matching scenario with Some(true)" in {
-      val input = CurrentYearInput(applyForCurrentYear = Some(true))
+      val input  = CurrentYearInput(applyForCurrentYear = Some(true))
       val result = input match {
         case CurrentYearInput(Some(value)) => value
-        case _ => false
+        case _                             => false
       }
       result mustBe true
     }
 
     "match correctly in a pattern matching scenario with None" in {
-      val input = CurrentYearInput(applyForCurrentYear = None)
+      val input  = CurrentYearInput(applyForCurrentYear = None)
       val result = input match {
         case CurrentYearInput(Some(value)) => value
-        case CurrentYearInput(None) => false
-        case _: models.CurrentYearInput => false
+        case CurrentYearInput(None)        => false
+        case _: models.CurrentYearInput    => false
       }
       result mustBe false
     }

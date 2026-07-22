@@ -21,24 +21,24 @@ import controllers.BaseController
 import controllers.auth.StandardAuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.UpdateRelationshipService
-import utils.{UpdateRelationshipErrorHandler, LoggerHelper}
+import utils.{LoggerHelper, UpdateRelationshipErrorHandler}
 
 import scala.concurrent.ExecutionContext
 
-class FinishedChangeController @Inject()(authenticate: StandardAuthJourney,
-                                         updateRelationshipService: UpdateRelationshipService,
-                                         cc: MessagesControllerComponents,
-                                         finished: views.html.coc.finished,
-                                         errorHandler: UpdateRelationshipErrorHandler)
-                                        (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class FinishedChangeController @Inject() (
+  authenticate: StandardAuthJourney,
+  updateRelationshipService: UpdateRelationshipService,
+  cc: MessagesControllerComponents,
+  finished: views.html.coc.finished,
+  errorHandler: UpdateRelationshipErrorHandler
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
-  def finishUpdate: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
-    implicit request =>
-      (for {
-        _ <- updateRelationshipService.removeCache
-      } yield {
-        Ok(finished())
-      }) recover errorHandler.handleError
+  def finishUpdate: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
+    (for {
+      _ <- updateRelationshipService.removeCache
+    } yield Ok(finished())) recover errorHandler.handleError
   }
 
 }

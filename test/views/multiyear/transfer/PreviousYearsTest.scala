@@ -43,14 +43,14 @@ import scala.concurrent.Future
 import scala.concurrent.duration.*
 import scala.language.postfixOps
 
-
 class PreviousYearsTest extends BaseTest with NinoGenerator {
 
-  lazy val nino: String = generateNino().nino
-  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  val mockTransferService: TransferService = mock[TransferService]
-  val eligibleYearsController: EligibleYearsController = app.injector.instanceOf[EligibleYearsController]
-  val extraYearsController: ExtraYearsController = app.injector.instanceOf[ExtraYearsController]
+  lazy val nino: String                                                  = generateNino().nino
+  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  val mockTransferService: TransferService                               = mock[TransferService]
+  val eligibleYearsController: EligibleYearsController                   = app.injector.instanceOf[EligibleYearsController]
+  val extraYearsController: ExtraYearsController                         = app.injector.instanceOf[ExtraYearsController]
 
   implicit val duration: Timeout = 20 seconds
 
@@ -59,13 +59,13 @@ class PreviousYearsTest extends BaseTest with NinoGenerator {
       bind[TransferService].toInstance(mockTransferService),
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[UnauthenticatedActionTransformer].to[MockUnauthenticatedAction],
-      bind[PertaxAuthAction].to[FakePertaxAuthAction],
+      bind[PertaxAuthAction].to[FakePertaxAuthAction]
     )
     .build()
 
   "Calling Previous year page " should {
-    val rcrec = UserRecord(cid = 123456, timestamp = "2015")
-    val rcdata = RegistrationFormInput(
+    val rcrec     = UserRecord(cid = 123456, timestamp = "2015")
+    val rcdata    = RegistrationFormInput(
       name = "foo",
       lastName = "bar",
       gender = Gender("M"),
@@ -91,14 +91,18 @@ class PreviousYearsTest extends BaseTest with NinoGenerator {
           )
         )
       val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(data = "year" -> "List(0)")
-      val result = extraYearsController.extraYearsAction(request)
+      val result  = extraYearsController.extraYearsAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementById("heading").text() shouldBe "Confirm the earlier years you want to apply for"
-      document.getElementById("eligible-years-form").toString should include("/marriage-allowance-application/extra-years")
+      document.getElementById("heading").text()                      shouldBe "Confirm the earlier years you want to apply for"
+      document.getElementById("eligible-years-form").toString          should include(
+        "/marriage-allowance-application/extra-years"
+      )
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("selectedYear-error").text() shouldBe "Error: Select yes if you would like to apply for earlier tax years"
+      document
+        .getElementById("selectedYear-error")
+        .text()                                                      shouldBe "Error: Select yes if you would like to apply for earlier tax years"
     }
   }
 

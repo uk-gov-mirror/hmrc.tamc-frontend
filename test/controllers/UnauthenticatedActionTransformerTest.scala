@@ -39,19 +39,19 @@ import scala.concurrent.Future
 class UnauthenticatedActionTransformerTest extends ControllerBaseTest with Injecting {
 
   type AuthRetrievals = ConfidenceLevel ~ Option[String] ~ Option[Credentials]
-  val retrievals: Retrieval[AuthRetrievals] = Retrievals.confidenceLevel and Retrievals.saUtr and Retrievals.credentials
-  val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  val retrievals: Retrieval[AuthRetrievals]        = Retrievals.confidenceLevel and Retrievals.saUtr and Retrievals.credentials
+  val mockAuthConnector: AuthConnector             = mock[AuthConnector]
   val authAction: UnauthenticatedActionTransformer = inject[UnauthenticatedActionTransformer]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
       bind[AuthConnector].toInstance(mockAuthConnector)
-    ).build()
-
+    )
+    .build()
 
   class FakeController(authReturn: Future[AuthRetrievals]) extends Controller {
-    def onPageLoad(): Action[AnyContent] = authAction(
-      implicit request => Ok.withHeaders("isAuthenticated" -> request.isAuthenticated.toString))
+    def onPageLoad(): Action[AnyContent] =
+      authAction(implicit request => Ok.withHeaders("isAuthenticated" -> request.isAuthenticated.toString))
 
     when(mockAuthConnector.authorise(any(), any())(any(), any()))
       .thenReturn(authReturn)
@@ -61,19 +61,21 @@ class UnauthenticatedActionTransformerTest extends ControllerBaseTest with Injec
     "return a success" when {
       "details are successfully retrieved and credentials have been defined" in new FakeController(withCredRetrieval) {
         val result: Future[Result] = onPageLoad()(request)
-        status(result) shouldBe OK
+        status(result)                           shouldBe OK
         result.header.headers("isAuthenticated") shouldBe "true"
       }
 
       "NoActiveSession is returned from auth connector" in new FakeController(Future.failed(NoActiveSessionException)) {
         val result: Future[Result] = onPageLoad()(request)
-        status(result) shouldBe OK
+        status(result)                           shouldBe OK
         result.header.headers("isAuthenticated") shouldBe "false"
       }
 
-      "InsufficientConfidenceLevel is returned from auth connector" in new FakeController(Future.failed(InsufficientConfidenceLevel())) {
+      "InsufficientConfidenceLevel is returned from auth connector" in new FakeController(
+        Future.failed(InsufficientConfidenceLevel())
+      ) {
         val result: Future[Result] = onPageLoad()(request)
-        status(result) shouldBe OK
+        status(result)                           shouldBe OK
         result.header.headers("isAuthenticated") shouldBe "false"
       }
     }
@@ -81,5 +83,5 @@ class UnauthenticatedActionTransformerTest extends ControllerBaseTest with Injec
 
   object NoActiveSessionException extends NoActiveSession("")
 
-  val withCredRetrieval: AuthRetrievals = ConfidenceLevel.L200 ~  None ~ Some(Credentials("", ""))
+  val withCredRetrieval: AuthRetrievals = ConfidenceLevel.L200 ~ None ~ Some(Credentials("", ""))
 }

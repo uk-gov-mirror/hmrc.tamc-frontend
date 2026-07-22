@@ -23,10 +23,10 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import javax.inject.Inject
 
 class RecipientNotFoundController @Inject() (
-                                              authenticate: StandardAuthJourney,
-                                              cc: MessagesControllerComponents,
-                                              recipientNotFound: views.html.errors.recipient_not_found
-                                            ) extends BaseController(cc) {
+  authenticate: StandardAuthJourney,
+  cc: MessagesControllerComponents,
+  recipientNotFound: views.html.errors.recipient_not_found
+) extends BaseController(cc) {
 
   def recipientNotFoundError: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails { implicit request =>
     Ok(recipientNotFound())

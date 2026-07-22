@@ -27,34 +27,35 @@ import javax.inject.Inject
 
 case class ClaimsRow(dateInterval: String, status: String)
 
-case class ClaimsViewModel(activeRow: ClaimsRow,
-                           historicRows: Seq[ClaimsRow],
-                           taxFreeAllowanceLink: Html)
+case class ClaimsViewModel(activeRow: ClaimsRow, historicRows: Seq[ClaimsRow], taxFreeAllowanceLink: Html)
 
-class ClaimsViewModelImpl@Inject()(applicationConfig: ApplicationConfig,  languageUtilsImpl: LanguageUtilsImpl) {
+class ClaimsViewModelImpl @Inject() (applicationConfig: ApplicationConfig, languageUtilsImpl: LanguageUtilsImpl) {
 
-  implicit val historicOrdering: Ordering[RelationshipRecord] = Ordering.by((_:RelationshipRecord).creationTimestamp).reverse
+  implicit val historicOrdering: Ordering[RelationshipRecord] =
+    Ordering.by((_: RelationshipRecord).creationTimestamp).reverse
 
-  def apply(primaryRelationship: RelationshipRecord,
-            historicRelationships: Seq[RelationshipRecord])(implicit messages: Messages): ClaimsViewModel = {
+  def apply(primaryRelationship: RelationshipRecord, historicRelationships: Seq[RelationshipRecord])(implicit
+    messages: Messages
+  ): ClaimsViewModel = {
 
-    val activeRow = activeClaimsRow(primaryRelationship)
+    val activeRow           = activeClaimsRow(primaryRelationship)
     val orderedHistoricRows = historicRelationships.sorted.map(historicClaimsRow(_))
 
     ClaimsViewModel(activeRow, orderedHistoricRows, taxFreeAllowanceLink)
   }
 
-  private def taxFreeAllowanceLink(implicit messages: Messages): Html = {
-    Html(
-      s"""${messages("pages.claims.link.tax.free.allowance.part1")} <a id="taxFreeAllowanceLink" href="${applicationConfig.taxFreeAllowanceUrl}">
+  private def taxFreeAllowanceLink(implicit messages: Messages): Html =
+    Html(s"""${messages(
+             "pages.claims.link.tax.free.allowance.part1"
+           )} <a id="taxFreeAllowanceLink" href="${applicationConfig.taxFreeAllowanceUrl}">
          |${messages("pages.claims.link.tax.free.allowance.link.text")}</a>""".stripMargin)
-  }
 
   private def activeClaimsRow(primaryRelationshipRecord: RelationshipRecord)(implicit messages: Messages): ClaimsRow = {
 
     val activeDateInterval = languageUtilsImpl().taxDateIntervalString(
       primaryRelationshipRecord.participant1StartDate,
-      primaryRelationshipRecord.participant1EndDate)
+      primaryRelationshipRecord.participant1EndDate
+    )
 
     val activeStatus = messages("change.status.active")
 
@@ -64,12 +65,11 @@ class ClaimsViewModelImpl@Inject()(applicationConfig: ApplicationConfig,  langua
 
   private def historicClaimsRow(nonPrimaryRelation: RelationshipRecord)(implicit messages: Messages): ClaimsRow = {
 
-    val historicDateInterval = languageUtilsImpl().taxDateIntervalString(
-      nonPrimaryRelation.participant1StartDate,
-      nonPrimaryRelation.participant1EndDate)
+    val historicDateInterval = languageUtilsImpl()
+      .taxDateIntervalString(nonPrimaryRelation.participant1StartDate, nonPrimaryRelation.participant1EndDate)
 
     val cause = nonPrimaryRelation.relationshipEndReason match {
-      case None => Default.value
+      case None         => Default.value
       case Some(reason) => reason.value
     }
 

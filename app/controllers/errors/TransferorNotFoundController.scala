@@ -23,12 +23,12 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import javax.inject.Inject
 
 class TransferorNotFoundController @Inject() (
-                                               authenticate: StandardAuthJourney,
-                                               cc: MessagesControllerComponents,
-                                               transferorNotFound: views.html.errors.transferor_not_found
-                                             ) extends BaseController(cc) {
+  authenticate: StandardAuthJourney,
+  cc: MessagesControllerComponents,
+  transferorNotFound: views.html.errors.transferor_not_found
+) extends BaseController(cc) {
 
   def transferorNotFoundError: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails { implicit request =>
-      Ok(transferorNotFound())
+    Ok(transferorNotFound())
   }
 }

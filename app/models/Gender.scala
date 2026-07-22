@@ -25,7 +25,7 @@ object Gender {
   def isValid(code: String): Boolean = validValues.contains(code)
 
   implicit val genderWrite: Writes[Gender] = new SimpleObjectWrites[Gender](_.gender)
-  implicit val genderRead: Reads[Gender] = new SimpleObjectReads[Gender]("gender", Gender.apply)
+  implicit val genderRead: Reads[Gender]   = new SimpleObjectReads[Gender]("gender", Gender.apply)
 }
 
 case class Gender(gender: String) {

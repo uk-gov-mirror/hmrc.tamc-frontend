@@ -22,14 +22,14 @@ import java.time.format.DateTimeFormatter
 import play.api.libs.json._
 
 object DateOfMarriageFormInput {
-  private val pattern = "dd/MM/yyyy"
+  private val pattern                                    = "dd/MM/yyyy"
   private def writes(pattern: String): Writes[LocalDate] = {
     val datePattern = DateTimeFormatter.ofPattern(pattern)
 
-    Writes[LocalDate] { localDate => JsString(localDate.format(datePattern))}
+    Writes[LocalDate](localDate => JsString(localDate.format(datePattern)))
   }
 
-  implicit val dateFormat: Format[LocalDate] = Format[LocalDate](Reads.localDateReads(pattern), writes(pattern))
+  implicit val dateFormat: Format[LocalDate]             = Format[LocalDate](Reads.localDateReads(pattern), writes(pattern))
   implicit val formats: OFormat[DateOfMarriageFormInput] = Json.format[DateOfMarriageFormInput]
 
   def unapply(input: DateOfMarriageFormInput): Option[LocalDate] =

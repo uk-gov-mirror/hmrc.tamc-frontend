@@ -24,15 +24,15 @@ import views.html.errors.no_year_selected
 
 class NoYearSelectedTest extends BaseTest {
 
-  lazy val noYearSelected = instanceOf[no_year_selected]
+  lazy val noYearSelected                      = instanceOf[no_year_selected]
   lazy val baseUserRequest: BaseUserRequest[?] = UserRequest(FakeRequest(), None, true, Some(""), true)
-  override lazy val messages = Helpers.stubMessages()
+  override lazy val messages                   = Helpers.stubMessages()
 
   "noYearsSelected" should {
     "display correct h1" in {
 
-      val doc = Jsoup.parse(noYearSelected()(messages, baseUserRequest).toString)
-      val h1Tag = doc.getElementsByTag("h1").toString
+      val doc      = Jsoup.parse(noYearSelected()(messages, baseUserRequest).toString)
+      val h1Tag    = doc.getElementsByTag("h1").toString
       val expected = messages("pages.noyears.h1")
 
       h1Tag should include(expected)
@@ -40,8 +40,8 @@ class NoYearSelectedTest extends BaseTest {
 
     "return the correct content" in {
 
-      val doc = Jsoup.parse(noYearSelected()(messages, baseUserRequest).toString)
-      val paragraphTag = doc.getElementsByTag("p").toString
+      val doc           = Jsoup.parse(noYearSelected()(messages, baseUserRequest).toString)
+      val paragraphTag  = doc.getElementsByTag("p").toString
       val expectedPart1 = messages("pages.noyears.findoutmore.part1")
       val expectedPart2 = messages("pages.noyears.findoutmore.link-text")
 
@@ -52,4 +52,3 @@ class NoYearSelectedTest extends BaseTest {
   }
 
 }
-

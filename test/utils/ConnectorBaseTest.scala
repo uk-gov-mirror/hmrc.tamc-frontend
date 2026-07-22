@@ -22,6 +22,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 trait ConnectorBaseTest extends BaseTest with WireMockHelper {
 
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
-    .configure("microservice.services.marriage-allowance.port" -> server.port()).build()
+    .configure("microservice.services.marriage-allowance.port" -> server.port())
+    .build()
 
 }

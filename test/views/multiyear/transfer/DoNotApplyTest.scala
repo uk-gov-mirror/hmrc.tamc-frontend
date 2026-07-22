@@ -30,8 +30,10 @@ import views.html.multiyear.transfer.dont_apply_current_tax_year
 class DoNotApplyTest extends BaseTest with ViewTestUtils with NinoGenerator {
 
   lazy val nino: String                                                  = generateNino().nino
-  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  override implicit lazy val messages: Messages                          = instanceOf[MessagesApi].asScala.preferred(FakeRequest(): Request[AnyContent])
+  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  override implicit lazy val messages: Messages                          =
+    instanceOf[MessagesApi].asScala.preferred(FakeRequest(): Request[AnyContent])
   lazy val doNotApplyView: dont_apply_current_tax_year                   = instanceOf[dont_apply_current_tax_year]
   implicit val doc: Document                                             = Jsoup.parse(doNotApplyView().toString())
 
@@ -62,7 +64,9 @@ class DoNotApplyTest extends BaseTest with ViewTestUtils with NinoGenerator {
         "change the years you want to apply for",
         "find out how Marriage Allowance works"
       )
-      doc.getElementById("change-year-link").attr("href")  shouldBe "/marriage-allowance-application/choose-years-to-apply-for"
+      doc
+        .getElementById("change-year-link")
+        .attr("href")                                      shouldBe "/marriage-allowance-application/choose-years-to-apply-for"
       doc.getElementById("how-it-works-link").attr("href") shouldBe "/marriage-allowance-application/how-it-works"
     }
 

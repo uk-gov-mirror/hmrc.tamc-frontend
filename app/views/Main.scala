@@ -28,40 +28,41 @@ import uk.gov.hmrc.sca.services.WrapperService
 @ImplementedBy(classOf[MainImpl])
 trait Main {
   def apply(
-             pageTitle: String,
-             backLinkHref: Option[String] = None,
-             sessionExpiredPage: Boolean = false,
-             scripts: Option[Html] = None,
-             backLinkAttrs: Map[String, String] = Map.empty,
-             afterContent: Option[Html] = None,
-             serviceTitle: String = "title.pattern",
-             disableBackLink: Boolean = false
-           )(
-             contentBlock: Html
-           )(implicit
-             BaseUserRequest: Request[?],
-             messages: Messages
-           ): HtmlFormat.Appendable
+    pageTitle: String,
+    backLinkHref: Option[String] = None,
+    sessionExpiredPage: Boolean = false,
+    scripts: Option[Html] = None,
+    backLinkAttrs: Map[String, String] = Map.empty,
+    afterContent: Option[Html] = None,
+    serviceTitle: String = "title.pattern",
+    disableBackLink: Boolean = false
+  )(
+    contentBlock: Html
+  )(implicit
+    BaseUserRequest: Request[?],
+    messages: Messages
+  ): HtmlFormat.Appendable
 }
 
 class MainImpl @Inject() (
-                           wrapperService: WrapperService,
-                           additionalStyles: views.html.components.additionalStyles,
-                           additionalScripts: views.html.components.additionalScripts
-                         ) extends Main with Logging {
+  wrapperService: WrapperService,
+  additionalStyles: views.html.components.additionalStyles,
+  additionalScripts: views.html.components.additionalScripts
+) extends Main
+    with Logging {
 
   override def apply(
-                      pageTitle: String,
-                      backLinkHref: Option[String],
-                      sessionExpiredPage: Boolean,
-                      scripts: Option[Html],
-                      backLinkAttrs: Map[String, String],
-                      afterContent: Option[Html],
-                      serviceTitle: String = "title.pattern",
-                      disableBackLink: Boolean
-                    )(
-                      contentBlock: Html
-                    )(implicit request: Request[?], messages: Messages): HtmlFormat.Appendable = {
+    pageTitle: String,
+    backLinkHref: Option[String],
+    sessionExpiredPage: Boolean,
+    scripts: Option[Html],
+    backLinkAttrs: Map[String, String],
+    afterContent: Option[Html],
+    serviceTitle: String = "title.pattern",
+    disableBackLink: Boolean
+  )(
+    contentBlock: Html
+  )(implicit request: Request[?], messages: Messages): HtmlFormat.Appendable = {
 
     val hideAccountMenu = request.session.get("authToken").isEmpty
 

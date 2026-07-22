@@ -39,12 +39,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FinishedControllerTest extends ControllerBaseTest with NinoGenerator {
 
-  lazy val nino: String = generateNino().nino
-  val currentTaxYear: Int = time.TaxYear.current.startYear
-  val mockTransferService: TransferService = mock[TransferService]
-  val mockTimeService: TimeService = mock[TimeService]
+  lazy val nino: String                      = generateNino().nino
+  val currentTaxYear: Int                    = time.TaxYear.current.startYear
+  val mockTransferService: TransferService   = mock[TransferService]
+  val mockTimeService: TimeService           = mock[TimeService]
   val notificationRecord: NotificationRecord = NotificationRecord(EmailAddress("test@test.com"))
-  val applicationConfig: ApplicationConfig = instanceOf[ApplicationConfig]
+  val applicationConfig: ApplicationConfig   = instanceOf[ApplicationConfig]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(

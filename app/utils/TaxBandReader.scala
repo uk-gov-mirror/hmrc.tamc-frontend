@@ -25,31 +25,27 @@ trait TaxBandReader {
   def read(countryOfResidence: Country, taxYear: TaxYear): List[TaxBand]
 }
 
-class TaxBandReaderImpl @Inject()(config: ApplicationConfig) extends TaxBandReader {
+class TaxBandReaderImpl @Inject() (config: ApplicationConfig) extends TaxBandReader {
 
-  override def read(countryOfResidence: Country, taxYear: TaxYear): List[TaxBand] = {
+  override def read(countryOfResidence: Country, taxYear: TaxYear): List[TaxBand] =
     countryOfResidence match {
-      case England => readByCountryAndTaxYear("england", taxYear.startYear)
-      case Scotland => readByCountryAndTaxYear("scotland", taxYear.startYear)
-      case Wales => readByCountryAndTaxYear("wales", taxYear.startYear)
+      case England         => readByCountryAndTaxYear("england", taxYear.startYear)
+      case Scotland        => readByCountryAndTaxYear("scotland", taxYear.startYear)
+      case Wales           => readByCountryAndTaxYear("wales", taxYear.startYear)
       case NorthernIreland => readByCountryAndTaxYear("northern-ireland", taxYear.startYear)
     }
-  }
 
-  private def readByCountryAndTaxYear(country: String, taxYear: Int): List[TaxBand] = {
+  private def readByCountryAndTaxYear(country: String, taxYear: Int): List[TaxBand] =
     country match {
-      case "scotland" => {
+      case "scotland" =>
         List[TaxBand](
           config.getTaxBand("StarterRate", "starter-rate", country.toLowerCase(), taxYear),
           config.getTaxBand("BasicRate", "basic-rate", country.toLowerCase(), taxYear),
           config.getTaxBand("IntermediateRate", "intermediate-rate", country.toLowerCase(), taxYear)
         )
-      }
-      case _ => {
+      case _          =>
         List[TaxBand](
           config.getTaxBand("BasicRate", "basic-rate", country.toLowerCase(), taxYear)
         )
-      }
     }
-  }
 }

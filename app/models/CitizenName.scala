@@ -26,11 +26,11 @@ case class CitizenName(firstName: Option[String], lastName: Option[String]) {
   def fullName: Option[String] = (firstName, lastName) match {
     case (Some(firstName), Some(lastName)) =>
       Some(s"${firstName.toLowerCase.capitalize} ${lastName.toLowerCase.capitalize}")
-    case (Some(firstName), None) =>
+    case (Some(firstName), None)           =>
       Some(firstName.toLowerCase.capitalize)
-    case (None, Some(lastName)) =>
+    case (None, Some(lastName))            =>
       Some(lastName.toLowerCase.capitalize)
-    case _ =>
+    case _                                 =>
       None
   }
 }

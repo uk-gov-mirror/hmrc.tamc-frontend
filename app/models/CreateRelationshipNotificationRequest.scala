@@ -22,7 +22,8 @@ import utils.emailAddressFormatters.PlayJsonFormats.emailAddressReads
 import utils.emailAddressFormatters.PlayJsonFormats.emailAddressWrites
 
 object CreateRelationshipNotificationRequest {
-  implicit val formats: OFormat[CreateRelationshipNotificationRequest] = Json.format[CreateRelationshipNotificationRequest]
+  implicit val formats: OFormat[CreateRelationshipNotificationRequest] =
+    Json.format[CreateRelationshipNotificationRequest]
 }
 
 case class CreateRelationshipNotificationRequest(full_name: String, email: EmailAddress, welsh: Boolean = false)

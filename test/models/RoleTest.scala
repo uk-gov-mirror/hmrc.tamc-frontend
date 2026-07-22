@@ -40,7 +40,7 @@ class RoleTest extends UnitSpec {
       participantsAndRoles foreach { participantAndRole =>
         s"the role is ${participantAndRole._2}" in {
           participantAndRole._2.value shouldBe participantAndRole._1
-         }
+        }
       }
     }
   }

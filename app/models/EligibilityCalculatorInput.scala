@@ -17,13 +17,12 @@
 package models
 
 case class EligibilityCalculatorInput(
-                                       country: String,
-                                       transferorIncome: BigDecimal,
-                                       recipientIncome: BigDecimal
-                                     )
+  country: String,
+  transferorIncome: BigDecimal,
+  recipientIncome: BigDecimal
+)
 
 object EligibilityCalculatorInput {
-  def unapply(input: EligibilityCalculatorInput): Option[(String, BigDecimal, BigDecimal)] = {
+  def unapply(input: EligibilityCalculatorInput): Option[(String, BigDecimal, BigDecimal)] =
     Some((input.country, input.transferorIncome, input.recipientIncome))
-  }
 }

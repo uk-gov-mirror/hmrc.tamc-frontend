@@ -23,19 +23,18 @@ import uk.gov.hmrc.domain.Nino
 import java.time.format.DateTimeFormatter
 
 object RecipientDetailsFormInput {
-  private val pattern = "dd/MM/yyyy"
+  private val pattern                                    = "dd/MM/yyyy"
   private def writes(pattern: String): Writes[LocalDate] = {
     val datePattern = DateTimeFormatter.ofPattern(pattern)
 
-    Writes[LocalDate] { localDate => JsString(localDate.format(datePattern))}
+    Writes[LocalDate](localDate => JsString(localDate.format(datePattern)))
   }
 
-  implicit val dateFormat: Format[LocalDate] = Format[LocalDate](Reads.localDateReads(pattern), writes(pattern))
+  implicit val dateFormat: Format[LocalDate]               = Format[LocalDate](Reads.localDateReads(pattern), writes(pattern))
   implicit val formats: OFormat[RecipientDetailsFormInput] = Json.format[RecipientDetailsFormInput]
 
-  def unapply(input: RecipientDetailsFormInput): Option[(String, String, Gender, Nino)] = {
+  def unapply(input: RecipientDetailsFormInput): Option[(String, String, Gender, Nino)] =
     Some((input.name, input.lastName, input.gender, input.nino))
-  }
 }
 
 case class RecipientDetailsFormInput(name: String, lastName: String, gender: Gender, nino: Nino)

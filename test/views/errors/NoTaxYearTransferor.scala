@@ -24,14 +24,14 @@ import views.html.errors.no_tax_year_transferor
 
 class NoTaxYearTransferor extends BaseTest {
 
-  lazy val noTaxYearTransferor = instanceOf[no_tax_year_transferor]
+  lazy val noTaxYearTransferor                 = instanceOf[no_tax_year_transferor]
   lazy val baseUserRequest: BaseUserRequest[?] = UserRequest(FakeRequest(), None, true, Some(""), true)
-  override lazy val messages = Helpers.stubMessages()
+  override lazy val messages                   = Helpers.stubMessages()
 
   "noTaxYearTransferor" should {
     "return the correct title" in {
-      val doc = Jsoup.parse(noTaxYearTransferor()(messages, baseUserRequest).toString)
-      val title = doc.title()
+      val doc      = Jsoup.parse(noTaxYearTransferor()(messages, baseUserRequest).toString)
+      val title    = doc.title()
       val expected = messages("title.no-tax-years") + " - " + messages("title.pattern")
 
       title shouldBe expected
@@ -39,24 +39,22 @@ class NoTaxYearTransferor extends BaseTest {
 
     "return Your Marriage Allowance claims h1" in {
 
-      val doc = Jsoup.parse(noTaxYearTransferor()(messages, baseUserRequest).toString)
-      val h1Tag = doc.getElementsByTag("h1").toString
+      val doc      = Jsoup.parse(noTaxYearTransferor()(messages, baseUserRequest).toString)
+      val h1Tag    = doc.getElementsByTag("h1").toString
       val expected = messages("eligibility.check.header")
 
       h1Tag should include(expected)
     }
 
-
     "return We will cancel your Marriage Allowance content" in {
 
-      val doc = Jsoup.parse(noTaxYearTransferor()(messages, baseUserRequest).toString)
+      val doc          = Jsoup.parse(noTaxYearTransferor()(messages, baseUserRequest).toString)
       val paragraphTag = doc.getElementsByTag("p").toString
-      val expected = messages("transferor.no-previous-years-available")
+      val expected     = messages("transferor.no-previous-years-available")
 
       paragraphTag should include(expected)
 
     }
   }
-
 
 }

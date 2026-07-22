@@ -36,7 +36,8 @@ class DoNotApplyControllerTest extends ControllerBaseTest with ControllerViewTes
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: DoNotApplyController = app.injector.instanceOf[DoNotApplyController]
 

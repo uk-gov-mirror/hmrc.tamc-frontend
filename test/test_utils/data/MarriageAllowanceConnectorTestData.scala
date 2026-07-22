@@ -16,7 +16,6 @@
 
 package test_utils.data
 
-
 import models._
 import test_utils.TestData.Cids
 import utils.EmailAddress
@@ -31,14 +30,15 @@ object MarriageAllowanceConnectorTestData {
 
   val relationshipRequestHolder = CreateRelationshipRequestHolder(createRelationshipRequest, notification)
 
-  val participant1 = RecipientInformation("", "")
-  val participant2 = TransferorInformation("")
+  val participant1            = RecipientInformation("", "")
+  val participant2            = TransferorInformation("")
   val relationshipInformation = RelationshipInformation("", "", "")
 
   val updateRelationshipRequest = UpdateRelationshipRequest(participant1, participant2, relationshipInformation)
 
   val updateRelationshipNotificationRequest = UpdateRelationshipNotificationRequest("", email, "")
 
-  val updateRelationshipRequestHolder = UpdateRelationshipRequestHolder(updateRelationshipRequest, updateRelationshipNotificationRequest)
+  val updateRelationshipRequestHolder =
+    UpdateRelationshipRequestHolder(updateRelationshipRequest, updateRelationshipNotificationRequest)
 
 }

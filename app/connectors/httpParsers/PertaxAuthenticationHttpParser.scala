@@ -25,21 +25,24 @@ object PertaxAuthenticationHttpParser extends Logging {
   type PertaxAuthenticationResponse = Either[UpstreamErrorResponse, PertaxAuthResponseModel]
 
   implicit object PertaxAuthenticationHttpReads extends HttpReads[PertaxAuthenticationResponse] {
-    override def read(method: String, url: String, response: HttpResponse): PertaxAuthenticationResponse = {
-      response.json.validate[PertaxAuthResponseModel].fold(
-        jsErrors => {
-          logger.error(
-            "[PertaxAuthenticationHttpParser][read] There was an issue processing the JSON returned from Pertax Auth. Check that the versions match." +
-            s"\nAssociated Json errors:\n$jsErrors"
-          )
-          Left(UpstreamErrorResponse.apply(
-            "[PertaxAuthenticationHttpParser][read] There was an issue parsing the response from Pertax Auth.",
-            INTERNAL_SERVER_ERROR
-          ))
-        },
-        Right(_)
-      )
-    }
+    override def read(method: String, url: String, response: HttpResponse): PertaxAuthenticationResponse =
+      response.json
+        .validate[PertaxAuthResponseModel]
+        .fold(
+          jsErrors => {
+            logger.error(
+              "[PertaxAuthenticationHttpParser][read] There was an issue processing the JSON returned from Pertax Auth. Check that the versions match." +
+                s"\nAssociated Json errors:\n$jsErrors"
+            )
+            Left(
+              UpstreamErrorResponse.apply(
+                "[PertaxAuthenticationHttpParser][read] There was an issue parsing the response from Pertax Auth.",
+                INTERNAL_SERVER_ERROR
+              )
+            )
+          },
+          Right(_)
+        )
   }
 
 }

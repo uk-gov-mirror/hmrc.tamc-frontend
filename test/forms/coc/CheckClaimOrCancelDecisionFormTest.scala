@@ -26,29 +26,28 @@ class CheckClaimOrCancelDecisionFormTest extends BaseTest {
       CheckClaimOrCancelDecisionForm.CheckMarriageAllowanceClaim,
       CheckClaimOrCancelDecisionForm.StopMarriageAllowance
     )
-    for (decision <- decisions) {
+    for (decision <- decisions)
       s"bind a valid decision <- '$decision'" in {
         val formInput = Map[String, String](
           CheckClaimOrCancelDecisionForm.DecisionChoice -> decision
         )
 
-        val form = CheckClaimOrCancelDecisionForm.form().bind(formInput)
+        val form   = CheckClaimOrCancelDecisionForm.form().bind(formInput)
         val errors = form.errors
-        val value = form.data
+        val value  = form.data
 
         errors shouldBe Seq()
-        value shouldBe formInput
+        value  shouldBe formInput
       }
-    }
 
     "not bind on empty input" in {
       val formInput = Map[String, String](
         CheckClaimOrCancelDecisionForm.DecisionChoice -> ""
       )
 
-      val form = CheckClaimOrCancelDecisionForm.form().bind(formInput)
+      val form   = CheckClaimOrCancelDecisionForm.form().bind(formInput)
       val errors = form.errors
-      val value = form.data
+      val value  = form.data
 
       errors shouldBe Seq(
         FormError(
@@ -56,7 +55,7 @@ class CheckClaimOrCancelDecisionFormTest extends BaseTest {
           Seq("pages.decision.error.mandatory.value")
         )
       )
-      value shouldBe formInput
+      value  shouldBe formInput
     }
   }
 }

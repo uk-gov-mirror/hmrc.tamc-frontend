@@ -24,13 +24,20 @@ import uk.gov.hmrc.domain.Nino
 import utils.EmailAddress
 
 object ConfirmationModelData {
-  val citizenName = Some(CitizenName(Some("Test"), Some("User")))
+  val citizenName  = Some(CitizenName(Some("Test"), Some("User")))
   val emailAddress = EmailAddress("test@test.com")
 
   val dateOfMarriageFormInput = DateOfMarriageFormInput(LocalDate.now().minusDays(1))
 
-  val confirmationModelData = ConfirmationModel(citizenName, emailAddress, "Test", "User", Nino(Ninos.nino1),
-    List(TaxYear(2015, None)), dateOfMarriageFormInput)
+  val confirmationModelData = ConfirmationModel(
+    citizenName,
+    emailAddress,
+    "Test",
+    "User",
+    Nino(Ninos.nino1),
+    List(TaxYear(2015, None)),
+    dateOfMarriageFormInput
+  )
 
   val updateRelationshipConfirmationModel =
     UpdateRelationshipConfirmationModel(citizenName, emailAddress, EndRelationshipReason("DIVORCE_PY"))

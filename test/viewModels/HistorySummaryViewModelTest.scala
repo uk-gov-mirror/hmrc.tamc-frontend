@@ -32,28 +32,29 @@ import java.text.NumberFormat
 import java.time.LocalDate
 import java.util.Locale
 
-
 class HistorySummaryViewModelTest extends BaseTest with Injecting with NinoGenerator {
 
-  val applicationConfig: ApplicationConfig = instanceOf[ApplicationConfig]
-  val view: history_summary = inject[history_summary]
-  val languageUtils: LanguageUtils = EnglishLangaugeUtils
+  val applicationConfig: ApplicationConfig                     = instanceOf[ApplicationConfig]
+  val view: history_summary                                    = inject[history_summary]
+  val languageUtils: LanguageUtils                             = EnglishLangaugeUtils
   val historySummaryViewModelImpl: HistorySummaryViewModelImpl = instanceOf[HistorySummaryViewModelImpl]
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  lazy val nino: String = generateNino().nino
+  implicit val request: AuthenticatedUserRequest[?]            =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  lazy val nino: String                                        = generateNino().nino
 
-  val currentOfTaxYear: Int = TaxYear.current.currentYear
-  val endOfTaxYear: LocalDate = TaxYear.current.finishes
-  val maxPATransfer: Int = applicationConfig.PERSONAL_ALLOWANCE(currentOfTaxYear)
-  val maxBenefit: Int = applicationConfig.MAX_BENEFIT(currentOfTaxYear)
-  val maxPaTransferFormatted: String = NumberFormat.getIntegerInstance().format(applicationConfig.MAX_ALLOWED_PERSONAL_ALLOWANCE_TRANSFER())
-  val formattedEndOfYear: String = languageUtils.ukDateTransformer(endOfTaxYear)
+  val currentOfTaxYear: Int          = TaxYear.current.currentYear
+  val endOfTaxYear: LocalDate        = TaxYear.current.finishes
+  val maxPATransfer: Int             = applicationConfig.PERSONAL_ALLOWANCE(currentOfTaxYear)
+  val maxBenefit: Int                = applicationConfig.MAX_BENEFIT(currentOfTaxYear)
+  val maxPaTransferFormatted: String =
+    NumberFormat.getIntegerInstance().format(applicationConfig.MAX_ALLOWED_PERSONAL_ALLOWANCE_TRANSFER())
+  val formattedEndOfYear: String     = languageUtils.ukDateTransformer(endOfTaxYear)
 
-  val citizenName: CitizenName = CitizenName(Some("Test"), Some("User"))
-  val loggedInUserInfo: LoggedInUserInfo = LoggedInUserInfo(cid = 1122L, timestamp = LocalDate.now().toString, has_allowance = None, name = Some(citizenName))
-  val expectedDisplayName = "Test User"
+  val citizenName: CitizenName                      = CitizenName(Some("Test"), Some("User"))
+  val loggedInUserInfo: LoggedInUserInfo            =
+    LoggedInUserInfo(cid = 1122L, timestamp = LocalDate.now().toString, has_allowance = None, name = Some(citizenName))
+  val expectedDisplayName                           = "Test User"
   override implicit lazy val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
-
 
   "HistorySummaryViewModel" should {
 
@@ -62,25 +63,36 @@ class HistorySummaryViewModelTest extends BaseTest with Injecting with NinoGener
       "marriage allowance has not been cancelled" when {
 
         "the person is a recipient " in {
-          val expectedHistorySummaryButton = HistorySummaryButton("checkOrUpdateMarriageAllowance", "Check or update your Marriage Allowance",
-            controllers.UpdateRelationship.routes.ChooseController.decision().url)
+          val expectedHistorySummaryButton = HistorySummaryButton(
+            "checkOrUpdateMarriageAllowance",
+            "Check or update your Marriage Allowance",
+            controllers.UpdateRelationship.routes.ChooseController.decision().url
+          )
 
-          val viewModel = historySummaryViewModelImpl(Recipient, hasMarriageAllowanceBeenCancelled = false, loggedInUserInfo)
+          val viewModel =
+            historySummaryViewModelImpl(Recipient, hasMarriageAllowanceBeenCancelled = false, loggedInUserInfo)
 
           val expectedContent = Html(
             s"""<p class="govuk-body">${s"Your partner is currently using Marriage Allowance to transfer " +
-              s"£$maxPaTransferFormatted of their Personal Allowance to you."}</p>""".stripMargin +
-            s"""<p class="govuk-body">${s"This can reduce the tax you pay by up to £$maxBenefit a year."}</p>""")
+                s"£$maxPaTransferFormatted of their Personal Allowance to you."}</p>""".stripMargin +
+              s"""<p class="govuk-body">${s"This can reduce the tax you pay by up to £$maxBenefit a year."}</p>"""
+          )
 
           viewModel shouldBe HistorySummaryViewModel(expectedContent, expectedHistorySummaryButton, expectedDisplayName)
         }
 
         "The person is a transferor" in {
-          val expectedHistorySummaryButton = HistorySummaryButton("checkOrUpdateMarriageAllowance", "Check or update your Marriage Allowance",
-            controllers.UpdateRelationship.routes.ChooseController.decision().url)
-          val viewModel = historySummaryViewModelImpl(Transferor, hasMarriageAllowanceBeenCancelled = false, loggedInUserInfo)
+          val expectedHistorySummaryButton = HistorySummaryButton(
+            "checkOrUpdateMarriageAllowance",
+            "Check or update your Marriage Allowance",
+            controllers.UpdateRelationship.routes.ChooseController.decision().url
+          )
+          val viewModel                    =
+            historySummaryViewModelImpl(Transferor, hasMarriageAllowanceBeenCancelled = false, loggedInUserInfo)
 
-          val expectedContent = Html(s"""<p class="govuk-body">${"You are currently helping your partner benefit from Marriage Allowance."}</p>""")
+          val expectedContent = Html(
+            s"""<p class="govuk-body">${"You are currently helping your partner benefit from Marriage Allowance."}</p>"""
+          )
 
           viewModel shouldBe HistorySummaryViewModel(expectedContent, expectedHistorySummaryButton, expectedDisplayName)
         }
@@ -89,35 +101,49 @@ class HistorySummaryViewModelTest extends BaseTest with Injecting with NinoGener
       "The record has cancelled marriage allowance" when {
 
         "the person is a recipient" in {
-          val expectedHistorySummaryButton = HistorySummaryButton("checkMarriageAllowance", "Check your Marriage Allowance claims",
-            controllers.UpdateRelationship.routes.ClaimsController.claims().url)
+          val expectedHistorySummaryButton = HistorySummaryButton(
+            "checkMarriageAllowance",
+            "Check your Marriage Allowance claims",
+            controllers.UpdateRelationship.routes.ClaimsController.claims().url
+          )
 
-          val viewModel = historySummaryViewModelImpl(Recipient, hasMarriageAllowanceBeenCancelled = true, loggedInUserInfo)
+          val viewModel =
+            historySummaryViewModelImpl(Recipient, hasMarriageAllowanceBeenCancelled = true, loggedInUserInfo)
 
-          val expectedContent = Html(s"""<p class="govuk-body">${"Your Marriage Allowance claim has ended."}</p>""" +
-            s"""<p class="govuk-body">${s"You will keep the tax-free allowances transferred to you until $formattedEndOfYear."}</p>""")
+          val expectedContent = Html(
+            s"""<p class="govuk-body">${"Your Marriage Allowance claim has ended."}</p>""" +
+              s"""<p class="govuk-body">${s"You will keep the tax-free allowances transferred to you until $formattedEndOfYear."}</p>"""
+          )
 
           viewModel shouldBe HistorySummaryViewModel(expectedContent, expectedHistorySummaryButton, expectedDisplayName)
         }
 
         "the person is a transferor" in {
-          val expectedHistorySummaryButton = HistorySummaryButton("checkMarriageAllowance", "Check your Marriage Allowance claims",
-            controllers.UpdateRelationship.routes.ClaimsController.claims().url)
+          val expectedHistorySummaryButton = HistorySummaryButton(
+            "checkMarriageAllowance",
+            "Check your Marriage Allowance claims",
+            controllers.UpdateRelationship.routes.ClaimsController.claims().url
+          )
 
-          val viewModel = historySummaryViewModelImpl(Transferor, hasMarriageAllowanceBeenCancelled = true, loggedInUserInfo)
+          val viewModel =
+            historySummaryViewModelImpl(Transferor, hasMarriageAllowanceBeenCancelled = true, loggedInUserInfo)
 
-          val expectedContent = Html(s"""<p class="govuk-body">${"Your Marriage Allowance claim has ended."}</p>""" +
-            s"""<p class="govuk-body">${s"You will keep the tax-free allowances transferred by you until $formattedEndOfYear."}</p>""")
+          val expectedContent = Html(
+            s"""<p class="govuk-body">${"Your Marriage Allowance claim has ended."}</p>""" +
+              s"""<p class="govuk-body">${s"You will keep the tax-free allowances transferred by you until $formattedEndOfYear."}</p>"""
+          )
 
           viewModel shouldBe HistorySummaryViewModel(expectedContent, expectedHistorySummaryButton, expectedDisplayName)
         }
       }
     }
 
-    "return expected response when there is no citizen name to allow a display name to be created" in  {
-      val loggedInUserInfo = LoggedInUserInfo(cid = 1122L, timestamp = LocalDate.now().toString, has_allowance = None, name = None)
+    "return expected response when there is no citizen name to allow a display name to be created" in {
+      val loggedInUserInfo =
+        LoggedInUserInfo(cid = 1122L, timestamp = LocalDate.now().toString, has_allowance = None, name = None)
 
-      val viewModel = historySummaryViewModelImpl(Transferor, hasMarriageAllowanceBeenCancelled = false, loggedInUserInfo)
+      val viewModel =
+        historySummaryViewModelImpl(Transferor, hasMarriageAllowanceBeenCancelled = false, loggedInUserInfo)
 
       viewModel.displayName shouldBe ""
     }

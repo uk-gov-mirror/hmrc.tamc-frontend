@@ -27,7 +27,7 @@ class AuthorisationControllerTest extends BaseTest {
   implicit val request: Request[AnyContent] = FakeRequest()
 
   lazy val controller: AuthorisationController = app.injector.instanceOf[AuthorisationController]
-  val applicationConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val applicationConfig: ApplicationConfig     = app.injector.instanceOf[ApplicationConfig]
 
   "Calling notAuthorised" should {
     "return OK" in {
@@ -46,7 +46,7 @@ class AuthorisationControllerTest extends BaseTest {
   "Calling logout" should {
     "redirect" in {
       val result = await(controller.logout()(request))
-      status(result) shouldBe SEE_OTHER
+      status(result)           shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(applicationConfig.logoutUrl)
     }
   }

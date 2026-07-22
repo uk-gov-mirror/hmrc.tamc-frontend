@@ -21,22 +21,24 @@ import controllers.BaseController
 import controllers.auth.StandardAuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.UpdateRelationshipService
-import utils.{UpdateRelationshipErrorHandler, LoggerHelper}
+import utils.{LoggerHelper, UpdateRelationshipErrorHandler}
 
 import scala.concurrent.ExecutionContext
 
-class BereavementController @Inject()(authenticate: StandardAuthJourney,
-                                      updateRelationshipService: UpdateRelationshipService,
-                                      cc: MessagesControllerComponents,
-                                      bereavementV: views.html.coc.bereavement,
-                                      errorHandler: UpdateRelationshipErrorHandler)
-                                     (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class BereavementController @Inject() (
+  authenticate: StandardAuthJourney,
+  updateRelationshipService: UpdateRelationshipService,
+  cc: MessagesControllerComponents,
+  bereavementV: views.html.coc.bereavement,
+  errorHandler: UpdateRelationshipErrorHandler
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
-  def bereavement: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
-    implicit request =>
-      (updateRelationshipService.getRelationshipRecords map { relationshipRecords =>
-        Ok(bereavementV(relationshipRecords.primaryRecord.role))
-      }) recover errorHandler.handleError
+  def bereavement: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
+    (updateRelationshipService.getRelationshipRecords map { relationshipRecords =>
+      Ok(bereavementV(relationshipRecords.primaryRecord.role))
+    }) recover errorHandler.handleError
   }
 
 }

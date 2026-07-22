@@ -25,11 +25,10 @@ import play.api.i18n.Messages
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class ViewHelpers @Inject()(
-                             val appConfig: ApplicationConfig,
-                             val languageUtils: LanguageUtils
-                           ) extends Logging {
-
+class ViewHelpers @Inject() (
+  val appConfig: ApplicationConfig,
+  val languageUtils: LanguageUtils
+) extends Logging {
 
   def formErrorPrefix(form: Form[?], title: String)(implicit messages: Messages): String =
     if (form.hasErrors || form.hasGlobalErrors)
