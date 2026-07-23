@@ -49,8 +49,8 @@ class EligibleYearsTest extends BaseTest with NinoGenerator {
   val currentTaxYearWithNBSP: String = languageUtilsImpl.apply().ukDateTransformer(LocalDate.now())
   val currentTaxYearDate: String     = currentTaxYearWithNBSP.replace("\u00A0", " ")
 
-  val currentTaxYear: Int            = TaxYear.current.currentYear
-  val maxBenefit: Int                = appConfig.MAX_BENEFIT(currentTaxYear)
+  val currentTaxYear: Int = TaxYear.current.currentYear
+  val maxBenefit: Int     = appConfig.MAX_BENEFIT(currentTaxYear)
 
   "EligibleYears" should {
     "return correct title" in {

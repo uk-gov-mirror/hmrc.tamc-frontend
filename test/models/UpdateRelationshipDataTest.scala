@@ -24,30 +24,31 @@ import java.time.LocalDate
 
 class UpdateRelationshipDataTest extends UnitSpec {
 
-  val loggedInUser = LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some("First"), Some("Name"))))
-  val relationshipRecords = RelationshipRecords(activeRecipientRelationshipRecord, Seq.empty[RelationshipRecord], loggedInUser)
-  val email = "email@email.com"
-  val endReason = "Divorce"
+  val loggedInUser                = LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some("First"), Some("Name"))))
+  val relationshipRecords         =
+    RelationshipRecords(activeRecipientRelationshipRecord, Seq.empty[RelationshipRecord], loggedInUser)
+  val email                       = "email@email.com"
+  val endReason                   = "Divorce"
   val marriageAllowanceEndingDate = LocalDate.now()
 
-  def createCacheData(relRecords: Option[RelationshipRecords] = Some(relationshipRecords),
-                      emailAddress: Option[String] = Some(email),
-                      maEndReason: Option[String] = Some(endReason),
-                      maEndDate: Option[LocalDate] = Some(marriageAllowanceEndingDate)): UpdateRelationshipCacheData = {
-
+  def createCacheData(
+    relRecords: Option[RelationshipRecords] = Some(relationshipRecords),
+    emailAddress: Option[String] = Some(email),
+    maEndReason: Option[String] = Some(endReason),
+    maEndDate: Option[LocalDate] = Some(marriageAllowanceEndingDate)
+  ): UpdateRelationshipCacheData =
     UpdateRelationshipCacheData(relRecords, emailAddress, maEndReason, maEndDate)
-  }
 
   "UpdateRelationshipData" should {
     "create an UpdateRelationship object given all cache data" in {
 
-      val cacheData = createCacheData()
+      val cacheData  = createCacheData()
       val updateData = UpdateRelationshipData(cacheData)
 
       updateData.relationshipRecords shouldBe relationshipRecords
-      updateData.email shouldBe email
-      updateData.endMaReason shouldBe endReason
-      updateData.marriageEndDate shouldBe marriageAllowanceEndingDate
+      updateData.email               shouldBe email
+      updateData.endMaReason         shouldBe endReason
+      updateData.marriageEndDate     shouldBe marriageAllowanceEndingDate
     }
 
     "return an error" when {

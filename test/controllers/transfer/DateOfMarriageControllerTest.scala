@@ -48,8 +48,6 @@ class DateOfMarriageControllerTest extends ControllerBaseTest {
   val notificationRecord: NotificationRecord = NotificationRecord(EmailAddress("test@test.com"))
   val applicationConfig: ApplicationConfig   = instanceOf[ApplicationConfig]
 
-
-
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
       bind[TransferService].toInstance(mockTransferService),
@@ -69,8 +67,8 @@ class DateOfMarriageControllerTest extends ControllerBaseTest {
 
   "dateOfMarriage" should {
     "return success when no data in the cache" in {
-      when(mockCachingService.get[DateOfMarriageFormInput](
-        ArgumentMatchers.eq(CACHE_MARRIAGE_DATE))(any())).thenReturn(Future.successful(None))
+      when(mockCachingService.get[DateOfMarriageFormInput](ArgumentMatchers.eq(CACHE_MARRIAGE_DATE))(any()))
+        .thenReturn(Future.successful(None))
 
       val result = controller.dateOfMarriage()(request)
       status(result) shouldBe OK
@@ -78,13 +76,13 @@ class DateOfMarriageControllerTest extends ControllerBaseTest {
 
     "return success when data in the cache" in {
       val savedFormInput = DateOfMarriageFormInput(LocalDate.of(2018, 6, 1))
-      when(mockCachingService.get[DateOfMarriageFormInput](
-        ArgumentMatchers.eq(CACHE_MARRIAGE_DATE))(any())).thenReturn(Future.successful(Some(savedFormInput)))
+      when(mockCachingService.get[DateOfMarriageFormInput](ArgumentMatchers.eq(CACHE_MARRIAGE_DATE))(any()))
+        .thenReturn(Future.successful(Some(savedFormInput)))
 
       val result = controller.dateOfMarriage()(request)
       status(result) shouldBe OK
     }
-}
+  }
 
   "dateOfMarriageAction" should {
     "return bad request" when {
@@ -119,8 +117,8 @@ class DateOfMarriageControllerTest extends ControllerBaseTest {
       }
 
       "the dateOfMarriage is within the current tax year" in {
-        val dateOfMarriageInput   = DateOfMarriageFormInput(LocalDate.now().minusDays(1))
-        val request               = FakeRequest()
+        val dateOfMarriageInput = DateOfMarriageFormInput(LocalDate.now().minusDays(1))
+        val request             = FakeRequest()
           .withMethod("POST")
           .withFormUrlEncodedBody(
             "dateOfMarriage.year"  -> dateOfMarriageInput.dateOfMarriage.getYear.toString,
@@ -140,7 +138,7 @@ class DateOfMarriageControllerTest extends ControllerBaseTest {
         status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(controllers.transfer.routes.PartnersDetailsController.transfer().url)
       }
-      
+
     }
   }
 
@@ -148,7 +146,7 @@ class DateOfMarriageControllerTest extends ControllerBaseTest {
     "redirect to the date of marriage page" in {
       val result = controller.redirectFromTransferAllowance()(FakeRequest(GET, "/transfer-allowance"))
 
-      status(result) shouldBe SEE_OTHER
+      status(result)           shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url)
     }
   }

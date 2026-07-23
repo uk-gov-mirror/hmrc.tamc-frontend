@@ -27,15 +27,15 @@ import org.scalatest.matchers.must.Matchers.mustEqual
 
 class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
 
-  lazy val currentYear: Int = LocalDate.now().getYear
-  lazy val futureDateTime: String = s"${currentTaxYear.finishYear}0504"
-  lazy val pastDateTime: String = s"${currentTaxYear.startYear}0604"
+  lazy val currentYear: Int              = LocalDate.now().getYear
+  lazy val futureDateTime: String        = s"${currentTaxYear.finishYear}0504"
+  lazy val pastDateTime: String          = s"${currentTaxYear.startYear}0604"
   lazy val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-  lazy val firstTaxYearOfMarriage: Int = 2012
+  lazy val firstTaxYearOfMarriage: Int   = 2012
 
-  lazy val applicationConfig: ApplicationConfig = instanceOf[ApplicationConfig]
+  lazy val applicationConfig: ApplicationConfig     = instanceOf[ApplicationConfig]
   lazy val currentTaxYear: uk.gov.hmrc.time.TaxYear = applicationConfig.currentTaxYear()
-  lazy val localDate: LocalDate = instanceOf[SystemLocalDate].now()
+  lazy val localDate: LocalDate                     = instanceOf[SystemLocalDate].now()
 
   lazy val relationshipActiveRecordWithNoEndDate: RelationshipRecord =
     RelationshipRecord(
@@ -45,7 +45,8 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
       Some(DesRelationshipEndReason.Default),
       None,
       "",
-      "")
+      ""
+    )
 
   lazy val relationshipActiveRecordWithFutureValidDate: RelationshipRecord =
     RelationshipRecord(
@@ -55,7 +56,8 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
       Some(DesRelationshipEndReason.Default),
       Some(futureDateTime),
       "",
-      "")
+      ""
+    )
 
   lazy val relationshipActiveRecordWithPastValidDate: RelationshipRecord =
     RelationshipRecord(
@@ -65,7 +67,8 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
       Some(DesRelationshipEndReason.Default),
       Some(pastDateTime),
       "",
-      "")
+      ""
+    )
 
   "isActive" should {
     "return true" when {
@@ -83,13 +86,15 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
     "return false" when {
 
       "relationship end date is a past date" in {
-        relationshipActiveRecordWithPastValidDate.copy(participant1EndDate =
-          Some(s"${currentTaxYear.startYear}0405")).isActive(localDate) shouldBe false
+        relationshipActiveRecordWithPastValidDate
+          .copy(participant1EndDate = Some(s"${currentTaxYear.startYear}0405"))
+          .isActive(localDate) shouldBe false
       }
 
       "relationship end date is today" in {
         val relationshipEndDate = dateFormat.format(LocalDateTime.now())
-        val relationshipRecord = relationshipActiveRecordWithNoEndDate.copy(participant1EndDate = Some(relationshipEndDate))
+        val relationshipRecord  =
+          relationshipActiveRecordWithNoEndDate.copy(participant1EndDate = Some(relationshipEndDate))
         relationshipRecord.isActive(localDate) shouldBe false
       }
 
@@ -101,20 +106,26 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
       "participant endDate is in PastYear" in {
         val relationshipRecord = relationshipActiveRecordWithPastValidDate
 
-        relationshipRecord.overlappingTaxYears(currentTaxYear.startYear) shouldBe (firstTaxYearOfMarriage to currentTaxYear.startYear).toSet
+        relationshipRecord.overlappingTaxYears(
+          currentTaxYear.startYear
+        ) shouldBe (firstTaxYearOfMarriage to currentTaxYear.startYear).toSet
       }
 
       "participant endDate is in FutureYear" in {
         val relationshipRecord = relationshipActiveRecordWithFutureValidDate
 
-        relationshipRecord.overlappingTaxYears(currentTaxYear.startYear) shouldBe (firstTaxYearOfMarriage to currentTaxYear.finishYear).toSet
+        relationshipRecord.overlappingTaxYears(
+          currentTaxYear.startYear
+        ) shouldBe (firstTaxYearOfMarriage to currentTaxYear.finishYear).toSet
       }
 
       "participant startDate and endDate is in same year" in {
-        val relationshipEndDate = "20200101"
+        val relationshipEndDate   = "20200101"
         val relationshipStartDate = "20200102"
-        val relationshipRecord = relationshipActiveRecordWithNoEndDate.copy(participant1EndDate = Some(relationshipEndDate),
-          participant1StartDate = relationshipStartDate)
+        val relationshipRecord    = relationshipActiveRecordWithNoEndDate.copy(
+          participant1EndDate = Some(relationshipEndDate),
+          participant1StartDate = relationshipStartDate
+        )
 
         relationshipRecord.overlappingTaxYears(currentTaxYear.startYear) shouldBe Set(2019)
       }
@@ -128,8 +139,10 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
       }
 
       "Return a set of years that ends with the start year of the previous tax year when a participant endReason is Divorce" in {
-        val relationshipRecord = relationshipActiveRecordWithNoEndDate.copy(relationshipEndReason = Some(DesRelationshipEndReason.Divorce),
-          participant1EndDate = Some(s"${currentTaxYear.startYear - 3}0406"))
+        val relationshipRecord = relationshipActiveRecordWithNoEndDate.copy(
+          relationshipEndReason = Some(DesRelationshipEndReason.Divorce),
+          participant1EndDate = Some(s"${currentTaxYear.startYear - 3}0406")
+        )
 
         val range: Seq[Int] = currentTaxYear.startYear - 9 to currentTaxYear.startYear - 4
 
@@ -184,7 +197,7 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
       )
 
       val relationshipRecords = RelationshipRecords(primaryRecord, Seq.empty, loggedInUserInfo)
-      val recipientInfo = relationshipRecords.recipientInformation
+      val recipientInfo       = relationshipRecords.recipientInformation
 
       recipientInfo mustEqual RecipientInformation("12345", "2023-10-06T12:00:00Z")
     }
@@ -201,7 +214,7 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
       )
 
       val relationshipRecords = RelationshipRecords(primaryRecord, Seq.empty, loggedInUserInfo)
-      val recipientInfo = relationshipRecords.recipientInformation
+      val recipientInfo       = relationshipRecords.recipientInformation
 
       recipientInfo mustEqual RecipientInformation("12345", "2023-10-06T12:00:00Z")
     }
@@ -218,7 +231,7 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
       )
 
       val relationshipRecords = RelationshipRecords(primaryRecord, Seq.empty, loggedInUserInfo)
-      val transferorInfo = relationshipRecords.transferorInformation
+      val transferorInfo      = relationshipRecords.transferorInformation
 
       transferorInfo mustEqual TransferorInformation("2023-10-06T12:00:00Z")
     }
@@ -235,13 +248,13 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
       )
 
       val relationshipRecords = RelationshipRecords(primaryRecord, Seq.empty, loggedInUserInfo)
-      val transferorInfo = relationshipRecords.transferorInformation
+      val transferorInfo      = relationshipRecords.transferorInformation
 
       transferorInfo mustEqual TransferorInformation("2023-10-06T12:00:00Z")
     }
 
     "construct RelationshipRecords via its companion object's apply method with a valid primary record" in {
-      val primaryRecord = RelationshipRecord(
+      val primaryRecord          = RelationshipRecord(
         participant = "Transferor",
         creationTimestamp = "2022-10-06T12:00:00Z",
         participant1StartDate = "2022-04-06",
@@ -250,7 +263,7 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
         otherParticipantInstanceIdentifier = "12345",
         otherParticipantUpdateTimestamp = "2023-10-06T12:00:00Z"
       )
-      val secondaryRecord = RelationshipRecord(
+      val secondaryRecord        = RelationshipRecord(
         participant = "Transferor",
         creationTimestamp = "2022-10-06T12:00:00Z",
         participant1StartDate = "2021-04-06",
@@ -271,7 +284,7 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
     }
 
     "throw NoPrimaryRecordError when no primary record is found during construction" in {
-      val secondaryRecord = RelationshipRecord(
+      val secondaryRecord        = RelationshipRecord(
         participant = "Transferor",
         creationTimestamp = "2022-10-06T12:00:00Z",
         participant1StartDate = "2021-04-06",
@@ -291,7 +304,7 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
     }
 
     "throw MultipleActiveRecordError when multiple active primary records are found during construction" in {
-      val primaryRecord1 = RelationshipRecord(
+      val primaryRecord1         = RelationshipRecord(
         participant = "Transferor",
         creationTimestamp = "2023-01-01",
         participant1StartDate = "2022-04-06",
@@ -300,7 +313,7 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
         otherParticipantInstanceIdentifier = "12345",
         otherParticipantUpdateTimestamp = "2023-01-01"
       )
-      val primaryRecord2 = RelationshipRecord(
+      val primaryRecord2         = RelationshipRecord(
         participant = "Transferor",
         creationTimestamp = "2023-01-02",
         participant1StartDate = "2022-04-07",
@@ -320,4 +333,3 @@ class RelationshipRecordTest extends BaseTest with GuiceOneAppPerSuite {
     }
   }
 }
-

@@ -29,15 +29,15 @@ import java.time.{Clock, LocalDate}
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class EligibleYearsController @Inject()(
-                                         errorHandler: TransferErrorHandler,
-                                         authenticate: StandardAuthJourney,
-                                         transferService: TransferService,
-                                         clock: Clock,
-                                         cc: MessagesControllerComponents,
-                                         eligibleYearsV: views.html.multiyear.transfer.eligible_years
-                                       )(implicit ec: ExecutionContext)
-  extends BaseController(cc)
+class EligibleYearsController @Inject() (
+  errorHandler: TransferErrorHandler,
+  authenticate: StandardAuthJourney,
+  transferService: TransferService,
+  clock: Clock,
+  cc: MessagesControllerComponents,
+  eligibleYearsV: views.html.multiyear.transfer.eligible_years
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
     with LoggerHelper
     with CurrentTaxYear {
 
@@ -45,11 +45,11 @@ class EligibleYearsController @Inject()(
 
   def eligibleYears: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
     transferService.deleteSelectionAndGetCurrentAndPreviousYearsEligibility map {
-      case CurrentAndPreviousYearsEligibility(false, Nil, _, _) =>
+      case CurrentAndPreviousYearsEligibility(false, Nil, _, _)                                     =>
         throw new NoTaxYearsAvailable
       case CurrentAndPreviousYearsEligibility(false, previousYears, _, _) if previousYears.nonEmpty =>
         Redirect(controllers.transfer.routes.ApplyByPostController.applyByPost())
-      case CurrentAndPreviousYearsEligibility(_, _, registrationInput, _) =>
+      case CurrentAndPreviousYearsEligibility(_, _, registrationInput, _)                           =>
         Ok(
           eligibleYearsV(
             registrationInput.name,

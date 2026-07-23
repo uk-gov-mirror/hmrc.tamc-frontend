@@ -37,10 +37,14 @@ import views.html.errors.try_later
 
 import scala.concurrent.Future
 
-class ClaimsControllerTest extends ControllerBaseTest with ControllerViewTestHelper with CreateRelationshipRecordsHelper with Injecting {
+class ClaimsControllerTest
+    extends ControllerBaseTest
+    with ControllerViewTestHelper
+    with CreateRelationshipRecordsHelper
+    with Injecting {
 
   val mockUpdateRelationshipService: UpdateRelationshipService = mock[UpdateRelationshipService]
-  val claimsViewModelImpl: ClaimsViewModelImpl = instanceOf[ClaimsViewModelImpl]
+  val claimsViewModelImpl: ClaimsViewModelImpl                 = instanceOf[ClaimsViewModelImpl]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
@@ -48,12 +52,13 @@ class ClaimsControllerTest extends ControllerBaseTest with ControllerViewTestHel
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: ClaimsController = app.injector.instanceOf[ClaimsController]
 
   val tryLaterView: try_later = inject[views.html.errors.try_later]
-  val claimsView: claims = inject[views.html.coc.claims]
+  val claimsView: claims      = inject[views.html.coc.claims]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -63,10 +68,12 @@ class ClaimsControllerTest extends ControllerBaseTest with ControllerViewTestHel
   "claims" should {
     "display the claims page" in {
       val relationshipRecords = createRelationshipRecords()
-      when(mockUpdateRelationshipService.getRelationshipRecords(any(), any())).thenReturn(Future.successful(relationshipRecords))
+      when(mockUpdateRelationshipService.getRelationshipRecords(any(), any()))
+        .thenReturn(Future.successful(relationshipRecords))
 
-      val claimsViewModel = claimsViewModelImpl(relationshipRecords.primaryRecord, relationshipRecords.nonPrimaryRecords)
-      val result = controller.claims(request)
+      val claimsViewModel =
+        claimsViewModelImpl(relationshipRecords.primaryRecord, relationshipRecords.nonPrimaryRecords)
+      val result          = controller.claims(request)
 
       status(result) shouldBe OK
       result `rendersTheSameViewAs` claimsView(claimsViewModel)
@@ -74,7 +81,8 @@ class ClaimsControllerTest extends ControllerBaseTest with ControllerViewTestHel
 
     "display an error page" when {
       "there is no cached data found" in {
-        when(mockUpdateRelationshipService.getRelationshipRecords(any(), any())).thenReturn(Future.failed(CacheMissingRelationshipRecords()))
+        when(mockUpdateRelationshipService.getRelationshipRecords(any(), any()))
+          .thenReturn(Future.failed(CacheMissingRelationshipRecords()))
 
         val result = controller.claims(request)
 

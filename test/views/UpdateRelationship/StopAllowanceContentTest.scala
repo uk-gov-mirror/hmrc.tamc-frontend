@@ -31,13 +31,16 @@ import java.util.Locale
 
 class StopAllowanceContentTest extends BaseTest with Injecting with NinoGenerator {
 
-  val stopAllowanceView: stopAllowance = inject[stopAllowance]
-  val cancelView: cancel = inject[cancel]
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  lazy val nino: String = generateNino().nino
+  val stopAllowanceView: stopAllowance              = inject[stopAllowance]
+  val cancelView: cancel                            = inject[cancel]
+  implicit val request: AuthenticatedUserRequest[?] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  lazy val nino: String                             = generateNino().nino
   override implicit lazy val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
-  val cancelDoc: Document = Jsoup.parse(cancelView(MarriageAllowanceEndingDates(TaxYear.current.finishes, TaxYear.current.next.starts)).toString())
-  val stopDoc: Document = Jsoup.parse(stopAllowanceView().toString)
+  val cancelDoc: Document                           = Jsoup.parse(
+    cancelView(MarriageAllowanceEndingDates(TaxYear.current.finishes, TaxYear.current.next.starts)).toString()
+  )
+  val stopDoc: Document                             = Jsoup.parse(stopAllowanceView().toString)
 
   "Display Stop allowance page for a RECIPIENT" should {
     "Display stop allowance page heading" in {
@@ -54,7 +57,7 @@ class StopAllowanceContentTest extends BaseTest with Injecting with NinoGenerato
     }
 
     "Display back to summary page link" in {
-      stopDoc.getElementById("backToSummary").text shouldBe "Back to your Marriage Allowance claim summary"
+      stopDoc.getElementById("backToSummary").text         shouldBe "Back to your Marriage Allowance claim summary"
       stopDoc.getElementById("backToSummary").attr("href") shouldBe "/marriage-allowance-application/history"
     }
   }

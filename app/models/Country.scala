@@ -21,9 +21,9 @@ sealed trait Country
 object Country {
 
   def fromString(s: String): Country = s match {
-    case "england" => England
-    case "wales" => Wales
-    case "scotland" => Scotland
+    case "england"         => England
+    case "wales"           => Wales
+    case "scotland"        => Scotland
     case "northernireland" => NorthernIreland
   }
 }

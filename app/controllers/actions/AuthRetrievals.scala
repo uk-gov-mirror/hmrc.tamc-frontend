@@ -28,11 +28,13 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthRetrievals @Inject()(
-                                            val authConnector: AuthConnector,
-                                            val parser: BodyParsers.Default
-                                          )(implicit val executionContext: ExecutionContext)
-  extends ActionRefiner[Request, AuthenticatedUserRequest] with ActionBuilder[AuthenticatedUserRequest, AnyContent] with AuthorisedFunctions {
+class AuthRetrievals @Inject() (
+  val authConnector: AuthConnector,
+  val parser: BodyParsers.Default
+)(implicit val executionContext: ExecutionContext)
+    extends ActionRefiner[Request, AuthenticatedUserRequest]
+    with ActionBuilder[AuthenticatedUserRequest, AnyContent]
+    with AuthorisedFunctions {
 
   override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedUserRequest[A]]] = {
 
@@ -44,10 +46,16 @@ class AuthRetrievals @Inject()(
         case credentials ~ Some(nino) ~ confidenceLevel ~ saUtr =>
           Future.successful(
             Right(
-              AuthenticatedUserRequest(request, Some(confidenceLevel), saUtr.isDefined, credentials.map(_.providerType), Nino(nino))
+              AuthenticatedUserRequest(
+                request,
+                Some(confidenceLevel),
+                saUtr.isDefined,
+                credentials.map(_.providerType),
+                Nino(nino)
+              )
             )
           )
-        case _ => throw new Exception("Nino not found")
+        case _                                                  => throw new Exception("Nino not found")
       }
-    }
+  }
 }

@@ -25,9 +25,12 @@ import play.api.i18n.Messages
 
 import javax.inject.Inject
 
-class DateOfMarriageForm@Inject()(registrationForm: RegistrationForm) {
+class DateOfMarriageForm @Inject() (registrationForm: RegistrationForm) {
 
-  def dateOfMarriageForm(today: LocalDate)(implicit messages: Messages): Form[DateOfMarriageFormInput] = Form[DateOfMarriageFormInput](
-    mapping(
-      "dateOfMarriage" -> registrationForm.dateOfMarriageValidator(today))(DateOfMarriageFormInput.apply)(DateOfMarriageFormInput.unapply))
+  def dateOfMarriageForm(today: LocalDate)(implicit messages: Messages): Form[DateOfMarriageFormInput] =
+    Form[DateOfMarriageFormInput](
+      mapping("dateOfMarriage" -> registrationForm.dateOfMarriageValidator(today))(DateOfMarriageFormInput.apply)(
+        DateOfMarriageFormInput.unapply
+      )
+    )
 }

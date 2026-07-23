@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 //TODO[DDCNL-3479] look into making this a util or deleting. It Is Not a Service!
 
-class TimeService@Inject()(applicationConfig: ApplicationConfig, taxYear: SystemTaxYear) {
+class TimeService @Inject() (applicationConfig: ApplicationConfig, taxYear: SystemTaxYear) {
 
   def isFutureDate(date: LocalDate): Boolean =
     date.isAfter(getCurrentDate)
@@ -52,17 +52,16 @@ class TimeService@Inject()(applicationConfig: ApplicationConfig, taxYear: System
   def getEarliestValidYear(): Int =
     getTaxYearForDate(getCurrentDate.minusYears(applicationConfig.TAMC_VALID_YEARS))
 
-  /**
-    * TODO Need to change and call this method right before send list of years
-    * TODO in cache itself and return only valid years from cache and use these years after
-    * @param years - cached years
-    * @return valid years to apply for MA
+  /** TODO Need to change and call this method right before send list of years TODO in cache itself and return only
+    * valid years from cache and use these years after
+    * @param years
+    *   \- cached years
+    * @return
+    *   valid years to apply for MA
     */
-  def getValidYearsApplyMAPreviousYears(years: Option[List[models.TaxYear]]): List[models.TaxYear] = {
-    years.fold(List[models.TaxYear]()) {
-      actualYears =>
-        actualYears.filter(year => year.year >= getEarliestValidYear())
+  def getValidYearsApplyMAPreviousYears(years: Option[List[models.TaxYear]]): List[models.TaxYear] =
+    years.fold(List[models.TaxYear]()) { actualYears =>
+      actualYears.filter(year => year.year >= getEarliestValidYear())
     }
-  }
 
 }

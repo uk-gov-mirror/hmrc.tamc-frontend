@@ -21,11 +21,11 @@ import play.api.data.Forms.{optional, single, text}
 
 object CheckClaimOrCancelDecisionForm {
 
-  val DecisionChoice = "decisionChoice"
+  val DecisionChoice              = "decisionChoice"
   val CheckMarriageAllowanceClaim = "checkMarriageAllowanceClaim"
-  val StopMarriageAllowance = "stopMarriageAllowance"
+  val StopMarriageAllowance       = "stopMarriageAllowance"
 
   def form(): Form[Option[String]] = Form[Option[String]](
-    single(DecisionChoice -> optional(text).verifying("pages.decision.error.mandatory.value", { _.isDefined }))
+    single(DecisionChoice -> optional(text).verifying("pages.decision.error.mandatory.value", _.isDefined))
   )
 }

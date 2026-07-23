@@ -31,11 +31,7 @@ case class CountryTaxBands(taxBands: List[TaxBand])
 object CountryTaxBands {
 
   implicit val countryBandFormats: Format[CountryTaxBands] = Format(
-    (json: JsValue) => {
-      JsSuccess(CountryTaxBands((json \ "taxBands").as[List[TaxBand]]))
-    },
-    (countryBands: CountryTaxBands) => {
-      Json.obj("taxBands" -> countryBands.taxBands)
-    }
+    (json: JsValue) => JsSuccess(CountryTaxBands((json \ "taxBands").as[List[TaxBand]])),
+    (countryBands: CountryTaxBands) => Json.obj("taxBands" -> countryBands.taxBands)
   )
 }

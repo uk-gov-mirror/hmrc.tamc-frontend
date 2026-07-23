@@ -22,35 +22,35 @@ import utils.UnitSpec
 
 class DesRelationshipEndReasonTest extends UnitSpec {
 
-  "RelationshipEndReasonHodsReads" should{
-    "read the HODS value for correct RelationshipEndReason" in{
+  "RelationshipEndReasonHodsReads" should {
+    "read the HODS value for correct RelationshipEndReason" in {
 
-      JsString("DEATH").as[DesRelationshipEndReason] shouldBe Death
-      JsString("DIVORCE").as[DesRelationshipEndReason] shouldBe DesRelationshipEndReason.Divorce
+      JsString("DEATH").as[DesRelationshipEndReason]               shouldBe Death
+      JsString("DIVORCE").as[DesRelationshipEndReason]             shouldBe DesRelationshipEndReason.Divorce
       JsString("INVALID_PARTICIPANT").as[DesRelationshipEndReason] shouldBe InvalidParticipant
-      JsString("CANCELLED").as[DesRelationshipEndReason] shouldBe Cancelled
-      JsString("REJECTED").as[DesRelationshipEndReason] shouldBe Rejected
-      JsString("HMRC").as[DesRelationshipEndReason] shouldBe Hmrc
-      JsString("CLOSED").as[DesRelationshipEndReason] shouldBe Closed
-      JsString("MERGER").as[DesRelationshipEndReason] shouldBe Merger
-      JsString("RETROSPECTIVE").as[DesRelationshipEndReason] shouldBe Retrospective
-      JsString("SYSTEM").as[DesRelationshipEndReason] shouldBe System
-      JsString("Active").as[DesRelationshipEndReason] shouldBe DesRelationshipEndReason.Active
-      JsString("DEFAULT").as[DesRelationshipEndReason] shouldBe Default
+      JsString("CANCELLED").as[DesRelationshipEndReason]           shouldBe Cancelled
+      JsString("REJECTED").as[DesRelationshipEndReason]            shouldBe Rejected
+      JsString("HMRC").as[DesRelationshipEndReason]                shouldBe Hmrc
+      JsString("CLOSED").as[DesRelationshipEndReason]              shouldBe Closed
+      JsString("MERGER").as[DesRelationshipEndReason]              shouldBe Merger
+      JsString("RETROSPECTIVE").as[DesRelationshipEndReason]       shouldBe Retrospective
+      JsString("SYSTEM").as[DesRelationshipEndReason]              shouldBe System
+      JsString("Active").as[DesRelationshipEndReason]              shouldBe DesRelationshipEndReason.Active
+      JsString("DEFAULT").as[DesRelationshipEndReason]             shouldBe Default
     }
-    "read Default if the reason is not recognised" in{
-      JsString("dafdasfa").as[DesRelationshipEndReason] shouldBe Default
+    "read Default if the reason is not recognised" in {
+      JsString("dafdasfa").as[DesRelationshipEndReason]          shouldBe Default
       JsString("Some other reason").as[DesRelationshipEndReason] shouldBe Default
-      JsString("Other").as[DesRelationshipEndReason] shouldBe Default
+      JsString("Other").as[DesRelationshipEndReason]             shouldBe Default
     }
-    "return JsResultException if the value is not string" in{
+    "return JsResultException if the value is not string" in {
       a[JsResultException] shouldBe thrownBy(JsNull.as[DesRelationshipEndReason])
       a[JsResultException] shouldBe thrownBy(JsNumber(21).as[DesRelationshipEndReason])
     }
   }
-  "writes" should{
-    "write the value to the Json correctly" in{
-      Json.toJson[DesRelationshipEndReason](Death) shouldBe JsString(Death.value)
+  "writes"                         should {
+    "write the value to the Json correctly" in {
+      Json.toJson[DesRelationshipEndReason](Death)              shouldBe JsString(Death.value)
       Json.toJson[DesRelationshipEndReason](InvalidParticipant) shouldBe JsString(InvalidParticipant.value)
     }
   }

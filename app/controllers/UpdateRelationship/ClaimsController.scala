@@ -21,25 +21,27 @@ import controllers.BaseController
 import controllers.auth.StandardAuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.UpdateRelationshipService
-import utils.{UpdateRelationshipErrorHandler, LoggerHelper}
+import utils.{LoggerHelper, UpdateRelationshipErrorHandler}
 import viewModels.ClaimsViewModelImpl
 
 import scala.concurrent.ExecutionContext
 
-class ClaimsController @Inject()(authenticate: StandardAuthJourney,
-                                 updateRelationshipService: UpdateRelationshipService,
-                                 cc: MessagesControllerComponents,
-                                 claimsV: views.html.coc.claims,
-                                 claimsViewModelImpl: ClaimsViewModelImpl,
-                                 errorHandler: UpdateRelationshipErrorHandler)
-                                (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class ClaimsController @Inject() (
+  authenticate: StandardAuthJourney,
+  updateRelationshipService: UpdateRelationshipService,
+  cc: MessagesControllerComponents,
+  claimsV: views.html.coc.claims,
+  claimsViewModelImpl: ClaimsViewModelImpl,
+  errorHandler: UpdateRelationshipErrorHandler
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
-  def claims: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
-    implicit request =>
-      (updateRelationshipService.getRelationshipRecords map { relationshipRecords =>
-        val viewModel = claimsViewModelImpl(relationshipRecords.primaryRecord, relationshipRecords.nonPrimaryRecords)
-        Ok(claimsV(viewModel))
-      }) recover errorHandler.handleError
+  def claims: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
+    (updateRelationshipService.getRelationshipRecords map { relationshipRecords =>
+      val viewModel = claimsViewModelImpl(relationshipRecords.primaryRecord, relationshipRecords.nonPrimaryRecords)
+      Ok(claimsV(viewModel))
+    }) recover errorHandler.handleError
   }
 
 }

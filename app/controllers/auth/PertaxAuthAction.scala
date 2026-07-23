@@ -35,25 +35,25 @@ import java.net.URLEncoder
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PertaxAuthActionImpl @Inject()(
-                                      pertaxAuthConnector: PertaxAuthConnector,
-                                      technicalIssue: try_later,
-                                      main: Main,
-                                      appConfig: ApplicationConfig
-                                    )(
-                                      implicit val executionContext: ExecutionContext,
-                                      controllerComponents: ControllerComponents
-                                    ) extends ActionFilter[Request]
-  with Results
-  with PertaxAuthAction
-  with I18nSupport
-  with Logging {
+class PertaxAuthActionImpl @Inject() (
+  pertaxAuthConnector: PertaxAuthConnector,
+  technicalIssue: try_later,
+  main: Main,
+  appConfig: ApplicationConfig
+)(implicit
+  val executionContext: ExecutionContext,
+  controllerComponents: ControllerComponents
+) extends ActionFilter[Request]
+    with Results
+    with PertaxAuthAction
+    with I18nSupport
+    with Logging {
 
   override def messagesApi: MessagesApi = controllerComponents.messagesApi
 
   override def filter[A](request: Request[A]): Future[Option[Result]] = {
     implicit val implicitRequest: Request[A] = request
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    implicit val hc: HeaderCarrier           = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     pertaxAuthConnector.pertaxPostAuthorise.value.flatMap {
       case Left(UpstreamErrorResponse(_, status, _, _)) if status == UNAUTHORIZED =>
@@ -81,7 +81,7 @@ class PertaxAuthActionImpl @Inject()(
         pertaxAuthConnector.loadPartial(errorView.url).map {
           case partial: HtmlPartial.Success =>
             Some(Status(errorView.statusCode)(main(partial.title.getOrElse(""))(partial.content)))
-          case _: HtmlPartial.Failure =>
+          case _: HtmlPartial.Failure       =>
             logger.error(s"The partial ${errorView.url} failed to be retrieved")
             Some(InternalServerError(technicalIssue()))
         }

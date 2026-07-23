@@ -24,10 +24,14 @@ import uk.gov.hmrc.play.partials.{FormPartialRetrieverImpl, HeaderCarrierForPart
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class MockFormPartialRetriever @Inject()(httpGet: HttpClientV2, headerCarrierForPartialsConverter: HeaderCarrierForPartialsConverter)
-  extends FormPartialRetrieverImpl(httpGet, headerCarrierForPartialsConverter) {
+class MockFormPartialRetriever @Inject() (
+  httpGet: HttpClientV2,
+  headerCarrierForPartialsConverter: HeaderCarrierForPartialsConverter
+) extends FormPartialRetrieverImpl(httpGet, headerCarrierForPartialsConverter) {
 
-  override def getPartialContent(url: String, templateParameters: Map[String, String], errorMessage: Html)
-                                (implicit ec: ExecutionContext, request: RequestHeader): Html = (Html("reportAProblem"))
+  override def getPartialContent(url: String, templateParameters: Map[String, String], errorMessage: Html)(implicit
+    ec: ExecutionContext,
+    request: RequestHeader
+  ): Html = Html("reportAProblem")
 
 }

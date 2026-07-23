@@ -33,24 +33,27 @@ import utils.{ControllerBaseTest, MockPermUnauthenticatedAction, MockUnauthentic
 class EligibilityCalculatorControllerTest extends ControllerBaseTest {
 
   val mockEligibilityCalculatorService: EligibilityCalculatorService = mock[EligibilityCalculatorService]
-  val applicationConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  val applicationConfig: ApplicationConfig                           = app.injector.instanceOf[ApplicationConfig]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .configure(
       "metrics.jvm" -> false
-    ).overrides(
-    bind[EligibilityCalculatorService].toInstance(mockEligibilityCalculatorService),
-    bind[UnauthenticatedActionTransformer].to[MockUnauthenticatedAction],
-  ).build()
-
+    )
+    .overrides(
+      bind[EligibilityCalculatorService].toInstance(mockEligibilityCalculatorService),
+      bind[UnauthenticatedActionTransformer].to[MockUnauthenticatedAction]
+    )
+    .build()
 
   def permAuthInjector: Injector = GuiceApplicationBuilder()
     .configure(
       "metrics.jvm" -> false
-    ).overrides(
-    bind[EligibilityCalculatorService].toInstance(mockEligibilityCalculatorService),
-    bind[UnauthenticatedActionTransformer].to[MockPermUnauthenticatedAction],
-  ).injector()
+    )
+    .overrides(
+      bind[EligibilityCalculatorService].toInstance(mockEligibilityCalculatorService),
+      bind[UnauthenticatedActionTransformer].to[MockPermUnauthenticatedAction]
+    )
+    .injector()
 
   val authController: EligibilityCalculatorController = permAuthInjector.instanceOf[EligibilityCalculatorController]
 
@@ -66,28 +69,32 @@ class EligibilityCalculatorControllerTest extends ControllerBaseTest {
   "gdsCalculatorAction" should {
     "return a bad request" when {
       "an invalid form is submitted" in {
-        val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(
-          "transferor-income" -> "not some income",
-          "recipient-income" -> "not some income")
-        val result = controller.gdsCalculatorAction()(request)
+        val request = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody("transferor-income" -> "not some income", "recipient-income" -> "not some income")
+        val result  = controller.gdsCalculatorAction()(request)
         status(result) shouldBe BAD_REQUEST
       }
     }
 
     "return a success" when {
       "a valid form is submitted" in {
-        val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(
-          "country" -> "england",
-          "transferor-income" -> "£350",
-          "recipient-income" -> "£1000"
-        )
+        val request = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "country"           -> "england",
+            "transferor-income" -> "£350",
+            "recipient-income"  -> "£1000"
+          )
 
-        when(mockEligibilityCalculatorService.calculate(
-          ArgumentMatchers.eq(BigDecimal(350)),
-          ArgumentMatchers.eq(BigDecimal(1000)),
-          ArgumentMatchers.eq(England),
-          any()
-        )).thenReturn(EligibilityCalculatorResult("test_key"))
+        when(
+          mockEligibilityCalculatorService.calculate(
+            ArgumentMatchers.eq(BigDecimal(350)),
+            ArgumentMatchers.eq(BigDecimal(1000)),
+            ArgumentMatchers.eq(England),
+            any()
+          )
+        ).thenReturn(EligibilityCalculatorResult("test_key"))
 
         val result = controller.gdsCalculatorAction()(request)
         status(result) shouldBe OK
@@ -105,27 +112,31 @@ class EligibilityCalculatorControllerTest extends ControllerBaseTest {
   "ptaCalculatorAction" should {
     "return a bad request" when {
       "an invalid form is submitted" in {
-        val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(
-          "transferor-income" -> "not some income",
-          "recipient-income" -> "not some income")
-        val result = controller.ptaCalculatorAction()(request)
+        val request = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody("transferor-income" -> "not some income", "recipient-income" -> "not some income")
+        val result  = controller.ptaCalculatorAction()(request)
         status(result) shouldBe BAD_REQUEST
       }
     }
 
     "return a success" when {
       "a valid form is submitted" in {
-        val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(
-          "country" -> "england",
-          "transferor-income" -> "    £20    ",
-          "recipient-income" -> "    £100    "
-        )
-        when(mockEligibilityCalculatorService.calculate(
-          ArgumentMatchers.eq(BigDecimal(20)),
-          ArgumentMatchers.eq(BigDecimal(100)),
-          ArgumentMatchers.eq(England),
-          any()
-        )).thenReturn(EligibilityCalculatorResult("test_key"))
+        val request = FakeRequest()
+          .withMethod("POST")
+          .withFormUrlEncodedBody(
+            "country"           -> "england",
+            "transferor-income" -> "    £20    ",
+            "recipient-income"  -> "    £100    "
+          )
+        when(
+          mockEligibilityCalculatorService.calculate(
+            ArgumentMatchers.eq(BigDecimal(20)),
+            ArgumentMatchers.eq(BigDecimal(100)),
+            ArgumentMatchers.eq(England),
+            any()
+          )
+        ).thenReturn(EligibilityCalculatorResult("test_key"))
 
         val result = controller.ptaCalculatorAction()(request)
         status(result) shouldBe OK

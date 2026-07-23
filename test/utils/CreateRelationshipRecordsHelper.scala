@@ -20,11 +20,13 @@ import models.{CitizenName, LoggedInUserInfo, RelationshipRecord, RelationshipRe
 
 trait CreateRelationshipRecordsHelper {
 
-  def createRelationshipRecords(roleType: String = "Transferor",
-                                 nonPrimaryRecords: Seq[RelationshipRecord] = Seq.empty[RelationshipRecord]): RelationshipRecords = {
+  def createRelationshipRecords(
+    roleType: String = "Transferor",
+    nonPrimaryRecords: Seq[RelationshipRecord] = Seq.empty[RelationshipRecord]
+  ): RelationshipRecords = {
 
-    val citizenName = CitizenName(Some("Test"), Some("User"))
-    val loggedInUserInfo = LoggedInUserInfo(
+    val citizenName               = CitizenName(Some("Test"), Some("User"))
+    val loggedInUserInfo          = LoggedInUserInfo(
       cid = 123456789,
       timestamp = "20181212",
       has_allowance = None,

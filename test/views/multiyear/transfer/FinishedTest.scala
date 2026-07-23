@@ -42,12 +42,11 @@ import scala.concurrent.Future
 import scala.concurrent.duration.*
 import scala.language.postfixOps
 
-
 class FinishedTest extends BaseTest with NinoGenerator {
 
-  lazy val nino: String = generateNino().nino
+  lazy val nino: String                    = generateNino().nino
   val mockTransferService: TransferService = mock[TransferService]
-  implicit val duration: Timeout = 20 seconds
+  implicit val duration: Timeout           = 20 seconds
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
@@ -71,15 +70,15 @@ class FinishedTest extends BaseTest with NinoGenerator {
     "successfully authenticate the user and have finished page and content" in {
 
       val result = finishedController.finished()(FakeRequest())
-      
+
       status(result) shouldBe OK
       val document = Jsoup.parse(contentAsString(result))
 
-      document.title() shouldBe "Application confirmed - Marriage Allowance application - GOV.UK"
+      document.title()                          shouldBe "Application confirmed - Marriage Allowance application - GOV.UK"
       document.getElementById("govuk-box").text shouldBe "Marriage Allowance application complete"
       document
         .getElementById("paragraph-1")
-        .text shouldBe "A confirmation email will be sent to " +
+        .text                                   shouldBe "A confirmation email will be sent to " +
         "example@example.com from noreply@tax.service.gov.uk within 24 hours."
     }
   }

@@ -16,7 +16,7 @@
 
 package events
 
-import models.{UserAnswersCacheData, UpdateRelationshipRequestHolder}
+import models.{UpdateRelationshipRequestHolder, UserAnswersCacheData}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import uk.gov.hmrc.play.audit.model.DataEvent
@@ -27,7 +27,7 @@ object CreateRelationshipSuccessEvent {
       AuditType.Tx_SUCCESSFUL,
       Map(
         "event" -> "create-relationship-pta",
-        "data" -> cacheData.toString
+        "data"  -> cacheData.toString
       )
     )
 }
@@ -38,7 +38,7 @@ object UpdateRelationshipSuccessEvent {
       AuditType.Tx_SUCCESSFUL,
       Map(
         "event" -> "update-relationship",
-        "data" -> updateData.toString
+        "data"  -> updateData.toString
       )
     )
 }
@@ -48,9 +48,9 @@ object CreateRelationshipFailureEvent {
     new BusinessEvent(
       AuditType.Tx_FAILED,
       Map(
-        "event" -> ("create-relationship-pta"),
+        "event" -> "create-relationship-pta",
         "error" -> error.toString,
-        "data" -> cacheData.toString
+        "data"  -> cacheData.toString
       )
     )
 }
@@ -61,7 +61,7 @@ object RelationshipAlreadyCreatedEvent {
       AuditType.Tx_FAILED,
       Map(
         "event" -> "relationship-exists",
-        "data" -> cacheData.toString
+        "data"  -> cacheData.toString
       )
     )
 }
@@ -73,7 +73,7 @@ object UpdateRelationshipFailureEvent {
       Map(
         "event" -> "update-relationship",
         "error" -> error.toString,
-        "data" -> cacheData.toString
+        "data"  -> cacheData.toString
       )
     )
 }
@@ -89,7 +89,6 @@ object CreateRelationshipCacheFailureEvent {
     )
 }
 
-
 object RecipientFailureEvent {
   def apply(nino: Nino, error: Throwable)(implicit hc: HeaderCarrier): BusinessEvent =
     new BusinessEvent(
@@ -97,20 +96,20 @@ object RecipientFailureEvent {
       Map(
         "event" -> "recipient-error",
         "error" -> error.toString,
-        "data" -> nino.value
+        "data"  -> nino.value
       )
     )
 }
 
 private object AuditType {
-  val Tx_FAILED = "TxFailed"
-  val Tx_SUCCESSFUL = "TxSuccessful" //TxSuccessful should be TxSucceeded but any changes would impact previous reports
+  val Tx_FAILED     = "TxFailed"
+  val Tx_SUCCESSFUL = "TxSuccessful" // TxSuccessful should be TxSucceeded but any changes would impact previous reports
 }
 
 class BusinessEvent(auditType: String, detail: Map[String, String])(implicit hc: HeaderCarrier)
-  extends DataEvent(
-    auditSource = "tamc-frontend",
-    auditType = auditType,
-    detail = detail,
-    tags = (hc.headers(HeaderNames.explicitlyIncludedHeaders) ++ hc.extraHeaders ++ hc.otherHeaders).toMap
-  )
+    extends DataEvent(
+      auditSource = "tamc-frontend",
+      auditType = auditType,
+      detail = detail,
+      tags = (hc.headers(HeaderNames.explicitlyIncludedHeaders) ++ hc.extraHeaders ++ hc.otherHeaders).toMap
+    )

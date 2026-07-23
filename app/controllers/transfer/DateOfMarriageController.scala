@@ -32,15 +32,15 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DateOfMarriageController @Inject() (
-                                            errorHandler: TransferErrorHandler,
-                                            authenticate: StandardAuthJourney,
-                                            cachingService: CachingService,
-                                            timeService: TimeService,
-                                            cc: MessagesControllerComponents,
-                                            dateOfMarriageV: views.html.date_of_marriage,
-                                            dateOfMarriageForm: DateOfMarriageForm
-                                          )(implicit ec: ExecutionContext)
-  extends BaseController(cc)
+  errorHandler: TransferErrorHandler,
+  authenticate: StandardAuthJourney,
+  cachingService: CachingService,
+  timeService: TimeService,
+  cc: MessagesControllerComponents,
+  dateOfMarriageV: views.html.date_of_marriage,
+  dateOfMarriageForm: DateOfMarriageForm
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
     with LoggerHelper
     with CurrentTaxYear {
 
@@ -50,12 +50,12 @@ class DateOfMarriageController @Inject() (
     val form: Form[DateOfMarriageFormInput] = dateOfMarriageForm.dateOfMarriageForm(today = timeService.getCurrentDate)
     cachingService.get(CACHE_MARRIAGE_DATE).map {
       case Some(savedData) =>
-        val date = savedData.dateOfMarriage
+        val date       = savedData.dateOfMarriage
         val filledForm = form.bind(
           Map(
-            "dateOfMarriage.day" -> date.getDayOfMonth.toString,
+            "dateOfMarriage.day"   -> date.getDayOfMonth.toString,
             "dateOfMarriage.month" -> date.getMonthValue.toString,
-            "dateOfMarriage.year" -> date.getYear.toString,
+            "dateOfMarriage.year"  -> date.getYear.toString
           )
         )
         Ok(dateOfMarriageV(filledForm))
@@ -80,7 +80,7 @@ class DateOfMarriageController @Inject() (
           }
         ) recover errorHandler.handleError
   }
-  
+
   def redirectFromTransferAllowance: Action[AnyContent] = Action {
     Redirect(routes.DateOfMarriageController.dateOfMarriage())
   }

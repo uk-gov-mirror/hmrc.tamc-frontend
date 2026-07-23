@@ -24,38 +24,40 @@ import models.*
 
 import javax.inject.Inject
 
-class BenefitCalculatorHelper@Inject()(applicationConfig: ApplicationConfig) {
+class BenefitCalculatorHelper @Inject() (applicationConfig: ApplicationConfig) {
 
   def calculateTotalBenefitAcrossBands(income: BigDecimal, countryTaxBands: List[TaxBand]): Int = {
-    val rates = countryTaxBands.map(band => band.name -> band.rate).toMap
-    val basicRate = countryTaxBands.find(band => band.name == "BasicRate").head.rate
+    val rates      = countryTaxBands.map(band => band.name -> band.rate).toMap
+    val basicRate  = countryTaxBands.find(band => band.name == "BasicRate").head.rate
     val maxBenefit = applicationConfig.MAX_ALLOWED_PERSONAL_ALLOWANCE_TRANSFER() * basicRate
 
-    val benefitsFromBandedIncome = dividedIncome(countryTaxBands, income).map(
-      i => i._2 * rates(i._1)).filterNot(_ < 0).sum.toInt
+    val benefitsFromBandedIncome =
+      dividedIncome(countryTaxBands, income).map(i => i._2 * rates(i._1)).filterNot(_ < 0).sum.toInt
 
     Math.min(benefitsFromBandedIncome, maxBenefit.toInt)
   }
-  
-  private def dividedIncome(relevantTaxBands: List[TaxBand], incomeLessPersonalAllowance: BigDecimal): Map[String, BigDecimal] = {
-    relevantTaxBands.map {
-      band =>
-        if (relevantTaxBands.size == 1 || band.name == relevantTaxBands.head.name) {
-          band.name -> incomeLessPersonalAllowance.min(band.diffBetweenLowerAndUpperThreshold)
-        } else
-          band.name -> {
-            val valueOfPreviousBands = relevantTaxBands.takeWhile(
-              relevantBand => relevantTaxBands.indexOf(relevantBand) < relevantTaxBands.indexOf(band)).map(
-              _.diffBetweenLowerAndUpperThreshold).sum
-            (incomeLessPersonalAllowance - valueOfPreviousBands).min(band.diffBetweenLowerAndUpperThreshold)
-          }
+
+  private def dividedIncome(
+    relevantTaxBands: List[TaxBand],
+    incomeLessPersonalAllowance: BigDecimal
+  ): Map[String, BigDecimal] =
+    relevantTaxBands.map { band =>
+      if (relevantTaxBands.size == 1 || band.name == relevantTaxBands.head.name) {
+        band.name -> incomeLessPersonalAllowance.min(band.diffBetweenLowerAndUpperThreshold)
+      } else
+        band.name -> {
+          val valueOfPreviousBands = relevantTaxBands
+            .takeWhile(relevantBand => relevantTaxBands.indexOf(relevantBand) < relevantTaxBands.indexOf(band))
+            .map(_.diffBetweenLowerAndUpperThreshold)
+            .sum
+          (incomeLessPersonalAllowance - valueOfPreviousBands).min(band.diffBetweenLowerAndUpperThreshold)
+        }
     }.toMap
-  }
 
   def maxLimit(country: Country): Int = country match {
-    case England => applicationConfig.MAX_LIMIT()
-    case Scotland => applicationConfig.MAX_LIMIT_SCOT()
-    case Wales => applicationConfig.MAX_LIMIT_WALES()
+    case England         => applicationConfig.MAX_LIMIT()
+    case Scotland        => applicationConfig.MAX_LIMIT_SCOT()
+    case Wales           => applicationConfig.MAX_LIMIT_WALES()
     case NorthernIreland => applicationConfig.MAX_LIMIT_NORTHERN_IRELAND()
   }
 

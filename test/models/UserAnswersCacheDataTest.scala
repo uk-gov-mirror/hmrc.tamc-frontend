@@ -29,11 +29,13 @@ class UserAnswersCacheDataTest extends BaseTest {
     "serialize to JSON correctly" in {
       val userAnswers = UserAnswersCacheData(
         transferor = Some(UserRecord(12345L, "2023-10-12T10:15:30")),
-        recipient = Some(RecipientRecord(
-          record = UserRecord(54321L, "2023-10-11T09:30:00"),
-          data = RegistrationFormInput("John", "Doe", Gender("M"), Nino("AA123456A"), LocalDate.of(2020, 10, 12)),
-          availableTaxYears = List(TaxYear(2023), TaxYear(2024))
-        )),
+        recipient = Some(
+          RecipientRecord(
+            record = UserRecord(54321L, "2023-10-11T09:30:00"),
+            data = RegistrationFormInput("John", "Doe", Gender("M"), Nino("AA123456A"), LocalDate.of(2020, 10, 12)),
+            availableTaxYears = List(TaxYear(2023), TaxYear(2024))
+          )
+        ),
         notification = Some(NotificationRecord(EmailAddress("john.doe@example.com"))),
         relationshipCreated = Some(true),
         selectedYears = Some(List(2023, 2024)),
@@ -145,11 +147,13 @@ class UserAnswersCacheDataTest extends BaseTest {
 
       val expectedUserAnswers = UserAnswersCacheData(
         transferor = Some(UserRecord(12345L, "2023-10-12T10:15:30")),
-        recipient = Some(RecipientRecord(
-          record = UserRecord(54321L, "2023-10-11T09:30:00"),
-          data = RegistrationFormInput("John", "Doe", Gender("M"), Nino("AA123456A"), LocalDate.of(2020, 10, 12)),
-          availableTaxYears = List(TaxYear(2023), TaxYear(2024))
-        )),
+        recipient = Some(
+          RecipientRecord(
+            record = UserRecord(54321L, "2023-10-11T09:30:00"),
+            data = RegistrationFormInput("John", "Doe", Gender("M"), Nino("AA123456A"), LocalDate.of(2020, 10, 12)),
+            availableTaxYears = List(TaxYear(2023), TaxYear(2024))
+          )
+        ),
         notification = Some(NotificationRecord(EmailAddress("john.doe@example.com"))),
         relationshipCreated = Some(true),
         selectedYears = Some(List(2023, 2024)),
@@ -204,11 +208,13 @@ class UserAnswersCacheDataTest extends BaseTest {
     "serialize and deserialize mixed-composition UserAnswersCacheData" in {
       val userAnswers = UserAnswersCacheData(
         transferor = None,
-        recipient = Some(RecipientRecord(
-          record = UserRecord(54321L, "2023-10-11T09:30:00"),
-          data = RegistrationFormInput("John", "Doe", Gender("M"), Nino("AA123456A"), LocalDate.of(2000, 3, 25)),
-          availableTaxYears = List()
-        )),
+        recipient = Some(
+          RecipientRecord(
+            record = UserRecord(54321L, "2023-10-11T09:30:00"),
+            data = RegistrationFormInput("John", "Doe", Gender("M"), Nino("AA123456A"), LocalDate.of(2000, 3, 25)),
+            availableTaxYears = List()
+          )
+        ),
         notification = None,
         relationshipCreated = Some(false),
         selectedYears = Some(List(2022)),
@@ -252,11 +258,39 @@ class UserAnswersCacheDataTest extends BaseTest {
     val eligibilityCheckData = EligibilityCheckCacheData(
       loggedInUserInfo = Some(LoggedInUserInfo(12345, "user@example.com")),
       roleRecord = Some("Recipient"),
-      activeRelationshipRecord = Some(RelationshipRecord("Recipient", "creationTimestamp", "20220101", None, None, "otherPaticipant", "otherParticipantupdateTimestamp")),
-      historicRelationships = Some(Seq(
-        RelationshipRecord("Recipient", "creationTimestamp", "20220101", None, None, "otherPaticipant", "otherParticipantupdateTimestamp"),
-        RelationshipRecord("Recipient", "creationTimestamp", "20220101", None, None, "otherPaticipant", "otherParticipantupdateTimestamp")
-      )),
+      activeRelationshipRecord = Some(
+        RelationshipRecord(
+          "Recipient",
+          "creationTimestamp",
+          "20220101",
+          None,
+          None,
+          "otherPaticipant",
+          "otherParticipantupdateTimestamp"
+        )
+      ),
+      historicRelationships = Some(
+        Seq(
+          RelationshipRecord(
+            "Recipient",
+            "creationTimestamp",
+            "20220101",
+            None,
+            None,
+            "otherPaticipant",
+            "otherParticipantupdateTimestamp"
+          ),
+          RelationshipRecord(
+            "Recipient",
+            "creationTimestamp",
+            "20220101",
+            None,
+            None,
+            "otherPaticipant",
+            "otherParticipantupdateTimestamp"
+          )
+        )
+      ),
       notification = Some(NotificationRecord(EmailAddress("notify@example.com"))),
       relationshipEndReasonRecord = Some(EndRelationshipReason("DIV")),
       relationshipUpdated = Some(true)
@@ -264,8 +298,7 @@ class UserAnswersCacheDataTest extends BaseTest {
 
     "serialize to JSON correctly" in {
 
-
-      val json = Json.toJson(eligibilityCheckData)
+      val json         = Json.toJson(eligibilityCheckData)
       val expectedJson = Json.parse(
         """{
           |  "relationshipEndReasonRecord": {
@@ -387,7 +420,7 @@ class UserAnswersCacheDataTest extends BaseTest {
         relationshipUpdated = None
       )
 
-      val json = Json.toJson(eligibilityCheckData)
+      val json         = Json.toJson(eligibilityCheckData)
       val expectedJson = Json.parse("{}")
 
       json mustEqual expectedJson

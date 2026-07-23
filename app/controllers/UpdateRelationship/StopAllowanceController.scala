@@ -21,29 +21,30 @@ import controllers.BaseController
 import controllers.auth.StandardAuthJourney
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.UpdateRelationshipService
-import utils.{UpdateRelationshipErrorHandler, LoggerHelper}
+import utils.{LoggerHelper, UpdateRelationshipErrorHandler}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class StopAllowanceController @Inject()(authenticate: StandardAuthJourney,
-                                        updateRelationshipService: UpdateRelationshipService,
-                                        cc: MessagesControllerComponents,
-                                        stopAllowanceV: views.html.coc.stopAllowance,
-                                        cancelV: views.html.coc.cancel,
-                                        errorHandler: UpdateRelationshipErrorHandler)
-                                       (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class StopAllowanceController @Inject() (
+  authenticate: StandardAuthJourney,
+  updateRelationshipService: UpdateRelationshipService,
+  cc: MessagesControllerComponents,
+  stopAllowanceV: views.html.coc.stopAllowance,
+  cancelV: views.html.coc.cancel,
+  errorHandler: UpdateRelationshipErrorHandler
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
-  def stopAllowance: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
-    implicit request =>
-      Future.successful(Ok(stopAllowanceV()))
+  def stopAllowance: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
+    Future.successful(Ok(stopAllowanceV()))
   }
 
-  def cancel: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
-    implicit request =>
-      val cancelDates = updateRelationshipService.getMAEndingDatesForCancellation
-      updateRelationshipService.saveMarriageAllowanceEndingDates(cancelDates) map { _ =>
-        Ok(cancelV(cancelDates))
-      } recover errorHandler.handleError
+  def cancel: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
+    val cancelDates = updateRelationshipService.getMAEndingDatesForCancellation
+    updateRelationshipService.saveMarriageAllowanceEndingDates(cancelDates) map { _ =>
+      Ok(cancelV(cancelDates))
+    } recover errorHandler.handleError
   }
 
 }

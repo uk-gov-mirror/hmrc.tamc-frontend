@@ -57,15 +57,17 @@ class PertaxAuthenticationHttpParserSpec extends BaseTest {
             }
           """
       )
-      val httpResponse = mock[HttpResponse]
+      val httpResponse         = mock[HttpResponse]
       when(httpResponse.json).thenReturn(invalidJson)
 
       val result = PertaxAuthenticationHttpReads.read("GET", "/some-url", httpResponse)
 
-      result mustBe Left(UpstreamErrorResponse(
-        "[PertaxAuthenticationHttpParser][read] There was an issue parsing the response from Pertax Auth.",
-        INTERNAL_SERVER_ERROR
-      ))
+      result mustBe Left(
+        UpstreamErrorResponse(
+          "[PertaxAuthenticationHttpParser][read] There was an issue parsing the response from Pertax Auth.",
+          INTERNAL_SERVER_ERROR
+        )
+      )
     }
   }
 }

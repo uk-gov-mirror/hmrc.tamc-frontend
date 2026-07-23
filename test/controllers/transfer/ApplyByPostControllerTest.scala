@@ -37,7 +37,7 @@ import scala.concurrent.Future
 class ApplyByPostControllerTest extends ControllerBaseTest with ControllerViewTestHelper with Injecting {
 
   val mockTransferService: TransferService = mock[TransferService]
-  val mockCachingService: CachingService = mock[CachingService]
+  val mockCachingService: CachingService   = mock[CachingService]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
@@ -45,7 +45,8 @@ class ApplyByPostControllerTest extends ControllerBaseTest with ControllerViewTe
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: ApplyByPostController = app.injector.instanceOf[ApplyByPostController]
 

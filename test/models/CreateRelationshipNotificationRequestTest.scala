@@ -69,7 +69,7 @@ class CreateRelationshipNotificationRequestTest extends BaseTest {
         welsh = true
       )
 
-      val json = Json.toJson(request)
+      val json         = Json.toJson(request)
       val deserialized = json.as[CreateRelationshipNotificationRequest]
 
       deserialized mustBe request

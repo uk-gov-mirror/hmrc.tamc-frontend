@@ -43,13 +43,13 @@ import scala.concurrent.Future
 import scala.concurrent.duration.*
 import scala.language.postfixOps
 
-
 class ConfirmTest extends BaseTest with NinoGenerator {
 
-  lazy val nino: String = generateNino().nino
-  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  val mockTransferService: TransferService = mock[TransferService]
-  val confirmController: ConfirmController = app.injector.instanceOf[ConfirmController]
+  lazy val nino: String                                                  = generateNino().nino
+  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  val mockTransferService: TransferService                               = mock[TransferService]
+  val confirmController: ConfirmController                               = app.injector.instanceOf[ConfirmController]
 
   implicit val duration: Timeout = 20 seconds
 
@@ -58,7 +58,7 @@ class ConfirmTest extends BaseTest with NinoGenerator {
       bind[TransferService].toInstance(mockTransferService),
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[UnauthenticatedActionTransformer].to[MockUnauthenticatedAction],
-      bind[PertaxAuthAction].to[FakePertaxAuthAction],
+      bind[PertaxAuthAction].to[FakePertaxAuthAction]
     )
     .build()
 
@@ -79,13 +79,13 @@ class ConfirmTest extends BaseTest with NinoGenerator {
       val result = confirmController.confirm(request)
 
       status(result) shouldBe OK
-      val document = Jsoup.parse(contentAsString(result))
+      val document      = Jsoup.parse(contentAsString(result))
       val applicantName = document.getElementById("transferor-name")
       val recipientName = document.getElementById("recipient-name")
-      val marriageDate = document.getElementById("marriage-date")
+      val marriageDate  = document.getElementById("marriage-date")
       applicantName.ownText() shouldBe "Jim Ferguson"
       recipientName.ownText() shouldBe "foo bar"
-      marriageDate.ownText() shouldBe "1 January 2015"
+      marriageDate.ownText()  shouldBe "1 January 2015"
     }
   }
 }

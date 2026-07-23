@@ -19,23 +19,30 @@ package models
 import errors.{CacheMissingEmail, CacheMissingEndReason, CacheMissingMAEndingDates, CacheMissingRelationshipRecords}
 import java.time.LocalDate
 
-case class UpdateRelationshipCacheData(relationshipRecords: Option[RelationshipRecords], email: Option[String], endMaReason: Option[String], marriageEndDate: Option[LocalDate])
+case class UpdateRelationshipCacheData(
+  relationshipRecords: Option[RelationshipRecords],
+  email: Option[String],
+  endMaReason: Option[String],
+  marriageEndDate: Option[LocalDate]
+)
 
-case class UpdateRelationshipData(relationshipRecords: RelationshipRecords, email: String, endMaReason: String, marriageEndDate: LocalDate)
+case class UpdateRelationshipData(
+  relationshipRecords: RelationshipRecords,
+  email: String,
+  endMaReason: String,
+  marriageEndDate: LocalDate
+)
 
 object UpdateRelationshipData {
 
-  def apply(updateRelationshipCacheData: UpdateRelationshipCacheData): UpdateRelationshipData = {
-
+  def apply(updateRelationshipCacheData: UpdateRelationshipCacheData): UpdateRelationshipData =
     updateRelationshipCacheData match {
 
-      case UpdateRelationshipCacheData(Some(relationshipRecords), Some(email), Some(endReason), Some(endDates)) => {
+      case UpdateRelationshipCacheData(Some(relationshipRecords), Some(email), Some(endReason), Some(endDates)) =>
         UpdateRelationshipData(relationshipRecords, email, endReason, endDates)
-      }
-      case UpdateRelationshipCacheData(None, _, _, _) => throw CacheMissingRelationshipRecords()
-      case UpdateRelationshipCacheData(_, None, _, _) => throw CacheMissingEmail()
-      case UpdateRelationshipCacheData(_, _, None, _) => throw CacheMissingEndReason()
-      case UpdateRelationshipCacheData(_, _, _, None) => throw CacheMissingMAEndingDates()
+      case UpdateRelationshipCacheData(None, _, _, _)                                                           => throw CacheMissingRelationshipRecords()
+      case UpdateRelationshipCacheData(_, None, _, _)                                                           => throw CacheMissingEmail()
+      case UpdateRelationshipCacheData(_, _, None, _)                                                           => throw CacheMissingEndReason()
+      case UpdateRelationshipCacheData(_, _, _, None)                                                           => throw CacheMissingMAEndingDates()
     }
-  }
 }

@@ -29,27 +29,27 @@ import java.time.LocalDate
 
 class SingleYearSelectTest extends BaseTest with NinoGenerator {
 
-  lazy val nino = generateNino().nino
-  lazy val singleYearSelect = instanceOf[single_year_select]
-  lazy val earlyYearForm = EarlierYearForm.earlierYearsForm()
-  lazy val registrationForm = RegistrationFormInput("firstName", "lastName", Gender("M"), Nino(nino), LocalDate.now)
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, true, None, Nino(nino))
+  lazy val nino                                     = generateNino().nino
+  lazy val singleYearSelect                         = instanceOf[single_year_select]
+  lazy val earlyYearForm                            = EarlierYearForm.earlierYearsForm()
+  lazy val registrationForm                         = RegistrationFormInput("firstName", "lastName", Gender("M"), Nino(nino), LocalDate.now)
+  implicit val request: AuthenticatedUserRequest[?] =
+    AuthenticatedUserRequest(FakeRequest(), None, true, None, Nino(nino))
 
   "SingleYearSelect" should {
     "return the correct title" in {
 
       val document = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
-      val title = document.title()
+      val title    = document.title()
       val expected = messages("title.confirm-extra-years") + " - " + messages("title.application.pattern")
 
       title shouldBe expected
     }
 
-
     "return TaxYear content" in {
 
       val document = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
-      val h2Tag = document.getElementsByTag("h2").toString
+      val h2Tag    = document.getElementsByTag("h2").toString
       val expected = messages("pages.multiyear.taxyear")
 
       h2Tag should include(expected)
@@ -58,9 +58,9 @@ class SingleYearSelectTest extends BaseTest with NinoGenerator {
 
     "return you and (partner) can claim content" in {
 
-      val document = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
+      val document     = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
       val paragraphTag = document.getElementsByTag("p").toString
-      val expected = messages("pages.multiyear.canclaim")
+      val expected     = messages("pages.multiyear.canclaim")
 
       paragraphTag should include(expected)
 
@@ -68,9 +68,9 @@ class SingleYearSelectTest extends BaseTest with NinoGenerator {
 
     "return your income was £x or less content" in {
 
-      val document = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
+      val document     = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
       val paragraphTag = document.getElementsByTag("ul").toString
-      val expected = messages("your-income")
+      val expected     = messages("your-income")
 
       paragraphTag should include(expected)
 
@@ -78,9 +78,9 @@ class SingleYearSelectTest extends BaseTest with NinoGenerator {
 
     "return x income was between content" in {
 
-      val document = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
+      val document     = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
       val paragraphTag = document.getElementsByTag("ul").toString
-      val expected = messages("income-between")
+      val expected     = messages("income-between")
 
       paragraphTag should include(expected)
 
@@ -88,9 +88,9 @@ class SingleYearSelectTest extends BaseTest with NinoGenerator {
 
     "return if your application is successful content" in {
 
-      val document = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
+      val document     = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
       val paragraphTag = document.getElementsByTag("p").toString
-      val expected = messages("pages.multiyear.successful")
+      val expected     = messages("pages.multiyear.successful")
 
       paragraphTag should include(expected)
 
@@ -98,9 +98,9 @@ class SingleYearSelectTest extends BaseTest with NinoGenerator {
 
     "return do you want to apply for extra tax year content" in {
 
-      val document = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
+      val document     = Jsoup.parse(singleYearSelect(earlyYearForm, registrationForm, List(TaxYear(2022))).toString())
       val paragraphTag = document.getElementsByTag("div").toString
-      val expected = messages("pages.multiyear.extrayears.from.to")
+      val expected     = messages("pages.multiyear.extrayears.from.to")
 
       paragraphTag should include(expected)
 

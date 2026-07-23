@@ -27,19 +27,36 @@ import views.html.coc.claims
 
 class ClaimsTest extends BaseTest with NinoGenerator {
 
-  lazy val claims = instanceOf[claims]
-  lazy val nino: String = generateNino().nino
-  lazy val claimViewModel = instanceOf[ClaimsViewModelImpl]
-  lazy val relationshipRecord = RelationshipRecord("Recipient", "creationTimestamp", "20220101", None, None, "otherPaticipant", "otherParticipantupdateTimestamp")
-  lazy val relationshipRecord1 = RelationshipRecord("Recipient", "creationTimestamp", "20220101", None, None, "otherPaticipant", "otherParticipantupdateTimestamp")
+  lazy val claims              = instanceOf[claims]
+  lazy val nino: String        = generateNino().nino
+  lazy val claimViewModel      = instanceOf[ClaimsViewModelImpl]
+  lazy val relationshipRecord  = RelationshipRecord(
+    "Recipient",
+    "creationTimestamp",
+    "20220101",
+    None,
+    None,
+    "otherPaticipant",
+    "otherParticipantupdateTimestamp"
+  )
+  lazy val relationshipRecord1 = RelationshipRecord(
+    "Recipient",
+    "creationTimestamp",
+    "20220101",
+    None,
+    None,
+    "otherPaticipant",
+    "otherParticipantupdateTimestamp"
+  )
 
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, true, None, Nino(nino))
+  implicit val request: AuthenticatedUserRequest[?] =
+    AuthenticatedUserRequest(FakeRequest(), None, true, None, Nino(nino))
 
   "claims" should {
     "return the correct title" in {
 
       val document = Jsoup.parse(claims(claimViewModel(relationshipRecord, Seq(relationshipRecord1))).toString)
-      val title = document.title()
+      val title    = document.title()
       val expected = messages("pages.claims.title") + " - " + messages("title.pattern")
 
       title shouldBe expected
@@ -48,7 +65,7 @@ class ClaimsTest extends BaseTest with NinoGenerator {
     "return Your Marriage Allowance claims h1" in {
 
       val document = Jsoup.parse(claims(claimViewModel(relationshipRecord, Seq(relationshipRecord1))).toString)
-      val h1Tag = document.getElementsByTag("h1").toString
+      val h1Tag    = document.getElementsByTag("h1").toString
       val expected = messages("pages.claims.title")
 
       h1Tag should include(expected)

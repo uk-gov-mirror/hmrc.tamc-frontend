@@ -39,9 +39,8 @@ trait JSoupMatchers {
 
   class ElementWithAttributeValueMatcher(expectedContent: String, attribute: String) extends Matcher[Element] {
     def apply(left: Element): MatchResult = {
-      val attribVal = left.attr(attribute)
+      val attribVal  = left.attr(attribute)
       val attributes = left.attributes().asScala.toList.mkString("\t", "\n\t", "")
-
 
       MatchResult(
         attribVal == expectedContent,
@@ -52,12 +51,12 @@ trait JSoupMatchers {
 
   }
 
-
   class CssSelectorWithTextMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
       val elements: List[String] =
         left
-          .select(selector).asScala
+          .select(selector)
+          .asScala
           .toList
           .map(_.text)
 
@@ -73,7 +72,7 @@ trait JSoupMatchers {
 
   class IdSelectorWithUrlAndTextMatcher(id: String, url: String, text: String) extends Matcher[Document] {
     def apply(left: Document): MatchResult = {
-      val element = left.getElementById(id)
+      val element           = left.getElementById(id)
       val hrefFound: String = element.attr("href")
       val textFound: String = element.text
 

@@ -21,12 +21,15 @@ import utils.EmailAddress
 import utils.emailAddressFormatters.PlayJsonFormats.emailAddressReads
 import utils.emailAddressFormatters.PlayJsonFormats.emailAddressWrites
 
-
-case class UpdateRelationshipNotificationRequest(full_name: String, email: EmailAddress, role: String, welsh: Boolean = false, isRetrospective: Boolean = false)
+case class UpdateRelationshipNotificationRequest(
+  full_name: String,
+  email: EmailAddress,
+  role: String,
+  welsh: Boolean = false,
+  isRetrospective: Boolean = false
+)
 
 object UpdateRelationshipNotificationRequest {
-  implicit val formats: OFormat[UpdateRelationshipNotificationRequest] = Json.format[UpdateRelationshipNotificationRequest]
+  implicit val formats: OFormat[UpdateRelationshipNotificationRequest] =
+    Json.format[UpdateRelationshipNotificationRequest]
 }
-
-
-

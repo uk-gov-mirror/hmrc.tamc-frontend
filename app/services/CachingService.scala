@@ -47,20 +47,29 @@ object CacheService {
   val CACHE_CHECK_CLAIM_OR_CANCEL: CacheReadWriteKey[String]                     = CacheKey[String]("CHECK_CLAIM_OR_CANCEL")
   val CACHE_TRANSFEROR_RECORD: CacheReadWriteKey[UserRecord]                     = CacheKey[UserRecord]("TRANSFEROR_RECORD")
   val CACHE_RECIPIENT_RECORD: CacheReadWriteKey[RecipientRecord]                 = CacheKey[RecipientRecord]("RECIPIENT_RECORD")
-  val CACHE_RECIPIENT_DETAILS: CacheReadWriteKey[RecipientDetailsFormInput]      = CacheKey[RecipientDetailsFormInput]("RECIPIENT_DETAILS")
-  val CACHE_NOTIFICATION_RECORD: CacheReadWriteKey[NotificationRecord]           = CacheKey[NotificationRecord]("NOTIFICATION_RECORD")
+  val CACHE_RECIPIENT_DETAILS: CacheReadWriteKey[RecipientDetailsFormInput]      =
+    CacheKey[RecipientDetailsFormInput]("RECIPIENT_DETAILS")
+  val CACHE_NOTIFICATION_RECORD: CacheReadWriteKey[NotificationRecord]           =
+    CacheKey[NotificationRecord]("NOTIFICATION_RECORD")
   val CACHE_LOCKED_CREATE: CacheReadWriteKey[Boolean]                            = CacheKey[Boolean]("LOCKED_CREATE")
   val CACHE_SELECTED_YEARS: CacheReadWriteKey[List[Int]]                         = CacheKey[List[Int]]("SELECTED_YEARS")
-  val CACHE_MARRIAGE_DATE: CacheReadWriteKey[DateOfMarriageFormInput]            = CacheKey[DateOfMarriageFormInput]("MARRIAGE_DATE")
+  val CACHE_MARRIAGE_DATE: CacheReadWriteKey[DateOfMarriageFormInput]            =
+    CacheKey[DateOfMarriageFormInput]("MARRIAGE_DATE")
   val CACHE_EMAIL_ADDRESS: CacheReadWriteKey[EmailAddress]                       = CacheKey[EmailAddress]("EMAIL_ADDRESS")
-  val CACHE_MA_ENDING_DATES: CacheReadWriteKey[MarriageAllowanceEndingDates]     = CacheKey[MarriageAllowanceEndingDates]("MA_ENDING_DATES")
-  val CACHE_RELATIONSHIP_RECORDS: CacheReadWriteKey[RelationshipRecords]         = CacheKey[RelationshipRecords]("RELATIONSHIP_RECORDS")
-  val CACHE_LOGGEDIN_USER_RECORD: CacheReadWriteKey[LoggedInUserInfo]            = CacheKey[LoggedInUserInfo]("LOGGEDIN_USER_RECORD")             // TODO is this key required?
-  val CACHE_ACTIVE_RELATION_RECORD: CacheReadWriteKey[RelationshipRecord]        = CacheKey[RelationshipRecord]("ACTIVE_RELATION_RECORD")         // TODO is this key required?
-  val CACHE_HISTORIC_RELATION_RECORD: CacheReadWriteKey[Seq[RelationshipRecord]] = CacheKey[Seq[RelationshipRecord]]("HISTORIC_RELATION_RECORD")  // TODO is this key required?
-  val CACHE_RELATION_END_REASON_RECORD: CacheReadWriteKey[EndRelationshipReason] = CacheKey[EndRelationshipReason]("RELATION_END_REASON_RECORD")  // TODO is this key required?
-  val CACHE_LOCKED_UPDATE: CacheReadWriteKey[Boolean]                            = CacheKey[Boolean]("LOCKED_UPDATE")                             // TODO is this key required?
-  val CACHE_ROLE_RECORD: CacheReadWriteKey[String]                               = CacheKey[String]("ROLE")                                       // TODO is this key required?
+  val CACHE_MA_ENDING_DATES: CacheReadWriteKey[MarriageAllowanceEndingDates]     =
+    CacheKey[MarriageAllowanceEndingDates]("MA_ENDING_DATES")
+  val CACHE_RELATIONSHIP_RECORDS: CacheReadWriteKey[RelationshipRecords]         =
+    CacheKey[RelationshipRecords]("RELATIONSHIP_RECORDS")
+  val CACHE_LOGGEDIN_USER_RECORD: CacheReadWriteKey[LoggedInUserInfo]            =
+    CacheKey[LoggedInUserInfo]("LOGGEDIN_USER_RECORD") // TODO is this key required?
+  val CACHE_ACTIVE_RELATION_RECORD: CacheReadWriteKey[RelationshipRecord]        =
+    CacheKey[RelationshipRecord]("ACTIVE_RELATION_RECORD") // TODO is this key required?
+  val CACHE_HISTORIC_RELATION_RECORD: CacheReadWriteKey[Seq[RelationshipRecord]] =
+    CacheKey[Seq[RelationshipRecord]]("HISTORIC_RELATION_RECORD") // TODO is this key required?
+  val CACHE_RELATION_END_REASON_RECORD: CacheReadWriteKey[EndRelationshipReason] =
+    CacheKey[EndRelationshipReason]("RELATION_END_REASON_RECORD") // TODO is this key required?
+  val CACHE_LOCKED_UPDATE: CacheReadWriteKey[Boolean]                            = CacheKey[Boolean]("LOCKED_UPDATE") // TODO is this key required?
+  val CACHE_ROLE_RECORD: CacheReadWriteKey[String]                               = CacheKey[String]("ROLE") // TODO is this key required?
   val CACHE_CHOOSE_YEARS: CacheReadWriteKey[String]                              = CacheKey[String]("CHOOSE_YEARS")
 
   val USER_ANSWERS_CACHE: CacheReadKey[UserAnswersCacheData] = CacheKey[UserAnswersCacheData]((cacheItem: CacheItem) =>

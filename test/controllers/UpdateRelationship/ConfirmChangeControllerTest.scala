@@ -41,7 +41,7 @@ import scala.concurrent.Future
 class ConfirmChangeControllerTest extends ControllerBaseTest with ControllerViewTestHelper with Injecting {
 
   val mockUpdateRelationshipService: UpdateRelationshipService = mock[UpdateRelationshipService]
-  val confirmUpdateViewModelImpl: ConfirmUpdateViewModelImpl = instanceOf[ConfirmUpdateViewModelImpl]
+  val confirmUpdateViewModelImpl: ConfirmUpdateViewModelImpl   = instanceOf[ConfirmUpdateViewModelImpl]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
@@ -49,11 +49,12 @@ class ConfirmChangeControllerTest extends ControllerBaseTest with ControllerView
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: ConfirmChangeController = app.injector.instanceOf[ConfirmChangeController]
 
-  val tryLaterView: try_later = inject[views.html.errors.try_later]
+  val tryLaterView: try_later          = inject[views.html.errors.try_later]
   val confirmUpdateView: confirmUpdate = inject[views.html.coc.confirmUpdate]
 
   override def beforeEach(): Unit = {
@@ -64,10 +65,10 @@ class ConfirmChangeControllerTest extends ControllerBaseTest with ControllerView
   "confirmUpdate" should {
     "display the confirmUpdate page" in {
 
-      val loggedInUser = LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some("first"), Some("surname"))))
-      val divorceDate = LocalDate.now().minusDays(1)
-      val emailAddress = "email@email.com"
-      val maEndingDate = LocalDate.now().plusDays(1)
+      val loggedInUser    = LoggedInUserInfo(1, "20200304", None, Some(CitizenName(Some("first"), Some("surname"))))
+      val divorceDate     = LocalDate.now().minusDays(1)
+      val emailAddress    = "email@email.com"
+      val maEndingDate    = LocalDate.now().plusDays(1)
       val paEffectiveDate = LocalDate.now().plusDays(2)
 
       val maEndingDates = MarriageAllowanceEndingDates(maEndingDate, paEffectiveDate)
@@ -104,8 +105,10 @@ class ConfirmChangeControllerTest extends ControllerBaseTest with ControllerView
 
       val result = controller.submitConfirmUpdate(request)
 
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.FinishedChangeController.finishUpdate().url)
+      status(result)           shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(
+        controllers.UpdateRelationship.routes.FinishedChangeController.finishUpdate().url
+      )
     }
 
     "display an error page" when {

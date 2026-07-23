@@ -29,7 +29,8 @@ import views.html.errors.transferor_not_found
 class NoTransferorFoundTest extends BaseTest {
 
   implicit val request: UserRequest[?]                  = UserRequest(FakeRequest(), None, true, None, false)
-  override implicit lazy val messages: Messages         = instanceOf[MessagesApi].asScala.preferred(FakeRequest(): Request[AnyContent])
+  override implicit lazy val messages: Messages         =
+    instanceOf[MessagesApi].asScala.preferred(FakeRequest(): Request[AnyContent])
   lazy val transferorNotFoundView: transferor_not_found = instanceOf[transferor_not_found]
 
   implicit val doc: Document = Jsoup.parse(transferorNotFoundView()(messages, request).toString())

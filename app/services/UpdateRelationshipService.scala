@@ -39,7 +39,7 @@ import java.time.format.DateTimeFormatter
 import java.time.{Clock, LocalDate}
 import scala.concurrent.{ExecutionContext, Future}
 
-class UpdateRelationshipService @Inject()(
+class UpdateRelationshipService @Inject() (
   marriageAllowanceConnector: MarriageAllowanceConnector,
   endDateDivorceCalculator: EndDateDivorceCalculator,
   auditConnector: AuditConnector,
@@ -47,15 +47,18 @@ class UpdateRelationshipService @Inject()(
   languageUtilsImpl: LanguageUtilsImpl,
   clock: Clock
 ) extends Logging
-  with CurrentTaxYear {
+    with CurrentTaxYear {
 
   override def now: () => LocalDate = () => LocalDate.now(clock)
-  
-  def retrieveRelationshipRecords(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[RelationshipRecords] =
+
+  def retrieveRelationshipRecords(
+    nino: Nino
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[RelationshipRecords] =
     marriageAllowanceConnector.listRelationship(nino) map (RelationshipRecords(_, now()))
 
-
-  def saveRelationshipRecords(relationshipRecords: RelationshipRecords)(implicit request: Request[?], ec: ExecutionContext): Future[RelationshipRecords] = {
+  def saveRelationshipRecords(
+    relationshipRecords: RelationshipRecords
+  )(implicit request: Request[?], ec: ExecutionContext): Future[RelationshipRecords] = {
 
     def unlockCreateRelationship()(implicit request: Request[?]): Future[Boolean] = {
       logger.info("unlockCreateRelationship has been called.")
@@ -63,11 +66,11 @@ class UpdateRelationshipService @Inject()(
     }
 
     def checkCreateActionLock(trrecord: UserRecord)(implicit ec: ExecutionContext): Future[UserRecord] =
-      unlockCreateRelationship().map { _ => trrecord }
+      unlockCreateRelationship().map(_ => trrecord)
 
-    val transferorRec = UserRecord(Some(relationshipRecords.loggedInUserInfo))
-    val checkCreateActionLockFuture = checkCreateActionLock(transferorRec)
-    val saveTransferorRecordFuture = cachingService.put[UserRecord](CACHE_TRANSFEROR_RECORD, transferorRec)
+    val transferorRec                 = UserRecord(Some(relationshipRecords.loggedInUserInfo))
+    val checkCreateActionLockFuture   = checkCreateActionLock(transferorRec)
+    val saveTransferorRecordFuture    = cachingService.put[UserRecord](CACHE_TRANSFEROR_RECORD, transferorRec)
     val cacheRelationshipRecordFuture = cachingService.put(CACHE_RELATIONSHIP_RECORDS, relationshipRecords)
 
     for {
@@ -77,89 +80,101 @@ class UpdateRelationshipService @Inject()(
     } yield relationshipRecords
   }
 
-  def getCheckClaimOrCancelDecision(implicit request: Request[?]): Future[Option[String]] = {
+  def getCheckClaimOrCancelDecision(implicit request: Request[?]): Future[Option[String]] =
     cachingService.get[String](CACHE_CHECK_CLAIM_OR_CANCEL)
-  }
 
-  def getMakeChangesDecision(implicit request: Request[?]): Future[Option[String]] = {
+  def getMakeChangesDecision(implicit request: Request[?]): Future[Option[String]] =
     cachingService.get[String](CACHE_MAKE_CHANGES_DECISION)
-  }
 
-  def saveMakeChangeDecision(makeChangeDecision: String)(implicit request: Request[?]): Future[String] = {
+  def saveMakeChangeDecision(makeChangeDecision: String)(implicit request: Request[?]): Future[String] =
     cachingService.put(CACHE_MAKE_CHANGES_DECISION, makeChangeDecision)
-  }
 
-  def getDivorceDate(implicit request: Request[?]): Future[Option[LocalDate]] = {
+  def getDivorceDate(implicit request: Request[?]): Future[Option[LocalDate]] =
     cachingService.get[LocalDate](CACHE_DIVORCE_DATE)
-  }
 
-  def getEmailAddress(implicit request: Request[?]): Future[Option[EmailAddress]] = {
+  def getEmailAddress(implicit request: Request[?]): Future[Option[EmailAddress]] =
     cachingService.get[EmailAddress](CACHE_EMAIL_ADDRESS)
-  }
 
-  def getEmailAddressForConfirmation(implicit request: Request[?], ec: ExecutionContext): Future[EmailAddress] = {
+  def getEmailAddressForConfirmation(implicit request: Request[?], ec: ExecutionContext): Future[EmailAddress] =
     cachingService.get[EmailAddress](CACHE_EMAIL_ADDRESS).map(_.getOrElse(throw CacheMissingEmail()))
-  }
 
-  def saveEmailAddress(emailAddress: EmailAddress)(implicit request: Request[?]): Future[EmailAddress] = {
+  def saveEmailAddress(emailAddress: EmailAddress)(implicit request: Request[?]): Future[EmailAddress] =
     cachingService.put[EmailAddress](CACHE_EMAIL_ADDRESS, emailAddress)
-  }
 
   def getDataForDivorceExplanation(implicit request: Request[?], ec: ExecutionContext): Future[(Role, LocalDate)] = {
 
     val relationshipRecordsFuture = getRelationshipRecords
-    val divorceDateFuture = getDivorceDate
+    val divorceDateFuture         = getDivorceDate
 
     for {
       relationshipRecords <- relationshipRecordsFuture
-      divorceDate <- divorceDateFuture
-    } yield {
-      divorceDate.fold(throw CacheMissingDivorceDate()) {
-        (relationshipRecords.primaryRecord.role, _)
-      }
+      divorceDate         <- divorceDateFuture
+    } yield divorceDate.fold(throw CacheMissingDivorceDate()) {
+      (relationshipRecords.primaryRecord.role, _)
     }
   }
 
   def saveDivorceDate(dateOfDivorce: LocalDate)(implicit request: Request[?]): Future[LocalDate] =
     cachingService.put[LocalDate](CACHE_DIVORCE_DATE, dateOfDivorce)
 
-
   def saveCheckClaimOrCancelDecision(checkClaimOrCancelDecision: String)(implicit request: Request[?]): Future[String] =
     cachingService.put[String](CACHE_CHECK_CLAIM_OR_CANCEL, checkClaimOrCancelDecision)
 
-  def updateRelationship(nino: Nino)(implicit request: Request[?], hc: HeaderCarrier, messages: Messages, ec: ExecutionContext): Future[UpdateRelationshipRequestHolder] = {
+  def updateRelationship(nino: Nino)(implicit
+    request: Request[?],
+    hc: HeaderCarrier,
+    messages: Messages,
+    ec: ExecutionContext
+  ): Future[UpdateRelationshipRequestHolder] = {
 
-    def updateRelationshipRequestHolder(updateRelationshipData: UpdateRelationshipData): UpdateRelationshipRequestHolder = {
+    def updateRelationshipRequestHolder(
+      updateRelationshipData: UpdateRelationshipData
+    ): UpdateRelationshipRequestHolder = {
 
-      val relationshipRecords = updateRelationshipData.relationshipRecords
-      val primaryRecord = relationshipRecords.primaryRecord
-      val relationshipInfo = relationshipInformation(primaryRecord.creationTimestamp, updateRelationshipData.endMaReason,
-        updateRelationshipData.marriageEndDate)
-      val recipient = relationshipRecords.recipientInformation
-      val transferor = relationshipRecords.transferorInformation
+      val relationshipRecords       = updateRelationshipData.relationshipRecords
+      val primaryRecord             = relationshipRecords.primaryRecord
+      val relationshipInfo          = relationshipInformation(
+        primaryRecord.creationTimestamp,
+        updateRelationshipData.endMaReason,
+        updateRelationshipData.marriageEndDate
+      )
+      val recipient                 = relationshipRecords.recipientInformation
+      val transferor                = relationshipRecords.transferorInformation
       val updateRelationshipRequest = UpdateRelationshipRequest(recipient, transferor, relationshipInfo)
-      val emailNotificationData = updateRelationshipNotificationRequest(updateRelationshipData.email, primaryRecord.role,
-        relationshipRecords.loggedInUserInfo, languageUtilsImpl.isWelsh(messages))
+      val emailNotificationData     = updateRelationshipNotificationRequest(
+        updateRelationshipData.email,
+        primaryRecord.role,
+        relationshipRecords.loggedInUserInfo,
+        languageUtilsImpl.isWelsh(messages)
+      )
 
       UpdateRelationshipRequestHolder(updateRelationshipRequest, emailNotificationData)
     }
 
-    def relationshipInformation(creationTimeStamp: String, relationshipEndReason: String, endDate: LocalDate): RelationshipInformation = {
+    def relationshipInformation(
+      creationTimeStamp: String,
+      relationshipEndReason: String,
+      endDate: LocalDate
+    ): RelationshipInformation = {
 
       val endDateFormatted = endDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-      val desEnumeration = relationshipEndReason match {
+      val desEnumeration   = relationshipEndReason match {
         case "Divorce" => "Divorce/Separation"
-        case "Cancel" => "Cancelled by Transferor"
-        case _ => throw DesEnumerationNotFound()
+        case "Cancel"  => "Cancelled by Transferor"
+        case _         => throw DesEnumerationNotFound()
       }
 
       RelationshipInformation(creationTimeStamp, desEnumeration, endDateFormatted)
     }
 
-    def updateRelationshipNotificationRequest(email: String, primaryRole: Role, loggedInUserInfo: LoggedInUserInfo, isWelsh: Boolean):
-    UpdateRelationshipNotificationRequest = {
-      val role = primaryRole.value
-      val name = loggedInUserInfo.name.flatMap(_.fullName).getOrElse("Unknown")
+    def updateRelationshipNotificationRequest(
+      email: String,
+      primaryRole: Role,
+      loggedInUserInfo: LoggedInUserInfo,
+      isWelsh: Boolean
+    ): UpdateRelationshipNotificationRequest = {
+      val role         = primaryRole.value
+      val name         = loggedInUserInfo.name.flatMap(_.fullName).getOrElse("Unknown")
       val emailAddress = EmailAddress(email)
 
       UpdateRelationshipNotificationRequest(name, emailAddress, role, isWelsh)
@@ -167,21 +182,32 @@ class UpdateRelationshipService @Inject()(
 
     for {
       updateRelationshipCacheData <- getUpdateRelationshipCachedData
-      updateRelationshipData = UpdateRelationshipData(updateRelationshipCacheData)
-      updateRelationshipRequest = updateRelationshipRequestHolder(updateRelationshipData)
-      postUpdateData <- sendUpdateRelationship(nino, updateRelationshipRequest)
-      _ <- auditUpdateRelationship(postUpdateData)
+      updateRelationshipData       = UpdateRelationshipData(updateRelationshipCacheData)
+      updateRelationshipRequest    = updateRelationshipRequestHolder(updateRelationshipData)
+      postUpdateData              <- sendUpdateRelationship(nino, updateRelationshipRequest)
+      _                           <- auditUpdateRelationship(postUpdateData)
     } yield postUpdateData
   }
 
-  def getUpdateRelationshipCachedData(implicit request: Request[?], ec: ExecutionContext): Future[UpdateRelationshipCacheData] =
-    cachingService.get[UpdateRelationshipCacheData](USER_ANSWERS_UPDATE_RELATIONSHIP).map(_.getOrElse(throw CacheMapNoFound()))
+  def getUpdateRelationshipCachedData(implicit
+    request: Request[?],
+    ec: ExecutionContext
+  ): Future[UpdateRelationshipCacheData] =
+    cachingService
+      .get[UpdateRelationshipCacheData](USER_ANSWERS_UPDATE_RELATIONSHIP)
+      .map(_.getOrElse(throw CacheMapNoFound()))
 
-  def getConfirmationUpdateAnswers(implicit request: Request[?], ec: ExecutionContext): Future[ConfirmationUpdateAnswers] =
-    cachingService.get[ConfirmationUpdateAnswersCacheData](USER_ANSWERS_UPDATE_CONFIRMATION).map(_.getOrElse(throw CacheMapNoFound())).map(ConfirmationUpdateAnswers(_))
+  def getConfirmationUpdateAnswers(implicit
+    request: Request[?],
+    ec: ExecutionContext
+  ): Future[ConfirmationUpdateAnswers] =
+    cachingService
+      .get[ConfirmationUpdateAnswersCacheData](USER_ANSWERS_UPDATE_CONFIRMATION)
+      .map(_.getOrElse(throw CacheMapNoFound()))
+      .map(ConfirmationUpdateAnswers(_))
 
   def getMAEndingDatesForCancellation: MarriageAllowanceEndingDates = {
-    val marriageAllowanceEndDate = current.finishes
+    val marriageAllowanceEndDate       = current.finishes
     val personalAllowanceEffectiveDate = current.next.starts
 
     MarriageAllowanceEndingDates(marriageAllowanceEndDate, personalAllowanceEffectiveDate)
@@ -189,19 +215,23 @@ class UpdateRelationshipService @Inject()(
 
   def getMAEndingDatesForDivorce(role: Role, divorceDate: LocalDate): MarriageAllowanceEndingDates = {
 
-    val marriageAllowanceEndDate = endDateDivorceCalculator.calculateEndDate(role, divorceDate)
-    val personalAllowanceEffectiveDate = endDateDivorceCalculator.calculatePersonalAllowanceEffectiveDate(marriageAllowanceEndDate)
+    val marriageAllowanceEndDate       = endDateDivorceCalculator.calculateEndDate(role, divorceDate)
+    val personalAllowanceEffectiveDate =
+      endDateDivorceCalculator.calculatePersonalAllowanceEffectiveDate(marriageAllowanceEndDate)
 
     MarriageAllowanceEndingDates(marriageAllowanceEndDate, personalAllowanceEffectiveDate)
 
   }
 
-  def saveMarriageAllowanceEndingDates(maEndingDates: MarriageAllowanceEndingDates)(implicit request: Request[?]):
-  Future[MarriageAllowanceEndingDates] =
+  def saveMarriageAllowanceEndingDates(maEndingDates: MarriageAllowanceEndingDates)(implicit
+    request: Request[?]
+  ): Future[MarriageAllowanceEndingDates] =
     cachingService.put[MarriageAllowanceEndingDates](CACHE_MA_ENDING_DATES, maEndingDates)
 
   def getRelationshipRecords(implicit request: Request[?], ec: ExecutionContext): Future[RelationshipRecords] =
-    cachingService.get[RelationshipRecords](CACHE_RELATIONSHIP_RECORDS).map(_.getOrElse(throw CacheMissingRelationshipRecords()))
+    cachingService
+      .get[RelationshipRecords](CACHE_RELATIONSHIP_RECORDS)
+      .map(_.getOrElse(throw CacheMissingRelationshipRecords()))
 
   def removeCache(implicit request: Request[?]): Future[Unit] = cachingService.clear()
 
@@ -210,38 +240,39 @@ class UpdateRelationshipService @Inject()(
       auditConnector.sendEvent(event)
     }
 
-  private def sendUpdateRelationship(transferorNino: Nino,
-                                     data: UpdateRelationshipRequestHolder)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UpdateRelationshipRequestHolder] =
+  private def sendUpdateRelationship(transferorNino: Nino, data: UpdateRelationshipRequestHolder)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[UpdateRelationshipRequestHolder] =
     marriageAllowanceConnector
       .updateRelationship(transferorNino, data)
       .map {
         case Right(updateRelationshipResponse) =>
           updateRelationshipResponse match {
-            case Some(UpdateRelationshipResponse(ResponseStatus("OK"))) => data
-            case Some(UpdateRelationshipResponse(ResponseStatus(CANNOT_UPDATE_RELATIONSHIP))) => throw CannotUpdateRelationship()
-            case Some(UpdateRelationshipResponse(ResponseStatus(BAD_REQUEST))) => throw RecipientNotFound()
-            case _ => throw new UnsupportedOperationException("Unable to send relationship update request")
+            case Some(UpdateRelationshipResponse(ResponseStatus("OK")))                       => data
+            case Some(UpdateRelationshipResponse(ResponseStatus(CANNOT_UPDATE_RELATIONSHIP))) =>
+              throw CannotUpdateRelationship()
+            case Some(UpdateRelationshipResponse(ResponseStatus(BAD_REQUEST)))                => throw RecipientNotFound()
+            case _                                                                            => throw new UnsupportedOperationException("Unable to send relationship update request")
           }
-        case Left(error) =>
+        case Left(error)                       =>
           error.status match {
             case Some(responseStatus) =>
               responseStatus.status_code match {
                 case CANNOT_UPDATE_RELATIONSHIP => throw CannotUpdateRelationship()
-                case BAD_REQUEST => throw RecipientNotFound()
-                case _ => throw new UnsupportedOperationException("Unable to send relationship update request")
+                case BAD_REQUEST                => throw RecipientNotFound()
+                case _                          => throw new UnsupportedOperationException("Unable to send relationship update request")
               }
-            case _ => throw new UnsupportedOperationException("Unable to send relationship update request")
+            case _                    => throw new UnsupportedOperationException("Unable to send relationship update request")
           }
       }
-      .recover {
-        case error =>
-          handleAudit(UpdateRelationshipFailureEvent(data, error))
-          throw error
+      .recover { case error =>
+        handleAudit(UpdateRelationshipFailureEvent(data, error))
+        throw error
       }
 
-  private def auditUpdateRelationship(updateData: UpdateRelationshipRequestHolder
-                                     )(implicit hc: HeaderCarrier,
-                                       ec: ExecutionContext): Future[Unit] = {
+  private def auditUpdateRelationship(
+    updateData: UpdateRelationshipRequestHolder
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
     handleAudit(UpdateRelationshipSuccessEvent(updateData))
-  }
 }

@@ -23,13 +23,17 @@ import errors._
 import models.auth.BaseUserRequest
 import play.api.mvc.{MessagesControllerComponents, Result}
 
-class UpdateRelationshipErrorHandler @Inject()(cc: MessagesControllerComponents,
-                                               tryLater: views.html.errors.try_later,
-                                               citizenNotFound: views.html.errors.citizen_not_found,
-                                               appConfig: ApplicationConfig) extends BaseController(cc) with LoggerHelper {
+class UpdateRelationshipErrorHandler @Inject() (
+  cc: MessagesControllerComponents,
+  tryLater: views.html.errors.try_later,
+  citizenNotFound: views.html.errors.citizen_not_found,
+  appConfig: ApplicationConfig
+) extends BaseController(cc)
+    with LoggerHelper {
 
   def handleError(implicit request: BaseUserRequest[?]): PartialFunction[Throwable, Result] = {
-    val message: String = s"An exception occurred during processing of URI [${request.uri}] SID [${utils.getSid(request)}]"
+    val message: String =
+      s"An exception occurred during processing of URI [${request.uri}] SID [${utils.getSid(request)}]"
 
     def handle(throwable: Throwable, logger: (String, Throwable) => Unit, result: Result): Result = {
       logger(message, throwable)
@@ -37,21 +41,27 @@ class UpdateRelationshipErrorHandler @Inject()(cc: MessagesControllerComponents,
     }
 
     val pf: PartialFunction[Throwable, Result] = {
-      case _: NoPrimaryRecordError => request.headers.get("Referer") match {
-        case Some(referrer) if referrer.contains(appConfig.gdsStartUrl) => Redirect(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage())
-        case Some(referrer) if referrer.contains(appConfig.gdsContinueUrl) => Redirect(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage())
-        case _ => Redirect(controllers.routes.HowItWorksController.howItWorks())
-      }
-      case t: CacheRelationshipAlreadyUpdated => handle(t, warn, Redirect(controllers.UpdateRelationship.routes.FinishedChangeController.finishUpdate()))
-      case t: CacheMissingUpdateRecord => handle(t, warn, InternalServerError(tryLater()))
-      case t: CacheUpdateRequestNotSent => handle(t, warn, InternalServerError(tryLater()))
-      case t: CannotUpdateRelationship => handle(t, warn, InternalServerError(tryLater()))
-      case t: MultipleActiveRecordError => handle(t, warn, InternalServerError(tryLater()))
-      case t: CitizenNotFound => handle(t, warn, InternalServerError(citizenNotFound()))
-      case t: BadFetchRequest => handle(t, warn, InternalServerError(tryLater()))
-      case t: TransferorNotFound => handle(t, warn, Redirect(controllers.errors.routes.TransferorNotFoundController.transferorNotFoundError()))
-      case t: RecipientNotFound  => handle(t, warn, Redirect(controllers.errors.routes.RecipientNotFoundController.recipientNotFoundError()))
-      case t => handle(t, error, InternalServerError(tryLater()))
+      case _: NoPrimaryRecordError            =>
+        request.headers.get("Referer") match {
+          case Some(referrer) if referrer.contains(appConfig.gdsStartUrl)    =>
+            Redirect(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage())
+          case Some(referrer) if referrer.contains(appConfig.gdsContinueUrl) =>
+            Redirect(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage())
+          case _                                                             => Redirect(controllers.routes.HowItWorksController.howItWorks())
+        }
+      case t: CacheRelationshipAlreadyUpdated =>
+        handle(t, warn, Redirect(controllers.UpdateRelationship.routes.FinishedChangeController.finishUpdate()))
+      case t: CacheMissingUpdateRecord        => handle(t, warn, InternalServerError(tryLater()))
+      case t: CacheUpdateRequestNotSent       => handle(t, warn, InternalServerError(tryLater()))
+      case t: CannotUpdateRelationship        => handle(t, warn, InternalServerError(tryLater()))
+      case t: MultipleActiveRecordError       => handle(t, warn, InternalServerError(tryLater()))
+      case t: CitizenNotFound                 => handle(t, warn, InternalServerError(citizenNotFound()))
+      case t: BadFetchRequest                 => handle(t, warn, InternalServerError(tryLater()))
+      case t: TransferorNotFound              =>
+        handle(t, warn, Redirect(controllers.errors.routes.TransferorNotFoundController.transferorNotFoundError()))
+      case t: RecipientNotFound               =>
+        handle(t, warn, Redirect(controllers.errors.routes.RecipientNotFoundController.recipientNotFoundError()))
+      case t                                  => handle(t, error, InternalServerError(tryLater()))
     }
     pf
   }

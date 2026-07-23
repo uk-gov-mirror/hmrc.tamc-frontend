@@ -44,10 +44,11 @@ import scala.concurrent.Future
 
 class DivorceControllerTest extends ControllerBaseTest with ControllerViewTestHelper with Injecting {
 
-  val mockUpdateRelationshipService: UpdateRelationshipService = mock[UpdateRelationshipService]
-  val mockTimeService: TimeService = mock[TimeService]
-  val divorceSelectYearForm: DivorceSelectYearForm = instanceOf[DivorceSelectYearForm]
-  val divorceEndExplanationViewModelImpl: DivorceEndExplanationViewModelImpl = instanceOf[DivorceEndExplanationViewModelImpl]
+  val mockUpdateRelationshipService: UpdateRelationshipService               = mock[UpdateRelationshipService]
+  val mockTimeService: TimeService                                           = mock[TimeService]
+  val divorceSelectYearForm: DivorceSelectYearForm                           = instanceOf[DivorceSelectYearForm]
+  val divorceEndExplanationViewModelImpl: DivorceEndExplanationViewModelImpl =
+    instanceOf[DivorceEndExplanationViewModelImpl]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
@@ -56,12 +57,13 @@ class DivorceControllerTest extends ControllerBaseTest with ControllerViewTestHe
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: DivorceController = app.injector.instanceOf[DivorceController]
 
-  val tryLaterView: try_later = inject[views.html.errors.try_later]
-  val divorceSelectYearView: divorce_select_year = inject[views.html.coc.divorce_select_year]
+  val tryLaterView: try_later                            = inject[views.html.errors.try_later]
+  val divorceSelectYearView: divorce_select_year         = inject[views.html.coc.divorce_select_year]
   val divorceEndExplanationView: divorce_end_explanation = inject[views.html.coc.divorce_end_explanation]
 
   override def beforeEach(): Unit = {
@@ -74,7 +76,8 @@ class DivorceControllerTest extends ControllerBaseTest with ControllerViewTestHe
     "display the enter a divorce year page with a status of OK" when {
       "there is data in the cache" in {
         val divorceDateInThePast = LocalDate.now().minusDays(1)
-        when(mockUpdateRelationshipService.getDivorceDate(any())).thenReturn(Future.successful(Some(divorceDateInThePast)))
+        when(mockUpdateRelationshipService.getDivorceDate(any()))
+          .thenReturn(Future.successful(Some(divorceDateInThePast)))
 
         val result = controller.divorceEnterYear(request)
 
@@ -108,9 +111,11 @@ class DivorceControllerTest extends ControllerBaseTest with ControllerViewTestHe
     "redirect to the divorce end explanation page" when {
       "the user enters a valid divorce date in the past" in {
         val divorceDateInThePast = LocalDate.now().minusDays(1)
-        val request = buildFakePostRequest("dateOfDivorce.year" -> divorceDateInThePast.getYear.toString,
+        val request              = buildFakePostRequest(
+          "dateOfDivorce.year"  -> divorceDateInThePast.getYear.toString,
           "dateOfDivorce.month" -> divorceDateInThePast.getMonthValue.toString,
-          "dateOfDivorce.day" -> divorceDateInThePast.getDayOfMonth.toString)
+          "dateOfDivorce.day"   -> divorceDateInThePast.getDayOfMonth.toString
+        )
 
         when(mockUpdateRelationshipService.saveDivorceDate(ArgumentMatchers.eq(divorceDateInThePast))(any()))
           .thenReturn(Future.successful(divorceDateInThePast))
@@ -120,18 +125,22 @@ class DivorceControllerTest extends ControllerBaseTest with ControllerViewTestHe
 
         val result = controller.submitDivorceEnterYear()(request)
 
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.DivorceController.divorceEndExplanation().url)
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(
+          controllers.UpdateRelationship.routes.DivorceController.divorceEndExplanation().url
+        )
       }
     }
 
     "return a bad request" when {
       "an invalid date is submitted" in {
-        val invalidRequest = FakeRequest().withFormUrlEncodedBody(
-          "dateOfDivorce.year" -> "year",
-          "dateOfDivorce.month" -> "month",
-          "dateOfDivorce.day" -> "day"
-        ).withMethod("POST")
+        val invalidRequest = FakeRequest()
+          .withFormUrlEncodedBody(
+            "dateOfDivorce.year"  -> "year",
+            "dateOfDivorce.month" -> "month",
+            "dateOfDivorce.day"   -> "day"
+          )
+          .withMethod("POST")
 
         val result = controller.submitDivorceEnterYear(invalidRequest)
 
@@ -144,9 +153,13 @@ class DivorceControllerTest extends ControllerBaseTest with ControllerViewTestHe
         when(mockUpdateRelationshipService.saveDivorceDate(any())(any())).thenReturn(failedFuture)
 
         val divorceDateInThePast = LocalDate.now().minusDays(1)
-        val request = FakeRequest().withFormUrlEncodedBody("dateOfDivorce.year" -> divorceDateInThePast.getYear.toString,
-          "dateOfDivorce.month" -> divorceDateInThePast.getMonthValue.toString,
-          "dateOfDivorce.day" -> divorceDateInThePast.getDayOfMonth.toString).withMethod("POST")
+        val request              = FakeRequest()
+          .withFormUrlEncodedBody(
+            "dateOfDivorce.year"  -> divorceDateInThePast.getYear.toString,
+            "dateOfDivorce.month" -> divorceDateInThePast.getMonthValue.toString,
+            "dateOfDivorce.day"   -> divorceDateInThePast.getDayOfMonth.toString
+          )
+          .withMethod("POST")
 
         when(mockTimeService.getCurrentDate)
           .thenReturn(LocalDate.now())
@@ -161,12 +174,12 @@ class DivorceControllerTest extends ControllerBaseTest with ControllerViewTestHe
 
   "divorceEndExplanation" should {
     "display the divorceEndExplanation page" in {
-      val role = Transferor
-      val now = LocalDate.now()
-      val divorceDate = now.minusDays(1)
-      val maEndingDate = now.plusDays(1)
+      val role            = Transferor
+      val now             = LocalDate.now()
+      val divorceDate     = now.minusDays(1)
+      val maEndingDate    = now.plusDays(1)
       val paEffectiveDate = now.plusDays(2)
-      val maEndingDates = MarriageAllowanceEndingDates(maEndingDate, paEffectiveDate)
+      val maEndingDates   = MarriageAllowanceEndingDates(maEndingDate, paEffectiveDate)
 
       when(mockUpdateRelationshipService.getDataForDivorceExplanation(any(), any()))
         .thenReturn(Future.successful((role, divorceDate)))
@@ -176,7 +189,7 @@ class DivorceControllerTest extends ControllerBaseTest with ControllerViewTestHe
         .thenReturn(Future.successful(maEndingDates))
 
       val viewModel = divorceEndExplanationViewModelImpl(role, divorceDate, maEndingDates)
-      val result = controller.divorceEndExplanation()(request)
+      val result    = controller.divorceEndExplanation()(request)
 
       status(result) shouldBe OK
       result `rendersTheSameViewAs` divorceEndExplanationView(viewModel)
@@ -194,11 +207,11 @@ class DivorceControllerTest extends ControllerBaseTest with ControllerViewTestHe
       }
 
       "an error has occurred whilst saving cache data" in {
-        val role = Transferor
-        val divorceDate = LocalDate.now().minusDays(1)
-        val maEndingDate = LocalDate.now().plusDays(1)
+        val role            = Transferor
+        val divorceDate     = LocalDate.now().minusDays(1)
+        val maEndingDate    = LocalDate.now().plusDays(1)
         val paEffectiveDate = LocalDate.now().plusDays(2)
-        val maEndingDates = MarriageAllowanceEndingDates(maEndingDate, paEffectiveDate)
+        val maEndingDates   = MarriageAllowanceEndingDates(maEndingDate, paEffectiveDate)
 
         when(mockUpdateRelationshipService.getDataForDivorceExplanation(any(), any()))
           .thenReturn(Future.successful((role, divorceDate)))

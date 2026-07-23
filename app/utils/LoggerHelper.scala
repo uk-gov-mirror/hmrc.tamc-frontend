@@ -20,19 +20,15 @@ import play.api.Logging
 
 trait LoggerHelper extends Logging {
 
-  def warn(message: String, throwable: Throwable): Unit = {
+  def warn(message: String, throwable: Throwable): Unit =
     logger.warn(message, throwable)
-  }
 
-  def warn(message: String): Unit = {
+  def warn(message: String): Unit =
     logger.warn(message)
-  }
 
-  def error(message: String, throwable: Throwable): Unit = {
+  def error(message: String, throwable: Throwable): Unit =
     logger.error(message, throwable)
-  }
 
-  def info(message: String): Unit = {
+  def info(message: String): Unit =
     logger.info(message)
-  }
 }

@@ -25,22 +25,23 @@ import play.twirl.api.Html
 
 import javax.inject.Inject
 
-class TransferErrorHandler @Inject()(
-                                      cc: MessagesControllerComponents,
-                                      transferorStatus: views.html.transferor_status,
-                                      noYearSelected: views.html.errors.no_year_selected,
-                                      noEligibleYears: views.html.errors.no_eligible_years,
-                                      noTaxYearTransferor: views.html.errors.no_tax_year_transferor,
-                                      relationshipCannotCreate: views.html.errors.relationship_cannot_create,
-                                      recipientRelationshipExists: views.html.errors.recipient_relationship_exists,
-                                      tryLater: views.html.errors.try_later,
-                                      transferorDeceased: views.html.errors.transferor_deceased
-                                    ) extends BaseController(cc) with LoggerHelper {
+class TransferErrorHandler @Inject() (
+  cc: MessagesControllerComponents,
+  transferorStatus: views.html.transferor_status,
+  noYearSelected: views.html.errors.no_year_selected,
+  noEligibleYears: views.html.errors.no_eligible_years,
+  noTaxYearTransferor: views.html.errors.no_tax_year_transferor,
+  relationshipCannotCreate: views.html.errors.relationship_cannot_create,
+  recipientRelationshipExists: views.html.errors.recipient_relationship_exists,
+  tryLater: views.html.errors.try_later,
+  transferorDeceased: views.html.errors.transferor_deceased
+) extends BaseController(cc)
+    with LoggerHelper {
 
   def handleError(implicit request: BaseUserRequest[?]): PartialFunction[Throwable, Result] = {
     def message(throwable: Throwable): String =
       s"An exception occurred during processing of URI [${request.uri}] reason [$throwable,${throwable.getMessage}] SID [${utils
-        .getSid(request)}] stackTrace [${ExceptionUtils.getStackTrace(throwable)}]"
+          .getSid(request)}] stackTrace [${ExceptionUtils.getStackTrace(throwable)}]"
 
     def handle(throwable: Throwable, logger: String => Unit, result: Result): Result = {
       logger(message(throwable))
@@ -53,39 +54,39 @@ class TransferErrorHandler @Inject()(
     }
 
     val pf: PartialFunction[Throwable, Result] = {
-      case t: TransferorNotFound =>
+      case t: TransferorNotFound              =>
         handle(t, warn, Redirect(controllers.errors.routes.TransferorNotFoundController.transferorNotFoundError()))
-      case t: RecipientNotFound =>
+      case t: RecipientNotFound               =>
         handle(t, warn, Redirect(controllers.errors.routes.RecipientNotFoundController.recipientNotFoundError()))
-      case t: TransferorDeceased =>
+      case t: TransferorDeceased              =>
         handleWithException(t, transferorDeceased())
-      case t: RecipientDeceased =>
+      case t: RecipientDeceased               =>
         handle(t, warn, Redirect(controllers.transfer.routes.CannotUseServiceController.cannotUseService()))
-      case t: CacheMissingTransferor =>
+      case t: CacheMissingTransferor          =>
         handle(t, warn, Redirect(controllers.UpdateRelationship.routes.HistoryController.history()))
-      case t: CacheTransferorInRelationship =>
+      case t: CacheTransferorInRelationship   =>
         handle(t, warn, Ok(transferorStatus()))
-      case t: CacheMissingRecipient =>
+      case t: CacheMissingRecipient           =>
         handle(t, warn, Redirect(controllers.UpdateRelationship.routes.HistoryController.history()))
-      case t: CacheMissingEmail =>
+      case t: CacheMissingEmail               =>
         handle(t, warn, Redirect(controllers.transfer.routes.ConfirmEmailController.confirmYourEmail()))
       case t: CacheRelationshipAlreadyCreated =>
         handle(t, warn, Redirect(controllers.UpdateRelationship.routes.HistoryController.history()))
-      case t: CacheCreateRequestNotSent =>
+      case t: CacheCreateRequestNotSent       =>
         handle(t, warn, Redirect(controllers.UpdateRelationship.routes.HistoryController.history()))
-      case t: NoTaxYearsSelected =>
+      case t: NoTaxYearsSelected              =>
         handle(t, info, Ok(noYearSelected()))
-      case t: NoTaxYearsAvailable =>
+      case t: NoTaxYearsAvailable             =>
         handle(t, info, Ok(noEligibleYears()))
-      case t: NoTaxYearsForTransferor =>
+      case t: NoTaxYearsForTransferor         =>
         handle(t, info, Ok(noTaxYearTransferor()))
-      case t: RelationshipMightBeCreated =>
+      case t: RelationshipMightBeCreated      =>
         handle(t, warn, Redirect(controllers.UpdateRelationship.routes.HistoryController.history()))
-      case ex: CannotCreateRelationship =>
+      case ex: CannotCreateRelationship       =>
         handleWithException(ex, relationshipCannotCreate())
-      case ex: CacheRecipientInRelationship =>
+      case ex: CacheRecipientInRelationship   =>
         handleWithException(ex, recipientRelationshipExists())
-      case ex =>
+      case ex                                 =>
         handleWithException(ex, tryLater())
     }
     pf

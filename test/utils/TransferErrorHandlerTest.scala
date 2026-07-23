@@ -102,7 +102,7 @@ class TransferErrorHandlerTest extends ControllerBaseTest {
         (new CacheTransferorInRelationship, OK, "transferor.has.relationship"),
         (new NoTaxYearsSelected, OK, "pages.noyears.h1"),
         (new Exception, INTERNAL_SERVER_ERROR, "technical.issue.heading"),
-        (new TransferorDeceased, INTERNAL_SERVER_ERROR, "title.cannot-use-service"),
+        (new TransferorDeceased, INTERNAL_SERVER_ERROR, "title.cannot-use-service")
       )
       for ((error, responseStatus, message) <- data)
         s"an $error has been thrown" in {

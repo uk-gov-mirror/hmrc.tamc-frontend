@@ -27,13 +27,12 @@ import uk.gov.hmrc.domain.Nino
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MockAuthenticatedAction @Inject()(
-                                         override val authConnector: AuthConnector,
-                                         val parsers: BodyParsers.Default
-                                       )
-  extends AuthRetrievals(authConnector, parsers) {
+class MockAuthenticatedAction @Inject() (
+  override val authConnector: AuthConnector,
+  val parsers: BodyParsers.Default
+) extends AuthRetrievals(authConnector, parsers) {
 
-  override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedUserRequest[A]]] = {
+  override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedUserRequest[A]]] =
     Future.successful(
       Right(
         AuthenticatedUserRequest(
@@ -41,28 +40,24 @@ class MockAuthenticatedAction @Inject()(
           Some(ConfidenceLevel.L200),
           isSA = false,
           Some("GovernmentGateway"),
-          Nino(TestData.Ninos.nino1))
+          Nino(TestData.Ninos.nino1)
+        )
       )
     )
-  }
 }
 
-class MockUnauthenticatedAction @Inject()(
-                                           override val authConnector: AuthConnector,
-                                           parsers: BodyParsers.Default
-                                         )
-  extends UnauthenticatedActionTransformer(authConnector, parsers) {
-  override protected def transform[A](request: Request[A]): Future[UserRequest[A]] = {
+class MockUnauthenticatedAction @Inject() (
+  override val authConnector: AuthConnector,
+  parsers: BodyParsers.Default
+) extends UnauthenticatedActionTransformer(authConnector, parsers) {
+  override protected def transform[A](request: Request[A]): Future[UserRequest[A]] =
     Future.successful(UserRequest(request, None, isSA = false, isAuthenticated = false, authProvider = None))
-  }
 }
 
-class MockPermUnauthenticatedAction @Inject()(
-                                               override val authConnector: AuthConnector,
-                                               parsers: BodyParsers.Default
-                                             )
-  extends UnauthenticatedActionTransformer(authConnector, parsers) {
-  override protected def transform[A](request: Request[A]): Future[UserRequest[A]] = {
+class MockPermUnauthenticatedAction @Inject() (
+  override val authConnector: AuthConnector,
+  parsers: BodyParsers.Default
+) extends UnauthenticatedActionTransformer(authConnector, parsers) {
+  override protected def transform[A](request: Request[A]): Future[UserRequest[A]] =
     Future.successful(UserRequest(request, None, isSA = false, isAuthenticated = true, authProvider = None))
-  }
 }

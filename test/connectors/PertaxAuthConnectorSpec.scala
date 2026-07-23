@@ -28,7 +28,12 @@ import uk.gov.hmrc.play.partials.HtmlPartial
 import utils.Constants.ACCESS_GRANTED
 import utils.{BaseTest, PertaxAuthMockingHelper, WireMockHelper}
 
-class PertaxAuthConnectorSpec extends BaseTest with GuiceOneAppPerSuite with WireMockHelper with PertaxAuthMockingHelper with Injecting {
+class PertaxAuthConnectorSpec
+    extends BaseTest
+    with GuiceOneAppPerSuite
+    with WireMockHelper
+    with PertaxAuthMockingHelper
+    with Injecting {
 
   lazy val connector: PertaxAuthConnector = inject[PertaxAuthConnector]
 

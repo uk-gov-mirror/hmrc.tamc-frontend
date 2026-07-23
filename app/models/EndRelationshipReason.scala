@@ -22,15 +22,19 @@ import play.api.libs.json._
 import java.time.format.DateTimeFormatter
 
 object EndRelationshipReason {
-  private val pattern = "dd/MM/yyyy"
+  private val pattern                                    = "dd/MM/yyyy"
   private def writes(pattern: String): Writes[LocalDate] = {
     val datePattern = DateTimeFormatter.ofPattern(pattern)
 
-    Writes[LocalDate] { localDate => JsString(localDate.format(datePattern))}
+    Writes[LocalDate](localDate => JsString(localDate.format(datePattern)))
   }
 
-  implicit val dateFormat: Format[LocalDate] = Format[LocalDate](Reads.localDateReads(pattern),  writes(pattern))
+  implicit val dateFormat: Format[LocalDate]           = Format[LocalDate](Reads.localDateReads(pattern), writes(pattern))
   implicit val formats: OFormat[EndRelationshipReason] = Json.format[EndRelationshipReason]
 }
 
-case class EndRelationshipReason(endReason: String, dateOfDivorce: Option[LocalDate] = None, timestamp: Option[String] = None)
+case class EndRelationshipReason(
+  endReason: String,
+  dateOfDivorce: Option[LocalDate] = None,
+  timestamp: Option[String] = None
+)

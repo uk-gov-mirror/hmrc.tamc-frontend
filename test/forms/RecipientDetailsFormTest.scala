@@ -31,48 +31,54 @@ class RecipientDetailsFormTest extends BaseTest {
   ".recipientDetailsForm nino mapping" should {
 
     val validNino = new Generator(new Random).nextNino
-    val form = recipientDetailsForm.recipientDetailsForm(LocalDate.now(), validNino)
+    val form      = recipientDetailsForm.recipientDetailsForm(LocalDate.now(), validNino)
 
     "fail to bind a nino containing invalid chars, with a explicit invalid char error" in {
       val formInput = Map[String, String](
-        "name" -> "name",
+        "name"      -> "name",
         "last-name" -> "last-name",
-        "gender" -> "M",
-        "nino" -> "AB123*"
+        "gender"    -> "M",
+        "nino"      -> "AB123*"
       )
-      val res = form.mapping.bind(formInput)
+      val res       = form.mapping.bind(formInput)
 
-      res shouldBe Left(Seq(
-        FormError("nino", "pages.form.field.nino.error.invalid.chars", Nil)
-      ))
+      res shouldBe Left(
+        Seq(
+          FormError("nino", "pages.form.field.nino.error.invalid.chars", Nil)
+        )
+      )
     }
 
     "fail to bind an invalid nino where no invalid characters are present, but the nino is not in valid form" in {
       val formInput = Map[String, String](
-        "name" -> "name",
+        "name"      -> "name",
         "last-name" -> "last-name",
-        "gender" -> "M",
-        "nino" -> "A1123456A"
+        "gender"    -> "M",
+        "nino"      -> "A1123456A"
       )
-      val res = form.mapping.bind(formInput)
+      val res       = form.mapping.bind(formInput)
 
-      res shouldBe Left(Seq(
-        FormError("nino", "pages.form.field.nino.error.invalid", Nil)
-      ))
+      res shouldBe Left(
+        Seq(
+          FormError("nino", "pages.form.field.nino.error.invalid", Nil)
+        )
+      )
     }
 
     "fail to bind an invalid nino which is longer than 9 characters" in {
       val formInput = Map[String, String](
-        "name" -> "name",
+        "name"      -> "name",
         "last-name" -> "last-name",
-        "gender" -> "M",
-        "nino" -> "A1123456AA"
+        "gender"    -> "M",
+        "nino"      -> "A1123456AA"
       )
-      val res = form.mapping.bind(formInput)
+      val res       = form.mapping.bind(formInput)
 
-      res shouldBe Left(Seq(
-        FormError("nino", "pages.form.field.nino.error.maxLength", Nil)
-      ))
+      res shouldBe Left(
+        Seq(
+          FormError("nino", "pages.form.field.nino.error.maxLength", Nil)
+        )
+      )
     }
 
     "bind a valid nino successfully" in {
@@ -80,12 +86,12 @@ class RecipientDetailsFormTest extends BaseTest {
       val testValidNino = new Generator(new Random).nextNino
 
       val formInput = Map[String, String](
-        "name" -> "name",
+        "name"      -> "name",
         "last-name" -> "last-name",
-        "gender" -> "M",
-        "nino" -> testValidNino.nino
+        "gender"    -> "M",
+        "nino"      -> testValidNino.nino
       )
-      val res = form.mapping.bind(formInput)
+      val res       = form.mapping.bind(formInput)
 
       res shouldBe Right(RecipientDetailsFormInput("name", "last-name", Gender("M"), testValidNino))
     }

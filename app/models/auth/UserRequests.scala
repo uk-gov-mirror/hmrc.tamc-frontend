@@ -21,27 +21,25 @@ import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.domain.Nino
 
 sealed abstract class BaseUserRequest[A](
-                                          val request: Request[A],
-                                          val isAuthenticated: Boolean,
-                                          val confidenceLevel: Option[ConfidenceLevel],
-                                          val isSA: Boolean,
-                                          val authProvider: Option[String]
-                                        ) extends WrappedRequest[A](request)
+  val request: Request[A],
+  val isAuthenticated: Boolean,
+  val confidenceLevel: Option[ConfidenceLevel],
+  val isSA: Boolean,
+  val authProvider: Option[String]
+) extends WrappedRequest[A](request)
 
 final case class UserRequest[A](
-                                 override val request: Request[A],
-                                 override val confidenceLevel: Option[ConfidenceLevel],
-                                 override val isAuthenticated: Boolean,
-                                 override val authProvider: Option[String],
-                                 override val isSA: Boolean
-                               ) extends BaseUserRequest[A](request, isAuthenticated, confidenceLevel, isSA, authProvider)
-
+  override val request: Request[A],
+  override val confidenceLevel: Option[ConfidenceLevel],
+  override val isAuthenticated: Boolean,
+  override val authProvider: Option[String],
+  override val isSA: Boolean
+) extends BaseUserRequest[A](request, isAuthenticated, confidenceLevel, isSA, authProvider)
 
 final case class AuthenticatedUserRequest[A](
-                                              override val request: Request[A],
-                                              override val confidenceLevel: Option[ConfidenceLevel],
-                                              override val isSA: Boolean,
-                                              override val authProvider: Option[String],
-                                              nino: Nino
-                                            ) extends BaseUserRequest[A](request, isAuthenticated = true, confidenceLevel, isSA, authProvider)
-
+  override val request: Request[A],
+  override val confidenceLevel: Option[ConfidenceLevel],
+  override val isSA: Boolean,
+  override val authProvider: Option[String],
+  nino: Nino
+) extends BaseUserRequest[A](request, isAuthenticated = true, confidenceLevel, isSA, authProvider)

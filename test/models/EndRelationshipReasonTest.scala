@@ -17,7 +17,7 @@
 package models
 
 import org.scalatest.matchers.must.Matchers.mustBe
-import play.api.libs.json.{JsValue, Json, JsError}
+import play.api.libs.json.{JsError, JsValue, Json}
 import utils.BaseTest
 
 import java.time.LocalDate
@@ -34,13 +34,15 @@ class EndRelationshipReasonTest extends BaseTest {
 
       val json: JsValue = Json.toJson(reason)
 
-      json.toString mustBe Json.parse(
-        """{
+      json.toString mustBe Json
+        .parse(
+          """{
           |  "endReason": "Divorce",
           |  "dateOfDivorce": "01/08/2023",
           |  "timestamp": "2023-08-01T12:34:56"
           |}""".stripMargin
-      ).toString
+        )
+        .toString
     }
 
     "serialize to JSON correctly when optional fields are missing" in {
@@ -50,11 +52,13 @@ class EndRelationshipReasonTest extends BaseTest {
 
       val json: JsValue = Json.toJson(reason)
 
-      json.toString mustBe Json.parse(
-        """{
+      json.toString mustBe Json
+        .parse(
+          """{
           |  "endReason": "Other Reason"
           |}""".stripMargin
-      ).toString
+        )
+        .toString
     }
 
     "deserialize from JSON correctly when all fields are present" in {
@@ -100,7 +104,7 @@ class EndRelationshipReasonTest extends BaseTest {
         timestamp = Some("2023-05-20T09:15:00")
       )
 
-      val json = Json.toJson(reason)
+      val json               = Json.toJson(reason)
       val deserializedReason = json.as[EndRelationshipReason]
 
       deserializedReason shouldBe reason
@@ -120,7 +124,7 @@ class EndRelationshipReasonTest extends BaseTest {
       result match {
         case JsError(errors) =>
           errors.nonEmpty mustBe true
-        case _ =>
+        case _               =>
           fail("Expected JsError for invalid JSON")
       }
     }
@@ -140,7 +144,7 @@ class EndRelationshipReasonTest extends BaseTest {
       result match {
         case JsError(errors) =>
           errors.head.toString should include("error.expected.date.isoformat")
-        case _ =>
+        case _               =>
           fail("Expected JsError for invalid date format")
       }
     }

@@ -37,7 +37,7 @@ import scala.concurrent.Future
 class FinishedChangeControllerTest extends ControllerBaseTest with ControllerViewTestHelper with Injecting {
 
   val mockUpdateRelationshipService: UpdateRelationshipService = mock[UpdateRelationshipService]
-  val mockCachingService: CachingService = mock[CachingService]
+  val mockCachingService: CachingService                       = mock[CachingService]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
@@ -45,7 +45,8 @@ class FinishedChangeControllerTest extends ControllerBaseTest with ControllerVie
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: FinishedChangeController = app.injector.instanceOf[FinishedChangeController]
 

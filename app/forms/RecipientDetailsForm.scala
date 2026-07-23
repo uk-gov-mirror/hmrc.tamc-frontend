@@ -25,12 +25,15 @@ import uk.gov.hmrc.domain.Nino
 
 import javax.inject.Inject
 
-class RecipientDetailsForm@Inject()(registrationForm: RegistrationForm) {
+class RecipientDetailsForm @Inject() (registrationForm: RegistrationForm) {
 
   def recipientDetailsForm(today: LocalDate, transferorNino: Nino) = Form[RecipientDetailsFormInput](
     mapping(
-      "name" -> registrationForm.firstName,
+      "name"      -> registrationForm.firstName,
       "last-name" -> registrationForm.lastName,
-      "gender" -> registrationForm.gender,
-      "nino" -> registrationForm.nino.verifying("pages.form.field.nino.error.self", recipientNino => !utils.areEqual(transferorNino, recipientNino)))(RecipientDetailsFormInput.apply)(RecipientDetailsFormInput.unapply))
+      "gender"    -> registrationForm.gender,
+      "nino"      -> registrationForm.nino
+        .verifying("pages.form.field.nino.error.self", recipientNino => !utils.areEqual(transferorNino, recipientNino))
+    )(RecipientDetailsFormInput.apply)(RecipientDetailsFormInput.unapply)
+  )
 }

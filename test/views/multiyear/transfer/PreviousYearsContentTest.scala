@@ -28,19 +28,18 @@ import java.time.LocalDate
 
 class PreviousYearsContentTest extends BaseTest with NinoGenerator {
 
-  lazy val nino: String = generateNino().nino
-  lazy val previousYears = instanceOf[previous_years]
-  lazy val registrationForm = RegistrationFormInput("firstName", "lastName", Gender("M"), Nino(nino), LocalDate.now)
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, true, None, Nino(nino))
+  lazy val nino: String                             = generateNino().nino
+  lazy val previousYears                            = instanceOf[previous_years]
+  lazy val registrationForm                         = RegistrationFormInput("firstName", "lastName", Gender("M"), Nino(nino), LocalDate.now)
+  implicit val request: AuthenticatedUserRequest[?] =
+    AuthenticatedUserRequest(FakeRequest(), None, true, None, Nino(nino))
 
   "previousYears" should {
     "return the correct title" in {
 
-      val document = Jsoup.parse(previousYears(registrationForm,
-        List(TaxYear(2022)),
-        true).toString())
+      val document = Jsoup.parse(previousYears(registrationForm, List(TaxYear(2022)), true).toString())
 
-      val title = document.title()
+      val title    = document.title()
       val expected = messages("pages.previousyear.header") + " - " + messages("title.application.pattern")
 
       title shouldBe expected
@@ -48,12 +47,10 @@ class PreviousYearsContentTest extends BaseTest with NinoGenerator {
 
     "display 'automatically renew every year' content" in {
 
-      val document = Jsoup.parse(previousYears(registrationForm,
-        List(TaxYear(2022)),
-        true).toString())
+      val document = Jsoup.parse(previousYears(registrationForm, List(TaxYear(2022)), true).toString())
 
       val paragraphTag = document.getElementsByTag("p").toString
-      val expected = messages("pages.previousyear.para")
+      val expected     = messages("pages.previousyear.para")
 
       paragraphTag should include(expected)
 
@@ -61,12 +58,10 @@ class PreviousYearsContentTest extends BaseTest with NinoGenerator {
 
     "display You can apply for earlier tax years h1" in {
 
-      val document = Jsoup.parse(previousYears(registrationForm,
-        List(TaxYear(2022)),
-        true).toString())
+      val document = Jsoup.parse(previousYears(registrationForm, List(TaxYear(2022)), true).toString())
 
       val paragraphTag = document.getElementsByTag("h1").toString
-      val expected = messages("pages.previousyear.header")
+      val expected     = messages("pages.previousyear.header")
 
       paragraphTag should include(expected)
 

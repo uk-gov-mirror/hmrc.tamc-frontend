@@ -37,13 +37,13 @@ import utils.{BaseTest, MockAuthenticatedAction, MockUnauthenticatedAction, Nino
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-
 class ConfirmEmailTest extends BaseTest with NinoGenerator {
 
-  lazy val nino: String = generateNino().nino
-  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  val mockTransferService: TransferService = mock[TransferService]
-  val confirmEmailController: ConfirmEmailController = app.injector.instanceOf[ConfirmEmailController]
+  lazy val nino: String                                                  = generateNino().nino
+  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  val mockTransferService: TransferService                               = mock[TransferService]
+  val confirmEmailController: ConfirmEmailController                     = app.injector.instanceOf[ConfirmEmailController]
 
   implicit val duration: Timeout = 20 seconds
 
@@ -52,10 +52,9 @@ class ConfirmEmailTest extends BaseTest with NinoGenerator {
       bind[TransferService].toInstance(mockTransferService),
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[UnauthenticatedActionTransformer].to[MockUnauthenticatedAction],
-      bind[PertaxAuthAction].to[FakePertaxAuthAction],
+      bind[PertaxAuthAction].to[FakePertaxAuthAction]
     )
     .build()
-
 
   "Calling Confirm email page with error in email field" should {
     "display form error message (transferor email missing from request)" in {
@@ -63,87 +62,117 @@ class ConfirmEmailTest extends BaseTest with NinoGenerator {
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementById("register-form").toString should include("/marriage-allowance-application/confirm-your-email")
+      document.getElementById("register-form").toString                should include(
+        "/marriage-allowance-application/confirm-your-email"
+      )
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("transferor-email-error").text() shouldBe "Error: Enter your email address"
-      document.getElementsByClass("govuk-back-link").attr("href") shouldBe controllers.transfer.routes.EligibleYearsController.eligibleYears().url
+      document.getElementById("transferor-email-error").text()       shouldBe "Error: Enter your email address"
+      document
+        .getElementsByClass("govuk-back-link")
+        .attr("href")                                                shouldBe controllers.transfer.routes.EligibleYearsController.eligibleYears().url
     }
 
     "display form error message (transferor email is empty)" in {
       val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(data = "transferor-email" -> "")
-      val result = confirmEmailController.confirmYourEmailAction(request)
+      val result  = confirmEmailController.confirmYourEmailAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementById("register-form").toString should include("/marriage-allowance-application/confirm-your-email")
+      document.getElementById("register-form").toString                should include(
+        "/marriage-allowance-application/confirm-your-email"
+      )
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("transferor-email-error").text() shouldBe "Error: Enter your email address"
+      document.getElementById("transferor-email-error").text()       shouldBe "Error: Enter your email address"
     }
 
     "display form error message (transferor email contains only spaces)" in {
       val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(data = "transferor-email" -> "  ")
-      val result = confirmEmailController.confirmYourEmailAction(request)
+      val result  = confirmEmailController.confirmYourEmailAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementById("register-form").toString should include("/marriage-allowance-application/confirm-your-email")
+      document.getElementById("register-form").toString                should include(
+        "/marriage-allowance-application/confirm-your-email"
+      )
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("transferor-email-error").text() shouldBe "Error: Enter your email address"
+      document.getElementById("transferor-email-error").text()       shouldBe "Error: Enter your email address"
     }
 
     "display form error message (transferor email contains more than 100 characters)" in {
-      val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody("transferor-email" -> s"${"a" * 90}@bbbb.ccccc")
-      val result = confirmEmailController.confirmYourEmailAction(request)
+      val request =
+        FakeRequest().withMethod("POST").withFormUrlEncodedBody("transferor-email" -> s"${"a" * 90}@bbbb.ccccc")
+      val result  = confirmEmailController.confirmYourEmailAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementById("register-form").toString should include("/marriage-allowance-application/confirm-your-email")
+      document.getElementById("register-form").toString                should include(
+        "/marriage-allowance-application/confirm-your-email"
+      )
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("transferor-email-error").text() shouldBe "Error: Enter no more than 100 characters"
+      document.getElementById("transferor-email-error").text()       shouldBe "Error: Enter no more than 100 characters"
     }
 
     "display form error message (transferor email is invalid)" in {
       val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(data = "transferor-email" -> "example")
-      val result = confirmEmailController.confirmYourEmailAction(request)
+      val result  = confirmEmailController.confirmYourEmailAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementById("register-form").toString should include("/marriage-allowance-application/confirm-your-email")
+      document.getElementById("register-form").toString                should include(
+        "/marriage-allowance-application/confirm-your-email"
+      )
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("transferor-email-error").text() shouldBe "Error: Enter an email address in the correct format, like name@example.com"
+      document
+        .getElementById("transferor-email-error")
+        .text()                                                      shouldBe "Error: Enter an email address in the correct format, like name@example.com"
     }
 
     "display form error message (transferor email has consequent dots)" in {
-      val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody("transferor-email" -> "ex..ample@example.com")
-      val result = confirmEmailController.confirmYourEmailAction(request)
+      val request =
+        FakeRequest().withMethod("POST").withFormUrlEncodedBody("transferor-email" -> "ex..ample@example.com")
+      val result  = confirmEmailController.confirmYourEmailAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementById("register-form").toString should include("/marriage-allowance-application/confirm-your-email")
+      document.getElementById("register-form").toString                should include(
+        "/marriage-allowance-application/confirm-your-email"
+      )
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("transferor-email-error").text() shouldBe "Error: Enter an email address in the correct format, like name@example.com"
+      document
+        .getElementById("transferor-email-error")
+        .text()                                                      shouldBe "Error: Enter an email address in the correct format, like name@example.com"
     }
 
     "display form error message (transferor email has symbols). Please note, this email actually is valid" in {
-      val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(data = "transferor-email" -> "check[example.com")
-      val result = confirmEmailController.confirmYourEmailAction(request)
+      val request =
+        FakeRequest().withMethod("POST").withFormUrlEncodedBody(data = "transferor-email" -> "check[example.com")
+      val result  = confirmEmailController.confirmYourEmailAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementById("register-form").toString should include("/marriage-allowance-application/confirm-your-email")
+      document.getElementById("register-form").toString                should include(
+        "/marriage-allowance-application/confirm-your-email"
+      )
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("transferor-email-error").text() shouldBe "Error: Enter an email address in the correct format, like name@example.com"
+      document
+        .getElementById("transferor-email-error")
+        .text()                                                      shouldBe "Error: Enter an email address in the correct format, like name@example.com"
     }
 
     "display form error message (transferor email does not include TLD)" in {
-      val request = FakeRequest().withMethod("POST").withFormUrlEncodedBody(data = "transferor-email" -> "example@example")
-      val result = confirmEmailController.confirmYourEmailAction(request)
+      val request =
+        FakeRequest().withMethod("POST").withFormUrlEncodedBody(data = "transferor-email" -> "example@example")
+      val result  = confirmEmailController.confirmYourEmailAction(request)
 
       status(result) shouldBe BAD_REQUEST
       val document = Jsoup.parse(contentAsString(result))
-      document.getElementById("register-form").toString should include("/marriage-allowance-application/confirm-your-email")
+      document.getElementById("register-form").toString                should include(
+        "/marriage-allowance-application/confirm-your-email"
+      )
       document.getElementsByClass("govuk-error-summary__title").text shouldBe "There is a problem"
-      document.getElementById("transferor-email-error").text() shouldBe "Error: Enter an email address in the correct format, like name@example.com"
+      document
+        .getElementById("transferor-email-error")
+        .text()                                                      shouldBe "Error: Enter an email address in the correct format, like name@example.com"
     }
   }
 }

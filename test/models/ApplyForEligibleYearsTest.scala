@@ -26,38 +26,35 @@ import play.api.libs.json.{JsError, JsString, Json}
 
 class ApplyForEligibleYearsTest extends AnyFreeSpec with Matchers with ScalaCheckPropertyChecks with OptionValues {
 
-    "ApplyForEligibleYears" - {
+  "ApplyForEligibleYears" - {
 
-      "must deserialise valid values" in {
-        val gen = Gen.oneOf(ApplyForEligibleYears.values.toSeq)
+    "must deserialise valid values" in {
+      val gen = Gen.oneOf(ApplyForEligibleYears.values.toSeq)
 
-        forAll(gen) {
-          ApplyForEligibleYears =>
-
-            JsString(ApplyForEligibleYears.toString).validate[ApplyForEligibleYears].asOpt.value mustEqual ApplyForEligibleYears
-        }
+      forAll(gen) { ApplyForEligibleYears =>
+        JsString(ApplyForEligibleYears.toString)
+          .validate[ApplyForEligibleYears]
+          .asOpt
+          .value mustEqual ApplyForEligibleYears
       }
+    }
 
-      "must fail to deserialise invalid values" in {
+    "must fail to deserialise invalid values" in {
 
-        val gen = arbitrary[String] suchThat (!ApplyForEligibleYears.values.map(_.toString).contains(_))
+      val gen = arbitrary[String] suchThat (!ApplyForEligibleYears.values.map(_.toString).contains(_))
 
-        forAll(gen) {
-          invalidValue =>
-
-            JsString(invalidValue).validate[ApplyForEligibleYears] mustEqual JsError("error.invalid")
-        }
+      forAll(gen) { invalidValue =>
+        JsString(invalidValue).validate[ApplyForEligibleYears] mustEqual JsError("error.invalid")
       }
+    }
 
-      "must serialise" in {
+    "must serialise" in {
 
-        val gen = Gen.oneOf(ApplyForEligibleYears.values.toSeq)
+      val gen = Gen.oneOf(ApplyForEligibleYears.values.toSeq)
 
-        forAll(gen) {
-          ApplyForEligibleYears =>
-
-            Json.toJson(ApplyForEligibleYears) mustEqual JsString(ApplyForEligibleYears.toString)
-        }
+      forAll(gen) { ApplyForEligibleYears =>
+        Json.toJson(ApplyForEligibleYears) mustEqual JsString(ApplyForEligibleYears.toString)
       }
     }
   }
+}

@@ -36,7 +36,11 @@ import views.html.errors.try_later
 
 import scala.concurrent.Future
 
-class BereavementControllerTest extends ControllerBaseTest with ControllerViewTestHelper with CreateRelationshipRecordsHelper with Injecting {
+class BereavementControllerTest
+    extends ControllerBaseTest
+    with ControllerViewTestHelper
+    with CreateRelationshipRecordsHelper
+    with Injecting {
 
   val mockUpdateRelationshipService: UpdateRelationshipService = mock[UpdateRelationshipService]
 
@@ -46,11 +50,12 @@ class BereavementControllerTest extends ControllerBaseTest with ControllerViewTe
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: BereavementController = app.injector.instanceOf[BereavementController]
 
-  val tryLaterView: try_later = inject[views.html.errors.try_later]
+  val tryLaterView: try_later      = inject[views.html.errors.try_later]
   val bereavementView: bereavement = inject[views.html.coc.bereavement]
 
   override def beforeEach(): Unit = {
@@ -62,8 +67,9 @@ class BereavementControllerTest extends ControllerBaseTest with ControllerViewTe
     "display the bereavement page" when {
       "there is data returned from the cache" in {
         val relationshipRecords = createRelationshipRecords()
-        when(mockUpdateRelationshipService.getRelationshipRecords(any(), any())).thenReturn(Future.successful(relationshipRecords))
-        val result = controller.bereavement(request)
+        when(mockUpdateRelationshipService.getRelationshipRecords(any(), any()))
+          .thenReturn(Future.successful(relationshipRecords))
+        val result              = controller.bereavement(request)
 
         status(result) shouldBe OK
         result `rendersTheSameViewAs` bereavementView(relationshipRecords.primaryRecord.role)
@@ -71,7 +77,8 @@ class BereavementControllerTest extends ControllerBaseTest with ControllerViewTe
 
       "display an error page" when {
         "there is no cached data found" in {
-          when(mockUpdateRelationshipService.getRelationshipRecords(any(), any())).thenReturn(Future.failed(CacheMissingRelationshipRecords()))
+          when(mockUpdateRelationshipService.getRelationshipRecords(any(), any()))
+            .thenReturn(Future.failed(CacheMissingRelationshipRecords()))
           val result = controller.bereavement(request)
 
           status(result) shouldBe INTERNAL_SERVER_ERROR

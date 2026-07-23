@@ -30,12 +30,28 @@ class ApplicationServiceTest extends BaseTest with BeforeAndAfterEach {
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
       bind[TimeService].toInstance(mockTimeService)
-    ).build()
+    )
+    .build()
 
-  val service: ApplicationService = instanceOf[ApplicationService]
-  lazy val relationshipRecord: RelationshipRecord = RelationshipRecord("Recipient", "creationTimestamp", "20220101", None, None, "otherPaticipant", "otherParticipantupdateTimestamp")
-  lazy val relationshipRecord1: RelationshipRecord = RelationshipRecord("Recipient", "creationTimestamp", "20220101", None, None, "otherPaticipant", "otherParticipantupdateTimestamp")
-
+  val service: ApplicationService                  = instanceOf[ApplicationService]
+  lazy val relationshipRecord: RelationshipRecord  = RelationshipRecord(
+    "Recipient",
+    "creationTimestamp",
+    "20220101",
+    None,
+    None,
+    "otherPaticipant",
+    "otherParticipantupdateTimestamp"
+  )
+  lazy val relationshipRecord1: RelationshipRecord = RelationshipRecord(
+    "Recipient",
+    "creationTimestamp",
+    "20220101",
+    None,
+    None,
+    "otherPaticipant",
+    "otherParticipantupdateTimestamp"
+  )
 
   "canApplyForCurrentYears" should {
     "return true" in {
@@ -50,6 +66,5 @@ class ApplicationServiceTest extends BaseTest with BeforeAndAfterEach {
       }
     }
   }
-
 
 }

@@ -47,12 +47,13 @@ class StopAllowanceControllerTest extends ControllerBaseTest with ControllerView
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: StopAllowanceController = app.injector.instanceOf[StopAllowanceController]
 
   val stopAllowanceView: stopAllowance = inject[views.html.coc.stopAllowance]
-  val cancelView: cancel = inject[views.html.coc.cancel]
+  val cancelView: cancel               = inject[views.html.coc.cancel]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -70,11 +71,14 @@ class StopAllowanceControllerTest extends ControllerBaseTest with ControllerView
 
   "cancel" should {
     "display the cancel page" in {
-      val nowDate = LocalDate.now
+      val nowDate                      = LocalDate.now
       val marriageAllowanceEndingDates = MarriageAllowanceEndingDates(nowDate, nowDate)
       when(mockUpdateRelationshipService.getMAEndingDatesForCancellation).thenReturn(marriageAllowanceEndingDates)
-      when(mockUpdateRelationshipService.saveMarriageAllowanceEndingDates(ArgumentMatchers.eq(marriageAllowanceEndingDates))(any())).
-        thenReturn(Future.successful(marriageAllowanceEndingDates))
+      when(
+        mockUpdateRelationshipService.saveMarriageAllowanceEndingDates(
+          ArgumentMatchers.eq(marriageAllowanceEndingDates)
+        )(any())
+      ).thenReturn(Future.successful(marriageAllowanceEndingDates))
 
       val result = controller.cancel(request)
       status(result) shouldBe OK
