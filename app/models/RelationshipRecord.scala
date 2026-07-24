@@ -20,16 +20,18 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import play.api.libs.json.{Json, OFormat}
 
-case class RelationshipRecord(participant: String,
-                              creationTimestamp: String,
-                              participant1StartDate: String,
-                              relationshipEndReason: Option[DesRelationshipEndReason] = None,
-                              participant1EndDate: Option[String] = None,
-                              otherParticipantInstanceIdentifier: String,
-                              otherParticipantUpdateTimestamp: String) {
+case class RelationshipRecord(
+  participant: String,
+  creationTimestamp: String,
+  participant1StartDate: String,
+  relationshipEndReason: Option[DesRelationshipEndReason] = None,
+  participant1EndDate: Option[String] = None,
+  otherParticipantInstanceIdentifier: String,
+  otherParticipantUpdateTimestamp: String
+) {
 
   def isActive(currentDate: LocalDate): Boolean = participant1EndDate match {
-    case None => true
+    case None       => true
     case Some(date) => parseDateWithFormat(date).isAfter(currentDate)
   }
 
@@ -47,17 +49,18 @@ case class RelationshipRecord(participant: String,
   def overlappingTaxYears(currentTaxYear: Int): Set[Int] = {
 
     val taxYearOfRelationshipStart = getTaxYearForDate(parseDateWithFormat(participant1StartDate))
-    val taxYearOfRelationshipEnd = participant1EndDate.fold(currentTaxYear)(
-      participant1EndDateAsString => {
-        val participant1EndDate = parseDateWithFormat(participant1EndDateAsString)
-        val taxYearOfParticipant1EndDate = getTaxYearForDate(participant1EndDate)
-        val isParticipant1EndDateOnTheFirstDayOfTaxYear: Boolean = participant1EndDate == getStartDateForTaxYear(taxYearOfParticipant1EndDate)
+    val taxYearOfRelationshipEnd   = participant1EndDate.fold(currentTaxYear) { participant1EndDateAsString =>
+      val participant1EndDate                                  = parseDateWithFormat(participant1EndDateAsString)
+      val taxYearOfParticipant1EndDate                         = getTaxYearForDate(participant1EndDate)
+      val isParticipant1EndDateOnTheFirstDayOfTaxYear: Boolean =
+        participant1EndDate == getStartDateForTaxYear(taxYearOfParticipant1EndDate)
 
-        relationshipEndReason match {
-          case Some(DesRelationshipEndReason.Divorce) if isParticipant1EndDateOnTheFirstDayOfTaxYear => taxYearOfParticipant1EndDate - 1
-          case _ => taxYearOfParticipant1EndDate
-        }
-      })
+      relationshipEndReason match {
+        case Some(DesRelationshipEndReason.Divorce) if isParticipant1EndDateOnTheFirstDayOfTaxYear =>
+          taxYearOfParticipant1EndDate - 1
+        case _                                                                                     => taxYearOfParticipant1EndDate
+      }
+    }
 
     (taxYearOfRelationshipStart to taxYearOfRelationshipEnd).toSet
   }

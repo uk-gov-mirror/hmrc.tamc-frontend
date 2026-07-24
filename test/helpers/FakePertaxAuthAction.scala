@@ -22,8 +22,7 @@ import play.api.mvc.{Request, Result}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakePertaxAuthAction @Inject()(implicit val executionContext: ExecutionContext) extends PertaxAuthAction {
-  override protected def filter[A](request: Request[A]): Future[Option[Result]] = {
+class FakePertaxAuthAction @Inject() (implicit val executionContext: ExecutionContext) extends PertaxAuthAction {
+  override protected def filter[A](request: Request[A]): Future[Option[Result]] =
     Future.successful(None)
-  }
 }

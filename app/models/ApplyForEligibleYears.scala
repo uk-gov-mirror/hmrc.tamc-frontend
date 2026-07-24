@@ -16,9 +16,9 @@
 
 package models
 
-  import play.api.i18n.Messages
-  import uk.gov.hmrc.govukfrontend.views.Aliases.Text
-  import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.CheckboxItem
 
 sealed trait ApplyForEligibleYears
 
@@ -29,13 +29,12 @@ object ApplyForEligibleYears extends Enumerable.Implicits {
     Seq(PreviousTaxYears, CurrentTaxYear)
 
   def options(currentTaxYear: String)(implicit messages: Messages): Seq[CheckboxItem] =
-    values.zipWithIndex.map {
-      case (value, index) =>
-        CheckboxItem(
-          content = Text(messages(s"pages.chooseYears.${value.toString}", currentTaxYear)),
-          value   = value.toString,
-          id      = Some(s"value_$index")
-        )
+    values.zipWithIndex.map { case (value, index) =>
+      CheckboxItem(
+        content = Text(messages(s"pages.chooseYears.${value.toString}", currentTaxYear)),
+        value = value.toString,
+        id = Some(s"value_$index")
+      )
     }
 
   implicit val enumerable: Enumerable[ApplyForEligibleYears] =

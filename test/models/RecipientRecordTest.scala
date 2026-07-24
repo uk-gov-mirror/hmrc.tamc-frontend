@@ -17,7 +17,7 @@
 package models
 
 import org.scalatest.matchers.must.Matchers.mustBe
-import play.api.libs.json.{JsValue, Json, JsError}
+import play.api.libs.json.{JsError, JsValue, Json}
 import uk.gov.hmrc.domain.Nino
 import utils.BaseTest
 
@@ -89,7 +89,7 @@ class RecipientRecordTest extends BaseTest {
       result match {
         case JsError(errors) =>
           errors.head._2.head.message should include("error.expected.date.isoformat")
-        case _ =>
+        case _               =>
           fail("Expected a JsError due to invalid date format")
       }
     }
@@ -180,7 +180,7 @@ class RecipientRecordTest extends BaseTest {
         availableTaxYears = List(TaxYear(2019))
       )
 
-      val json = Json.toJson(originalRecipientRecord)
+      val json         = Json.toJson(originalRecipientRecord)
       val deserialized = json.as[RecipientRecord]
 
       deserialized mustBe originalRecipientRecord

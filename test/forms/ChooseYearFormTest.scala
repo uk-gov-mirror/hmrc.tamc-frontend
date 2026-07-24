@@ -27,9 +27,9 @@ class ChooseYearFormTest extends BaseTest {
 
   "ChooseYearForm" should {
     "bind all valid options" in {
-      val allOptions = ApplyForEligibleYears.values.map(_.toString)
-      val data: Map[String, String] = allOptions.zipWithIndex.map {
-        case (value, index) => s"value[$index]" -> value
+      val allOptions                = ApplyForEligibleYears.values.map(_.toString)
+      val data: Map[String, String] = allOptions.zipWithIndex.map { case (value, index) =>
+        s"value[$index]" -> value
       }.toMap
 
       val boundForm = form.bind(data)

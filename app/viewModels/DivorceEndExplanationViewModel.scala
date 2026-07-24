@@ -26,33 +26,44 @@ import javax.inject.Inject
 
 case class DivorceEndExplanationViewModel(divorceDate: String, taxYearStatus: String, bulletStatement: (String, String))
 
-class DivorceEndExplanationViewModelImpl @Inject()(languageUtilsImpl: LanguageUtilsImpl, taxYear: SystemTaxYear) {
+class DivorceEndExplanationViewModelImpl @Inject() (languageUtilsImpl: LanguageUtilsImpl, taxYear: SystemTaxYear) {
 
-  def apply(role: Role, divorceDate: LocalDate, datesForDivorce: MarriageAllowanceEndingDates)(implicit messages: Messages): DivorceEndExplanationViewModel = {
+  def apply(role: Role, divorceDate: LocalDate, datesForDivorce: MarriageAllowanceEndingDates)(implicit
+    messages: Messages
+  ): DivorceEndExplanationViewModel = {
 
-    val divorceDateFormatted = languageUtilsImpl().ukDateTransformer(divorceDate)
-    val isCurrentYearDivorced: Boolean =  taxYear.current().contains(divorceDate)
+    val divorceDateFormatted           = languageUtilsImpl().ukDateTransformer(divorceDate)
+    val isCurrentYearDivorced: Boolean = taxYear.current().contains(divorceDate)
 
-    val taxYearStatus = if(isCurrentYearDivorced) {
-        messages("pages.divorce.explanation.current.taxYear")
-     } else {
-        messages("pages.divorce.explanation.previous.taxYear")
-     }
+    val taxYearStatus = if (isCurrentYearDivorced) {
+      messages("pages.divorce.explanation.current.taxYear")
+    } else {
+      messages("pages.divorce.explanation.previous.taxYear")
+    }
 
-    val bullets = createBullets(role, isCurrentYearDivorced, datesForDivorce.marriageAllowanceEndDate, datesForDivorce.personalAllowanceEffectiveDate)
+    val bullets = createBullets(
+      role,
+      isCurrentYearDivorced,
+      datesForDivorce.marriageAllowanceEndDate,
+      datesForDivorce.personalAllowanceEffectiveDate
+    )
 
     DivorceEndExplanationViewModel(divorceDateFormatted, taxYearStatus, bullets)
   }
 
-  def createBullets(role: Role, isCurrentYearDivorced: Boolean, maEndDate: LocalDate, paEffectiveDate: LocalDate)(implicit messages: Messages): (String, String) = {
-
-    if(role == Recipient && isCurrentYearDivorced) {
-      (messages("pages.divorce.explanation.current.ma.bullet", languageUtilsImpl().ukDateTransformer(maEndDate)),
-        messages("pages.divorce.explanation.current.pa.bullet", languageUtilsImpl().ukDateTransformer(paEffectiveDate)))
+  def createBullets(role: Role, isCurrentYearDivorced: Boolean, maEndDate: LocalDate, paEffectiveDate: LocalDate)(
+    implicit messages: Messages
+  ): (String, String) =
+    if (role == Recipient && isCurrentYearDivorced) {
+      (
+        messages("pages.divorce.explanation.current.ma.bullet", languageUtilsImpl().ukDateTransformer(maEndDate)),
+        messages("pages.divorce.explanation.current.pa.bullet", languageUtilsImpl().ukDateTransformer(paEffectiveDate))
+      )
     } else {
-      (messages("pages.divorce.explanation.previous.bullet", languageUtilsImpl().ukDateTransformer(maEndDate)),
-        messages("pages.divorce.explanation.adjust.code.bullet"))
+      (
+        messages("pages.divorce.explanation.previous.bullet", languageUtilsImpl().ukDateTransformer(maEndDate)),
+        messages("pages.divorce.explanation.adjust.code.bullet")
+      )
     }
-  }
 
 }

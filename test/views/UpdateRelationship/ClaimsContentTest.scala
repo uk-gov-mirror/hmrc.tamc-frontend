@@ -35,13 +35,14 @@ import java.util.Locale
 
 class ClaimsContentTest extends BaseTest with Injecting with NinoGenerator {
 
-  val view: claims = inject[claims]
-  val claimsViewModelImpl: ClaimsViewModelImpl = instanceOf[ClaimsViewModelImpl]
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  lazy val nino: String = generateNino().nino
+  val view: claims                                  = inject[claims]
+  val claimsViewModelImpl: ClaimsViewModelImpl      = instanceOf[ClaimsViewModelImpl]
+  implicit val request: AuthenticatedUserRequest[?] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  lazy val nino: String                             = generateNino().nino
   override implicit lazy val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
 
-  val now: LocalDate = LocalDate.now()
+  val now: LocalDate   = LocalDate.now()
   val dateInputPattern = "yyyyMMdd"
 
   val relationshipRecord: RelationshipRecord = RelationshipRecord(
@@ -51,9 +52,11 @@ class ClaimsContentTest extends BaseTest with Injecting with NinoGenerator {
     Some(Default),
     None,
     otherParticipantInstanceIdentifier = "1",
-    LocalDate.now.minusDays(1).format(DateTimeFormatter.ofPattern(dateInputPattern)))
+    LocalDate.now.minusDays(1).format(DateTimeFormatter.ofPattern(dateInputPattern))
+  )
 
-  val doc: Document = Jsoup.parse(view(claimsViewModelImpl(relationshipRecord, Seq.empty[RelationshipRecord])).toString())
+  val doc: Document =
+    Jsoup.parse(view(claimsViewModelImpl(relationshipRecord, Seq.empty[RelationshipRecord])).toString())
 
   "Claims view page" should {
     "Display claim page heading" in {
@@ -61,14 +64,19 @@ class ClaimsContentTest extends BaseTest with Injecting with NinoGenerator {
     }
 
     "Display correct table headers" in {
-      doc.getElementsByClass("govuk-table__header")
+      doc
+        .getElementsByClass("govuk-table__header")
         .eachText()
         .toArray contains Array("Tax Year", "Status", s"${TaxYear.current.startYear} to Present")
     }
 
     "Display tax free allowance link" in {
-      doc.getElementById("taxFreeAllowance").text() shouldBe "You can see the transferred allowance in your tax-free amount."
-      doc.getElementById("taxFreeAllowanceLink").attr("href") shouldBe "http://localhost:9230/check-income-tax/tax-free-allowance"
+      doc
+        .getElementById("taxFreeAllowance")
+        .text()       shouldBe "You can see the transferred allowance in your tax-free amount."
+      doc
+        .getElementById("taxFreeAllowanceLink")
+        .attr("href") shouldBe "http://localhost:9230/check-income-tax/tax-free-allowance"
     }
   }
 

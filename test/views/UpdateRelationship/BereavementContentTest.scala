@@ -30,17 +30,18 @@ import java.util.Locale
 
 class BereavementContentTest extends BaseTest with Injecting with NinoGenerator {
 
-  val view: bereavement = inject[bereavement]
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  lazy val nino: String = generateNino().nino
+  val view: bereavement                             = inject[bereavement]
+  implicit val request: AuthenticatedUserRequest[?] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  lazy val nino: String                             = generateNino().nino
   override implicit lazy val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
-  val recipientDoc: Document = Jsoup.parse(view(Recipient).toString())
-  val transferorDoc: Document = Jsoup.parse(view(Transferor).toString())
+  val recipientDoc: Document                        = Jsoup.parse(view(Recipient).toString())
+  val transferorDoc: Document                       = Jsoup.parse(view(Transferor).toString())
 
   "Bereavement page" should {
 
     "Display correct page heading" in {
-      recipientDoc.getElementById("bereavement").text() shouldBe "We are sorry for your loss"
+      recipientDoc.getElementById("bereavement").text()  shouldBe "We are sorry for your loss"
       transferorDoc.getElementById("bereavement").text() shouldBe "We are sorry for your loss"
     }
 
@@ -72,10 +73,11 @@ class BereavementContentTest extends BaseTest with Injecting with NinoGenerator 
     }
 
     "Display contact helpline link" in {
-      transferorDoc.getElementById("main-content")
+      transferorDoc
+        .getElementById("main-content")
         .getElementById("helpline")
         .text() shouldBe "contact the Income Tax general enquiries helpline"
-      
+
       recipientDoc.getElementById("main-content").getElementsByClass("govuk-link").attr("href") shouldBe
         "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/income-tax-enquiries-for-individuals-pensioners-and-employees"
     }

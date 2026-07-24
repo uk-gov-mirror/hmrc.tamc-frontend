@@ -16,14 +16,14 @@
 
 package connectors
 
- import config.ApplicationConfig
+import config.ApplicationConfig
 
 import javax.inject.Inject
 import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.http.client.HttpClientV2
 
- class TamcAuthConnector @Inject()(val httpClientV2: HttpClientV2, applicationConfig: ApplicationConfig)
-  extends PlayAuthConnector {
+class TamcAuthConnector @Inject() (val httpClientV2: HttpClientV2, applicationConfig: ApplicationConfig)
+    extends PlayAuthConnector {
 
   override val serviceUrl: String = applicationConfig.authURL
 

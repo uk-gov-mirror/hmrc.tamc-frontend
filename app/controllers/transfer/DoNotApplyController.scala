@@ -23,16 +23,14 @@ import utils.LoggerHelper
 
 import javax.inject.Inject
 
-class DoNotApplyController @Inject()(
-                                       authenticate: StandardAuthJourney,
-                                       doNotApplyView: views.html.multiyear.transfer.dont_apply_current_tax_year,
-                                       cc: MessagesControllerComponents
-                                     )
-                                     extends BaseController(cc) with LoggerHelper {
+class DoNotApplyController @Inject() (
+  authenticate: StandardAuthJourney,
+  doNotApplyView: views.html.multiyear.transfer.dont_apply_current_tax_year,
+  cc: MessagesControllerComponents
+) extends BaseController(cc)
+    with LoggerHelper {
 
-
-  def doNotApply: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails {
-    implicit request =>
-      Ok(doNotApplyView())
+  def doNotApply: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails { implicit request =>
+    Ok(doNotApplyView())
   }
 }

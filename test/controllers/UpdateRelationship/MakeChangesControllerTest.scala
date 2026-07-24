@@ -38,7 +38,11 @@ import views.html.coc.reason_for_change
 
 import scala.concurrent.Future
 
-class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTestHelper with CreateRelationshipRecordsHelper with Injecting {
+class MakeChangesControllerTest
+    extends ControllerBaseTest
+    with ControllerViewTestHelper
+    with CreateRelationshipRecordsHelper
+    with Injecting {
 
   val mockUpdateRelationshipService: UpdateRelationshipService = mock[UpdateRelationshipService]
 
@@ -48,14 +52,14 @@ class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTe
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: MakeChangesController = app.injector.instanceOf[MakeChangesController]
 
-  val reasonForChangeView: reason_for_change = inject[views.html.coc.reason_for_change]
+  val reasonForChangeView: reason_for_change   = inject[views.html.coc.reason_for_change]
   val relationshipRecords: RelationshipRecords = createRelationshipRecords()
-  val role: Role = relationshipRecords.primaryRecord.role
-
+  val role: Role                               = relationshipRecords.primaryRecord.role
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -69,7 +73,8 @@ class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTe
     "display the make change page" when {
       "there is valid data in the cache" in {
         val userAnswer = "Divorce"
-        when(mockUpdateRelationshipService.getMakeChangesDecision(any())).thenReturn(Future.successful(Some(userAnswer)))
+        when(mockUpdateRelationshipService.getMakeChangesDecision(any()))
+          .thenReturn(Future.successful(Some(userAnswer)))
 
         val result = controller.makeChange()(request)
 
@@ -112,20 +117,22 @@ class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTe
     "redirect to the divorce enter year page" when {
       "a user selects the Divorce option" in {
         val userAnswer = MakeChangesDecisionForm.Divorce
-        val request = buildFakePostRequest(MakeChangesDecisionForm.StopMAChoice -> userAnswer)
+        val request    = buildFakePostRequest(MakeChangesDecisionForm.StopMAChoice -> userAnswer)
         when(mockUpdateRelationshipService.saveMakeChangeDecision(ArgumentMatchers.eq(userAnswer))(any()))
           .thenReturn(Future.successful("Divorce"))
 
         val result = controller.submitMakeChange()(request)
 
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.DivorceController.divorceEnterYear().url)
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(
+          controllers.UpdateRelationship.routes.DivorceController.divorceEnterYear().url
+        )
       }
 
       "redirect to the stop allowance page" when {
         "a recipient selects Cancel" in {
           val relationshipRecords = createRelationshipRecords("Recipient")
-          val request = buildFakePostRequest(MakeChangesDecisionForm.StopMAChoice -> "Cancel")
+          val request             = buildFakePostRequest(MakeChangesDecisionForm.StopMAChoice -> "Cancel")
           when(mockUpdateRelationshipService.saveMakeChangeDecision(ArgumentMatchers.eq("Cancel"))(any()))
             .thenReturn(Future.successful("Cancel"))
           when(mockUpdateRelationshipService.getRelationshipRecords(any(), any()))
@@ -133,17 +140,22 @@ class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTe
 
           val result = controller.submitMakeChange()(request)
 
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.StopAllowanceController.stopAllowance().url)
+          status(result)           shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(
+            controllers.UpdateRelationship.routes.StopAllowanceController.stopAllowance().url
+          )
         }
       }
 
       "redirect to the make change page" when {
         "there is an unexpected error" in {
-          val request = FakeRequest().withFormUrlEncodedBody(MakeChangesDecisionForm.StopMAChoice -> "Test").withMethod("POST")
-          val result = controller.submitMakeChange()(request)
+          val request =
+            FakeRequest().withFormUrlEncodedBody(MakeChangesDecisionForm.StopMAChoice -> "Test").withMethod("POST")
+          val result  = controller.submitMakeChange()(request)
 
-          redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.MakeChangesController.makeChange().url)
+          redirectLocation(result) shouldBe Some(
+            controllers.UpdateRelationship.routes.MakeChangesController.makeChange().url
+          )
         }
       }
     }
@@ -151,28 +163,32 @@ class MakeChangesControllerTest extends ControllerBaseTest with ControllerViewTe
     "redirect to the cancel page" when {
       "a transferor selects Do not want Marriage Allowance anymore" in {
         val userAnswer = MakeChangesDecisionForm.Cancel
-        val request = buildFakePostRequest(MakeChangesDecisionForm.StopMAChoice -> userAnswer)
+        val request    = buildFakePostRequest(MakeChangesDecisionForm.StopMAChoice -> userAnswer)
         when(mockUpdateRelationshipService.saveMakeChangeDecision(ArgumentMatchers.eq(userAnswer))(any()))
           .thenReturn(Future.successful(userAnswer))
 
         val result = controller.submitMakeChange()(request)
 
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.StopAllowanceController.cancel().url)
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(
+          controllers.UpdateRelationship.routes.StopAllowanceController.cancel().url
+        )
       }
     }
 
     "redirect to the bereavement page" when {
       "a user selects the bereavement option" in {
         val userAnswer = MakeChangesDecisionForm.Bereavement
-        val request = buildFakePostRequest(MakeChangesDecisionForm.StopMAChoice -> userAnswer)
+        val request    = buildFakePostRequest(MakeChangesDecisionForm.StopMAChoice -> userAnswer)
         when(mockUpdateRelationshipService.saveMakeChangeDecision(ArgumentMatchers.eq(userAnswer))(any()))
           .thenReturn(Future.successful(userAnswer))
 
         val result = controller.submitMakeChange()(request)
 
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.UpdateRelationship.routes.BereavementController.bereavement().url)
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(
+          controllers.UpdateRelationship.routes.BereavementController.bereavement().url
+        )
       }
     }
   }

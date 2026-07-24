@@ -73,12 +73,23 @@ object DesRelationshipEndReason extends Logging {
     val value = "DEFAULT"
   }
 
-  object Enumeration{
+  object Enumeration {
 
     def withValue(v: String): Option[DesRelationshipEndReason] = values.find(_.value == v)
 
     val values = Set(
-      Death, Divorce, InvalidParticipant, Cancelled, Rejected, Hmrc, Closed, Merger, Retrospective, System, Active, Default
+      Death,
+      Divorce,
+      InvalidParticipant,
+      Cancelled,
+      Rejected,
+      Hmrc,
+      Closed,
+      Merger,
+      Retrospective,
+      System,
+      Active,
+      Default
     )
   }
 
@@ -89,7 +100,7 @@ object DesRelationshipEndReason extends Logging {
       val reason = json.as[String]
       Enumeration.withValue(reason) match {
         case Some(r) => JsSuccess(r)
-        case None =>
+        case None    =>
           logger.warn(s"Invalid relationship end status has been received: $reason. Treating it as Default status.")
           JsSuccess(Default)
       }

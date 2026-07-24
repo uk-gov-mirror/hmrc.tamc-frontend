@@ -30,7 +30,7 @@ import utils.UnitSpec
 
 import java.util.Locale
 
-class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite with Injecting{
+class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite with Injecting {
 
   implicit val request: Request[?] = FakeRequest()
 
@@ -38,23 +38,23 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite with Injecting{
 
   override def fakeApplication(): Application = GuiceApplicationBuilder().build()
 
-  val errorHandler: ErrorHandler = inject[ErrorHandler]
+  val errorHandler: ErrorHandler      = inject[ErrorHandler]
   implicit val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
 
   "standardErrorTemplate" must {
     "return the global error view" in {
-      val title = "testTitle"
+      val title   = "testTitle"
       val heading = "testHeading"
       val message = "testMessage"
 
       val standardErrorTemplate: Html = errorHandler.standardErrorTemplate(title, heading, message)
-      val doc: Document = Jsoup.parse(standardErrorTemplate.toString())
+      val doc: Document               = Jsoup.parse(standardErrorTemplate.toString())
 
-      val docTitle = doc.title()
+      val docTitle   = doc.title()
       val docHeading = doc.select("#errorHeading").text()
       val docMessage = doc.select("#errorText").text()
 
-      docTitle shouldBe title + " - Marriage Allowance - GOV.UK"
+      docTitle   shouldBe title + " - Marriage Allowance - GOV.UK"
       docHeading shouldBe heading
       docMessage shouldBe message
     }
@@ -63,7 +63,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite with Injecting{
   "notFoundTemplate" must {
     "return the page not found view" in {
       val notFoundTemplate: Html = errorHandler.notFoundTemplate
-      val doc: Document = Jsoup.parse(notFoundTemplate.toString())
+      val doc: Document          = Jsoup.parse(notFoundTemplate.toString())
 
       val docTitle = doc.title()
       docTitle should include("Marriage Allowance - GOV.UK")

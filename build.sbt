@@ -20,6 +20,8 @@ val appName = "tamc-frontend"
 
 ThisBuild / majorVersion := 7
 ThisBuild / scalaVersion := "3.6.3"
+ThisBuild / scalafmtOnCompile := true
+
 ThisBuild / scalacOptions ++= Seq(
   "-feature",
   "-Wconf:msg=Flag.*repeatedly:s",

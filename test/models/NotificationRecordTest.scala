@@ -17,7 +17,7 @@
 package models
 
 import org.scalatest.matchers.must.Matchers.mustBe
-import play.api.libs.json.{JsValue, Json, JsError}
+import play.api.libs.json.{JsError, JsValue, Json}
 import utils.{BaseTest, EmailAddress}
 
 class NotificationRecordTest extends BaseTest {
@@ -60,8 +60,8 @@ class NotificationRecordTest extends BaseTest {
       record.isError mustBe true
       record match {
         case JsError(errors) =>
-          errors.head._2.head.message should include ("not a valid email address")
-        case _ =>
+          errors.head._2.head.message should include("not a valid email address")
+        case _               =>
           fail("Expected a JsError due to invalid email")
       }
     }

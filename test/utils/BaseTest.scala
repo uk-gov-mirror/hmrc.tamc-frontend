@@ -26,9 +26,9 @@ import scala.concurrent.ExecutionContext
 
 trait BaseTest extends UnitSpec with GuiceOneAppPerSuite with BeforeAndAfterEach {
 
-  implicit lazy val messages: Messages = Helpers.stubMessages()
+  implicit lazy val messages: Messages      = Helpers.stubMessages()
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
-  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+  implicit lazy val ec: ExecutionContext    = app.injector.instanceOf[ExecutionContext]
 
   def instanceOf[T](implicit evidence: scala.reflect.ClassTag[T]): T = app.injector.instanceOf[T]
 

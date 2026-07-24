@@ -39,26 +39,28 @@ import scala.concurrent.Future
 class AuthRetrievalsTest extends ControllerBaseTest {
 
   type Retrievals = Option[Credentials] ~ Option[String] ~ ConfidenceLevel ~ Option[String]
-  val mockAuthConnector: AuthConnector = mock[AuthConnector]
-  val retrievals: Retrieval[Retrievals] = Retrievals.credentials and Retrievals.nino and Retrievals.confidenceLevel and Retrievals.saUtr
+  val mockAuthConnector: AuthConnector  = mock[AuthConnector]
+  val retrievals: Retrieval[Retrievals] =
+    Retrievals.credentials and Retrievals.nino and Retrievals.confidenceLevel and Retrievals.saUtr
 
   val applicationConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
-      bind[AuthConnector].toInstance(mockAuthConnector),
-    ).configure(
-    "metrics.jvm" -> false
-    ).build()
+      bind[AuthConnector].toInstance(mockAuthConnector)
+    )
+    .configure(
+      "metrics.jvm" -> false
+    )
+    .build()
 
   val authAction = app.injector.instanceOf[AuthRetrievals]
 
   class FakeController extends Controller {
-    def onPageLoad(): Action[AnyContent] = authAction {
-      implicit request => Ok(request.nino.nino)
+    def onPageLoad(): Action[AnyContent] = authAction { implicit request =>
+      Ok(request.nino.nino)
     }
   }
-
 
   "AuthRetrievals" should {
     "throw exception" when {
@@ -80,7 +82,7 @@ class AuthRetrievalsTest extends ControllerBaseTest {
           .thenReturn(Future.successful(withNinoRetrieval))
 
         val result: Future[Result] = onPageLoad()(request)
-        status(result) shouldBe OK
+        status(result)          shouldBe OK
         contentAsString(result) shouldBe Ninos.nino1
       }
     }

@@ -33,22 +33,24 @@ trait PertaxAuthMockingHelper {
     "microservice.services.pertax-auth.port" -> server.port()
   )
 
-  override def fakeApplication(): Application = {
+  override def fakeApplication(): Application =
     GuiceApplicationBuilder()
       .configure(
         config
-      ).build()
-  }
+      )
+      .build()
 
-  def mockPostPertaxAuth(returnedValue: PertaxAuthResponseModel): StubMapping = {
+  def mockPostPertaxAuth(returnedValue: PertaxAuthResponseModel): StubMapping =
     server.stubFor(
       post(urlMatching("/pertax/authorise"))
-        .willReturn(aResponse().withStatus(OK)
-        .withBody(Json.stringify(Json.toJson(returnedValue))))
+        .willReturn(
+          aResponse()
+            .withStatus(OK)
+            .withBody(Json.stringify(Json.toJson(returnedValue)))
+        )
     )
-  }
 
-  def mockPertaxAuth(returnedValue: PertaxAuthResponseModel, nino: String = "AA000000A"): StubMapping = {
+  def mockPertaxAuth(returnedValue: PertaxAuthResponseModel, nino: String = "AA000000A"): StubMapping =
     server.stubFor(
       get(urlMatching(s"/pertax/$nino/authorise"))
         .willReturn(
@@ -57,9 +59,8 @@ trait PertaxAuthMockingHelper {
             .withBody(Json.stringify(Json.toJson(returnedValue)))
         )
     )
-  }
 
-  def mockPertaxAuthFailure(returnedValue: JsValue, nino: String = "AA000000A"): StubMapping = {
+  def mockPertaxAuthFailure(returnedValue: JsValue, nino: String = "AA000000A"): StubMapping =
     server.stubFor(
       get(urlMatching(s"/pertax/$nino/authorise"))
         .willReturn(
@@ -68,9 +69,13 @@ trait PertaxAuthMockingHelper {
             .withBody(Json.stringify(returnedValue))
         )
     )
-  }
 
-  def mockPertaxPartial(body: String, title: Option[String], status: Int = OK, partialUrl: String = "/partial"): StubMapping = {
+  def mockPertaxPartial(
+    body: String,
+    title: Option[String],
+    status: Int = OK,
+    partialUrl: String = "/partial"
+  ): StubMapping = {
     val response = aResponse()
       .withStatus(status)
       .withBody(body)

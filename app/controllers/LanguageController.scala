@@ -16,7 +16,6 @@
 
 package controllers
 
-
 import config.ApplicationConfig
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -24,11 +23,11 @@ import uk.gov.hmrc.play.language.LanguageUtils
 
 import javax.inject.Inject
 
-class LanguageController @Inject()(
-                                    languageUtils: LanguageUtils,
-                                    appConfig: ApplicationConfig,
-                                    cc: MessagesControllerComponents
-                                  ) extends uk.gov.hmrc.play.language.LanguageController(languageUtils, cc) {
+class LanguageController @Inject() (
+  languageUtils: LanguageUtils,
+  appConfig: ApplicationConfig,
+  cc: MessagesControllerComponents
+) extends uk.gov.hmrc.play.language.LanguageController(languageUtils, cc) {
 
   def enGb(): Action[AnyContent] = switchToLanguage(language = "english")
 

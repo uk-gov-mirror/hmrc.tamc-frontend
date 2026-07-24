@@ -22,40 +22,42 @@ import controllers.auth.StandardAuthJourney
 import forms.EmailForm.emailForm
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.UpdateRelationshipService
-import utils.{UpdateRelationshipErrorHandler, LoggerHelper}
+import utils.{LoggerHelper, UpdateRelationshipErrorHandler}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class ConfirmEmailController @Inject()(authenticate: StandardAuthJourney,
-                                       updateRelationshipService: UpdateRelationshipService,
-                                       cc: MessagesControllerComponents,
-                                       emailV: views.html.coc.email,
-                                       errorHandler: UpdateRelationshipErrorHandler)
-                                      (implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class ConfirmEmailController @Inject() (
+  authenticate: StandardAuthJourney,
+  updateRelationshipService: UpdateRelationshipService,
+  cc: MessagesControllerComponents,
+  emailV: views.html.coc.email,
+  errorHandler: UpdateRelationshipErrorHandler
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
-  def confirmEmail: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
-    implicit request =>
-      lazy val emptyEmailView = emailV(emailForm)
-      updateRelationshipService.getEmailAddress map {
-        case Some(email) => Ok(emailV(emailForm.fill(email)))
-        case None => Ok(emptyEmailView)
-      } recover {
-        case NonFatal(_) => Ok(emptyEmailView)
-      }
+  def confirmEmail: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
+    lazy val emptyEmailView = emailV(emailForm)
+    updateRelationshipService.getEmailAddress map {
+      case Some(email) => Ok(emailV(emailForm.fill(email)))
+      case None        => Ok(emptyEmailView)
+    } recover { case NonFatal(_) =>
+      Ok(emptyEmailView)
+    }
   }
 
   def confirmYourEmailActionUpdate: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async {
     implicit request =>
-      emailForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(emailV(formWithErrors)))
-        },
-        email =>
-          updateRelationshipService.saveEmailAddress(email) map {
-            _ => Redirect(controllers.UpdateRelationship.routes.ConfirmChangeController.confirmUpdate())
-          }
-      ) recover errorHandler.handleError
+      emailForm
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(emailV(formWithErrors))),
+          email =>
+            updateRelationshipService.saveEmailAddress(email) map { _ =>
+              Redirect(controllers.UpdateRelationship.routes.ConfirmChangeController.confirmUpdate())
+            }
+        ) recover errorHandler.handleError
   }
 
 }

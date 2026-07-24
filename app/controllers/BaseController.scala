@@ -21,4 +21,4 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-class BaseController @Inject()(cc: MessagesControllerComponents) extends FrontendController(cc) with I18nSupport
+class BaseController @Inject() (cc: MessagesControllerComponents) extends FrontendController(cc) with I18nSupport

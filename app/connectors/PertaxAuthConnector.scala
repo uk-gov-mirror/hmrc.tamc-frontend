@@ -32,11 +32,18 @@ import connectors.httpParsers.PertaxAuthenticationHttpParser._
 import models.pertaxAuth.PertaxAuthResponseModel
 import uk.gov.hmrc.http.client.HttpClientV2
 
-class PertaxAuthConnectorImpl @Inject()(http: HttpClientV2, appConfig: ApplicationConfig, httpClientResponse: HttpClientResponse)(
-  implicit ec: ExecutionContext
-) extends PertaxAuthConnector with Logging {
+class PertaxAuthConnectorImpl @Inject() (
+  http: HttpClientV2,
+  appConfig: ApplicationConfig,
+  httpClientResponse: HttpClientResponse
+)(implicit
+  ec: ExecutionContext
+) extends PertaxAuthConnector
+    with Logging {
 
-  override def authorise(nino: String)(implicit hc: HeaderCarrier): Future[Either[UpstreamErrorResponse, PertaxAuthResponseModel]] = {
+  override def authorise(
+    nino: String
+  )(implicit hc: HeaderCarrier): Future[Either[UpstreamErrorResponse, PertaxAuthResponseModel]] = {
     val authUrl = appConfig.pertaxAuthBaseUrl + s"/pertax/$nino/authorise"
 
     http
@@ -46,15 +53,15 @@ class PertaxAuthConnectorImpl @Inject()(http: HttpClientV2, appConfig: Applicati
   }
 
   def pertaxPostAuthorise(implicit
-                          hc: HeaderCarrier,
-                          ec: ExecutionContext
-                         ): EitherT[Future, UpstreamErrorResponse, PertaxAuthResponseModel] = {
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): EitherT[Future, UpstreamErrorResponse, PertaxAuthResponseModel] = {
     val pertaxUrl = appConfig.pertaxAuthBaseUrl
 
     httpClientResponse
       .read(
         http
-          .post(url= url"$pertaxUrl/pertax/authorise")
+          .post(url = url"$pertaxUrl/pertax/authorise")
           .setHeader(HeaderNames.ACCEPT -> "application/vnd.hmrc.2.0+json")
           .execute[Either[UpstreamErrorResponse, HttpResponse]]
       )
@@ -63,7 +70,8 @@ class PertaxAuthConnectorImpl @Inject()(http: HttpClientV2, appConfig: Applicati
 
   override def loadPartial(partialContextUrl: String)(implicit hc: HeaderCarrier): Future[HtmlPartial] = {
     val partialUrl =
-      appConfig.pertaxAuthBaseUrl + s"${if (partialContextUrl.charAt(0).toString == "/") partialContextUrl else s"/$partialContextUrl"}"
+      appConfig.pertaxAuthBaseUrl + s"${if (partialContextUrl.charAt(0).toString == "/") partialContextUrl
+        else s"/$partialContextUrl"}"
 
     http
       .get(url"$partialUrl")
@@ -71,22 +79,30 @@ class PertaxAuthConnectorImpl @Inject()(http: HttpClientV2, appConfig: Applicati
       .map {
         case partialSuccess: HtmlPartial.Success => partialSuccess
         case partialFailure: HtmlPartial.Failure =>
-          logger.error(s"[PertaxAuthConnector][loadPartial] Failed to load Partial from partial url '$partialUrl'. " +
-            s"Partial info: $partialFailure, body: ${partialFailure.body}")
+          logger.error(
+            s"[PertaxAuthConnector][loadPartial] Failed to load Partial from partial url '$partialUrl'. " +
+              s"Partial info: $partialFailure, body: ${partialFailure.body}"
+          )
           partialFailure
-      }.recover {
-      case exception: HttpException => HtmlPartial.Failure(Some(exception.responseCode))
-      case _ => HtmlPartial.Failure(None)
-    }
+      }
+      .recover {
+        case exception: HttpException => HtmlPartial.Failure(Some(exception.responseCode))
+        case _                        => HtmlPartial.Failure(None)
+      }
   }
 
 }
 
 @ImplementedBy(classOf[PertaxAuthConnectorImpl])
 trait PertaxAuthConnector {
-  def authorise(nino: String)(implicit hc: HeaderCarrier): Future[Either[UpstreamErrorResponse, PertaxAuthResponseModel]]
+  def authorise(nino: String)(implicit
+    hc: HeaderCarrier
+  ): Future[Either[UpstreamErrorResponse, PertaxAuthResponseModel]]
 
-  def pertaxPostAuthorise(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, UpstreamErrorResponse, PertaxAuthResponseModel]
+  def pertaxPostAuthorise(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): EitherT[Future, UpstreamErrorResponse, PertaxAuthResponseModel]
 
   def loadPartial(partialContextUrl: String)(implicit hc: HeaderCarrier): Future[HtmlPartial]
 }

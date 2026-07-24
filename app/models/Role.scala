@@ -27,13 +27,13 @@ case object Transferor extends Role {
 }
 
 case object Recipient extends Role {
-  override val value: String =  "Recipient"
+  override val value: String = "Recipient"
 }
 
 object Role {
   def apply(participant: String): Role = participant match {
     case Transferor.value => Transferor
-    case Recipient.value => Recipient
-    case _ => throw UnknownParticipant()
+    case Recipient.value  => Recipient
+    case _                => throw UnknownParticipant()
   }
 }

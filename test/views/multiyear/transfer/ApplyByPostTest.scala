@@ -30,13 +30,15 @@ import views.html.multiyear.transfer.apply_by_post
 class ApplyByPostTest extends BaseTest with ViewTestUtils with NinoGenerator {
 
   lazy val nino: String                                                  = generateNino().nino
-  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
-  override implicit lazy val messages: Messages                          = instanceOf[MessagesApi].asScala.preferred(FakeRequest(): Request[AnyContent])
+  implicit val request: AuthenticatedUserRequest[AnyContentAsEmpty.type] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  override implicit lazy val messages: Messages                          =
+    instanceOf[MessagesApi].asScala.preferred(FakeRequest(): Request[AnyContent])
   lazy val applyByPostView: apply_by_post                                = instanceOf[apply_by_post]
 
   val taxYears: Seq[String] = Seq("currentTaxYear", "PreviousTaxYears")
 
-  implicit val doc: Document                                             = Jsoup.parse(applyByPostView(taxYears).toString())
+  implicit val doc: Document = Jsoup.parse(applyByPostView(taxYears).toString())
 
   "Apply By Post" should {
     "display the correct title" in {
@@ -49,29 +51,44 @@ class ApplyByPostTest extends BaseTest with ViewTestUtils with NinoGenerator {
 
     "display dynamic text" when {
       "only previous tax years are available" in {
-        val taxYears = Seq("previousTaxYears")
+        val taxYears               = Seq("previousTaxYears")
         implicit val doc: Document = Jsoup.parse(applyByPostView(taxYears).toString())
-        doc.getElementsByTag("p").eachText().toArray.shouldBe(Array(
-          "You cannot apply for previous tax years online.",
-          "Apply for Marriage Allowance by post",
-          "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."
-        ))
+        doc
+          .getElementsByTag("p")
+          .eachText()
+          .toArray
+          .shouldBe(
+            Array(
+              "You cannot apply for previous tax years online.",
+              "Apply for Marriage Allowance by post",
+              "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."
+            )
+          )
       }
 
       "both current and previous tax years are available" in {
-        val taxYears = Seq("previousTaxYears", "currentTaxYear")
+        val taxYears               = Seq("previousTaxYears", "currentTaxYear")
         implicit val doc: Document = Jsoup.parse(applyByPostView(taxYears).toString())
-        doc.getElementsByTag("p").eachText().toArray.shouldBe(Array(
-          "Your application includes a previous tax year. You cannot apply for previous tax years online.",
-          "Apply for Marriage Allowance by post",
-          "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."
-        ))
+        doc
+          .getElementsByTag("p")
+          .eachText()
+          .toArray
+          .shouldBe(
+            Array(
+              "Your application includes a previous tax year. You cannot apply for previous tax years online.",
+              "Apply for Marriage Allowance by post",
+              "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."
+            )
+          )
       }
     }
 
     "display correct link" in {
       doc.getElementById("apply-by-post-link").text().shouldBe("Apply for Marriage Allowance by post")
-      doc.getElementById("apply-by-post-link").attr("href").shouldBe("https://www.gov.uk/guidance/apply-for-marriage-allowance-by-post")
+      doc
+        .getElementById("apply-by-post-link")
+        .attr("href")
+        .shouldBe("https://www.gov.uk/guidance/apply-for-marriage-allowance-by-post")
     }
 
   }

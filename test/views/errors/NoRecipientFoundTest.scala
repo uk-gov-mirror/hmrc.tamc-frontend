@@ -28,9 +28,10 @@ import views.html.errors.recipient_not_found
 
 class NoRecipientFoundTest extends BaseTest {
 
-  implicit val request: UserRequest[?]                = UserRequest(FakeRequest(), None, true, None, false)
-  override implicit lazy val messages: Messages       = instanceOf[MessagesApi].asScala.preferred(FakeRequest(): Request[AnyContent])
-    
+  implicit val request: UserRequest[?]          = UserRequest(FakeRequest(), None, true, None, false)
+  override implicit lazy val messages: Messages =
+    instanceOf[MessagesApi].asScala.preferred(FakeRequest(): Request[AnyContent])
+
   lazy val recipientNotFoundView: recipient_not_found = instanceOf[recipient_not_found]
 
   implicit val doc: Document = Jsoup.parse(recipientNotFoundView()(messages, request).toString())

@@ -36,38 +36,40 @@ class MainViewSpec extends BaseTest with Injecting {
 
   object CommonValues {
 
-    val pageTitle = "Fake Page Title - Apply for - Marriage Allowance - GOV.UK"
-    val pageHeader = "Apply for Marriage Allowance"
-    val accountHome = "Account home"
-    val messages = "Messages"
-    val checkProgress = "Check progress"
+    val pageTitle          = "Fake Page Title - Apply for - Marriage Allowance - GOV.UK"
+    val pageHeader         = "Apply for Marriage Allowance"
+    val accountHome        = "Account home"
+    val messages           = "Messages"
+    val checkProgress      = "Check progress"
     val profileAndSettings = "Profile and settings"
-    val signOut = "Sign out"
+    val signOut            = "Sign out"
 
     val localPersonalAccountLink = "http://localhost:9232/personal-account"
-    val localMessagesLink = "http://localhost:9232/personal-account/messages"
-    val localTrackProgressLink = "http://localhost:9100/track"
-    val signOutUrl = "/marriage-allowance-application/logout"
-    val keepAliveUrl = "/keep-alive"
+    val localMessagesLink        = "http://localhost:9232/personal-account/messages"
+    val localTrackProgressLink   = "http://localhost:9100/track"
+    val signOutUrl               = "/marriage-allowance-application/logout"
+    val keepAliveUrl             = "/keep-alive"
 
-    val urBannerHeader = "Help make GOV.UK better"
+    val urBannerHeader   = "Help make GOV.UK better"
     val urBannerLinkText = "Sign up to take part in research (opens in new tab)"
-    val urBannerLink = "https://signup.take-part-in-research.service.gov.uk/?utm_campaign=TAMCPTAbanner&utm_source=Other&utm_medium=gov.uk%20survey&t=HMRC&id=133"
+    val urBannerLink     =
+      "https://signup.take-part-in-research.service.gov.uk/?utm_campaign=TAMCPTAbanner&utm_source=Other&utm_medium=gov.uk%20survey&t=HMRC&id=133"
 
-    val accessibilityStatementText = "Accessibility statement"
+    val accessibilityStatementText    = "Accessibility statement"
     val accessibilityStatementBaseUrl = "http://localhost:12346/accessibility-statement/marriage-allowance?referrerUrl="
 
     val reportATechnicalIssueText = "Is this page not working properly? (opens in new tab)"
 
-    val scriptUrl = "http://localhost:9234/marriage-allowance/assets/javascript/tamc.js"
+    val scriptUrl             = "http://localhost:9234/marriage-allowance/assets/javascript/tamc.js"
     val tamcBacklinkScriptUrl = "http://localhost:9234/marriage-allowance/pta-frontend/assets/tamc-backlink.js"
-    val pollyfillScriptUrl = "http://localhost:9234/marriage-allowance/pta-frontend/assets/pollyfill.js"
+    val pollyfillScriptUrl    = "http://localhost:9234/marriage-allowance/pta-frontend/assets/pollyfill.js"
 
-    val testName: String = "new style"
+    val testName: String               = "new style"
     val profileAndSettingsLink: String = "http://localhost:9232/personal-account/profile-and-settings"
 
-    val accessibilityReferrerUrl: String = "%2Fsome-url"
-    val reportTechnicalProblemUrl: String = "http://localhost:9250/contact/report-technical-problem?service=TAMC&referrerUrl=%2Fsome-url"
+    val accessibilityReferrerUrl: String  = "%2Fsome-url"
+    val reportTechnicalProblemUrl: String =
+      "http://localhost:9250/contact/report-technical-problem?service=TAMC&referrerUrl=%2Fsome-url"
 
   }
 
@@ -103,12 +105,12 @@ class MainViewSpec extends BaseTest with Injecting {
 
       }
 
-      lazy val accountLinks = doc.select(".hmrc-account-menu__link")
-      lazy val accountHome = accountLinks.first()
-      lazy val messagesLink = accountLinks.get(3)
-      lazy val checkProgressLink = accountLinks.get(4)
+      lazy val accountLinks           = doc.select(".hmrc-account-menu__link")
+      lazy val accountHome            = accountLinks.first()
+      lazy val messagesLink           = accountLinks.get(3)
+      lazy val checkProgressLink      = accountLinks.get(4)
       lazy val profileAndSettingsLink = accountLinks.get(5)
-      lazy val signOutLink = accountLinks.get(6)
+      lazy val signOutLink            = accountLinks.get(6)
 
       "the account link" should {
         "have the Account Menu visible" in {
@@ -187,7 +189,9 @@ class MainViewSpec extends BaseTest with Injecting {
       }
 
       "the accessibility link" should {
-        lazy val accessibilityLink = doc.select("body > footer > div > div > div.govuk-footer__meta-item.govuk-footer__meta-item--grow > ul > li:nth-child(2) > a")
+        lazy val accessibilityLink = doc.select(
+          "body > footer > div > div > div.govuk-footer__meta-item.govuk-footer__meta-item--grow > ul > li:nth-child(2) > a"
+        )
 
         "contain the text 'Accessibility statement'" in {
           accessibilityLink.text() shouldBe CommonValues.accessibilityStatementText

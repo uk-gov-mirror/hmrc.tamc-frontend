@@ -24,17 +24,16 @@ import views.html.errors.other_ways
 
 class OtherWaysTest extends BaseTest {
 
-  lazy val otherWays = instanceOf[other_ways]
+  lazy val otherWays                           = instanceOf[other_ways]
   lazy val baseUserRequest: BaseUserRequest[?] = UserRequest(FakeRequest(), None, true, Some(""), true)
-  override lazy val messages = Helpers.stubMessages()
-
+  override lazy val messages                   = Helpers.stubMessages()
 
   "otherWays" should {
 
     "return correct page title of otherWays page" in {
 
       val document = Jsoup.parse(otherWays()(messages, baseUserRequest).toString)
-      val title = document.title()
+      val title    = document.title()
       val expected = messages("title.other-ways") + " - " + messages("title.pattern")
 
       title shouldBe expected
@@ -43,10 +42,10 @@ class OtherWaysTest extends BaseTest {
 
     "return you can apply for marriage allowance from PTA content" in {
 
-      val document = Jsoup.parse(otherWays()(messages, baseUserRequest).toString)
-      val paragraphTag = document.getElementsByTag("p").toString
+      val document      = Jsoup.parse(otherWays()(messages, baseUserRequest).toString)
+      val paragraphTag  = document.getElementsByTag("p").toString
       val expectedPart1 = messages("technical.other-ways.para0.part1")
-      val expectedLink = messages("technical.other-ways.para0.link-text")
+      val expectedLink  = messages("technical.other-ways.para0.link-text")
       val expectedPart2 = messages("technical.other-ways.para0.part2")
 
       paragraphTag should include(expectedPart1)
@@ -57,8 +56,8 @@ class OtherWaysTest extends BaseTest {
 
     "return you can call hmrc to make an application content" in {
 
-      val document = Jsoup.parse(otherWays()(messages, baseUserRequest).toString)
-      val paragraphTag = document.getElementsByTag("p").toString
+      val document      = Jsoup.parse(otherWays()(messages, baseUserRequest).toString)
+      val paragraphTag  = document.getElementsByTag("p").toString
       val expectedPart1 = messages("technical.other-ways.para1")
       val expectedPart2 = messages("technical.other-ways.para2")
 

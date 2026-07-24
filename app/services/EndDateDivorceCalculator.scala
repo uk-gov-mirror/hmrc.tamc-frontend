@@ -22,19 +22,20 @@ import java.time.LocalDate
 
 import uk.gov.hmrc.time.CurrentTaxYear
 
-class EndDateDivorceCalculator @Inject()(taxYear: CurrentTaxYear) {
+class EndDateDivorceCalculator @Inject() (taxYear: CurrentTaxYear) {
 
   def calculateEndDate(role: Role, divorceDate: LocalDate): LocalDate = {
 
     val isDivorceDateInTaxYear: Boolean = taxYear.current.contains(divorceDate)
 
     (role, isDivorceDateInTaxYear) match {
-      case(Recipient, true) => taxYear.current.finishes
-      case(Recipient, false) => taxYear.current.previous.finishes
-      case(Transferor, true) => taxYear.current.previous.finishes
-      case(Transferor, false) => taxYear.taxYearFor(divorceDate).finishes
+      case (Recipient, true)   => taxYear.current.finishes
+      case (Recipient, false)  => taxYear.current.previous.finishes
+      case (Transferor, true)  => taxYear.current.previous.finishes
+      case (Transferor, false) => taxYear.taxYearFor(divorceDate).finishes
     }
   }
 
-  def calculatePersonalAllowanceEffectiveDate(marriageAllowanceEndDate: LocalDate): LocalDate = taxYear.taxYearFor(marriageAllowanceEndDate).next.starts
+  def calculatePersonalAllowanceEffectiveDate(marriageAllowanceEndDate: LocalDate): LocalDate =
+    taxYear.taxYearFor(marriageAllowanceEndDate).next.starts
 }

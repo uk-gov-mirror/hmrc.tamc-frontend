@@ -20,7 +20,6 @@ import com.google.inject.Inject
 import config.ApplicationConfig
 import uk.gov.hmrc.time.TaxYear
 
-
-class SystemTaxYear @Inject()(applicationConfig: ApplicationConfig) {
+class SystemTaxYear @Inject() (applicationConfig: ApplicationConfig) {
   def current(): TaxYear = applicationConfig.currentTaxYear()
 }

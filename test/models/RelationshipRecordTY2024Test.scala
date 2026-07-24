@@ -26,13 +26,13 @@ class RelationshipRecordTY2024Test extends BaseTest {
   val testYear: Int = 2024
 
   val testTaxYear: uk.gov.hmrc.time.TaxYear = uk.gov.hmrc.time.TaxYear(testYear)
-  val testDate: LocalDate = LocalDate.of(testYear, 6, 6)
-  val testDateTime = LocalDateTime.of(testDate, LocalTime.of(1, 1, 1))
+  val testDate: LocalDate                   = LocalDate.of(testYear, 6, 6)
+  val testDateTime                          = LocalDateTime.of(testDate, LocalTime.of(1, 1, 1))
 
-  val nextYear: Int = testYear + 1
-  val pastYear: Int = testYear - 1
-  val futureDateTime: String = "" + nextYear + "0101"
-  val pastDateTime: String = "" + pastYear + "0101"
+  val nextYear: Int                 = testYear + 1
+  val pastYear: Int                 = testYear - 1
+  val futureDateTime: String        = "" + nextYear + "0101"
+  val pastDateTime: String          = "" + pastYear + "0101"
   val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
 
   val relationshipActiveRecordWithNoEndDate: RelationshipRecord =
@@ -43,7 +43,8 @@ class RelationshipRecordTY2024Test extends BaseTest {
       Some(DesRelationshipEndReason.Default),
       None,
       "",
-      "")
+      ""
+    )
 
   val relationshipActiveRecordWithFutureValidDate: RelationshipRecord =
     RelationshipRecord(
@@ -53,7 +54,8 @@ class RelationshipRecordTY2024Test extends BaseTest {
       Some(DesRelationshipEndReason.Default),
       Some(futureDateTime),
       "",
-      "")
+      ""
+    )
 
   val relationshipActiveRecordWithPastValidDate: RelationshipRecord =
     RelationshipRecord(
@@ -63,7 +65,8 @@ class RelationshipRecordTY2024Test extends BaseTest {
       Some(DesRelationshipEndReason.Default),
       Some(pastDateTime),
       "",
-      "")
+      ""
+    )
 
   "isActive" should {
     "return true" when {
@@ -86,7 +89,7 @@ class RelationshipRecordTY2024Test extends BaseTest {
 
       "relationship end date is today" in {
         val relationshipEndDate = dateFormat.format(testDateTime)
-        val relationshipRecord = relationshipActiveRecordWithNoEndDate.copy(
+        val relationshipRecord  = relationshipActiveRecordWithNoEndDate.copy(
           participant1EndDate = Some(relationshipEndDate)
         )
 
@@ -101,19 +104,21 @@ class RelationshipRecordTY2024Test extends BaseTest {
       "participant endDate is in PastYear" in {
         val relationshipRecord = relationshipActiveRecordWithPastValidDate
 
-        relationshipRecord.overlappingTaxYears(testTaxYear.startYear) shouldBe Set(2014, 2020, 2017, 2015, 2016, 2022, 2012, 2013, 2019, 2021, 2018)
+        relationshipRecord.overlappingTaxYears(testTaxYear.startYear) shouldBe Set(2014, 2020, 2017, 2015, 2016, 2022,
+          2012, 2013, 2019, 2021, 2018)
       }
 
       "participant endDate is in FutureYear" in {
         val relationshipRecord = relationshipActiveRecordWithFutureValidDate
 
-        relationshipRecord.overlappingTaxYears(testTaxYear.startYear) shouldBe Set(2014, 2020, 2024, 2017, 2015, 2023, 2016, 2022, 2012, 2013, 2019, 2021, 2018)
+        relationshipRecord.overlappingTaxYears(testTaxYear.startYear) shouldBe Set(2014, 2020, 2024, 2017, 2015, 2023,
+          2016, 2022, 2012, 2013, 2019, 2021, 2018)
       }
 
       "participant startDate and endDate is in same year" in {
-        val relationshipEndDate = "20200101"
+        val relationshipEndDate   = "20200101"
         val relationshipStartDate = "20200102"
-        val relationshipRecord = relationshipActiveRecordWithNoEndDate.copy(
+        val relationshipRecord    = relationshipActiveRecordWithNoEndDate.copy(
           participant1EndDate = Some(relationshipEndDate),
           participant1StartDate = relationshipStartDate
         )

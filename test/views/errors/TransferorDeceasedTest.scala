@@ -24,16 +24,15 @@ import views.html.errors.transferor_deceased
 
 class TransferorDeceasedTest extends BaseTest {
 
-  lazy val transferorDeceased = instanceOf[transferor_deceased]
+  lazy val transferorDeceased                  = instanceOf[transferor_deceased]
   lazy val baseUserRequest: BaseUserRequest[?] = UserRequest(FakeRequest(), None, true, Some(""), true)
-  override lazy val messages = Helpers.stubMessages()
-
+  override lazy val messages                   = Helpers.stubMessages()
 
   "transferorDeceased" should {
     "return correct page title of transferorDeceased page" in {
 
       val document = Jsoup.parse(transferorDeceased()(messages, baseUserRequest).toString)
-      val title = document.title()
+      val title    = document.title()
       val expected = messages("title.cannot-use-service") + " - " + messages("title.pattern")
 
       title shouldBe expected
@@ -42,8 +41,8 @@ class TransferorDeceasedTest extends BaseTest {
 
     "return you can apply for marriage allowance from PTA content" in {
 
-      val document = Jsoup.parse(transferorDeceased()(messages, baseUserRequest).toString)
-      val paragraphTag = document.getElementsByTag("p").toString
+      val document      = Jsoup.parse(transferorDeceased()(messages, baseUserRequest).toString)
+      val paragraphTag  = document.getElementsByTag("p").toString
       val expectedPart1 = messages("technical.transferor-dead-p1")
       val expectedPart2 = messages("technical.transferor-dead-p2")
 

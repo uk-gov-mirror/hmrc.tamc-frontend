@@ -35,7 +35,7 @@ class TransferorInformationTest extends BaseTest {
     }
 
     "deserialize from JSON correctly" in {
-      val json: JsValue = Json.parse(
+      val json: JsValue                 = Json.parse(
         """
           {
             "updateTimestamp": "2023-10-12T14:30:00"

@@ -50,36 +50,48 @@ class PlayFormFormatterSpec extends AnyWordSpec with Matchers {
     }
 
     "reject missing or empty field" in {
-      emptyEmailInputData.foreach(
-        address =>
-          emailAddressMapping.bind(data = address).swap.getOrElse(List(FormError("", ""))) shouldBe List(FormError("email", List("error.required"), List())))
+      emptyEmailInputData.foreach(address =>
+        emailAddressMapping.bind(data = address).swap.getOrElse(List(FormError("", ""))) shouldBe List(
+          FormError("email", List("error.required"), List())
+        )
+      )
     }
 
     "reject missing or empty field (using custom error message)" in {
-      emptyEmailInputData.foreach(
-        address =>
-          emailAddressCustomErrorsMapping.bind(data = address).swap.getOrElse(List(FormError("", ""))) shouldBe List(FormError("email", List("field.required"), List())))
+      emptyEmailInputData.foreach(address =>
+        emailAddressCustomErrorsMapping.bind(data = address).swap.getOrElse(List(FormError("", ""))) shouldBe List(
+          FormError("email", List("field.required"), List())
+        )
+      )
     }
 
     invalidEmailInputData foreach { email =>
       s"$email reject invalid email" in {
-        emailAddressMapping.bind(data = email).swap.getOrElse(List(FormError("", ""))) shouldBe List(FormError("email", List("error.email"), List()))
+        emailAddressMapping.bind(data = email).swap.getOrElse(List(FormError("", ""))) shouldBe List(
+          FormError("email", List("error.email"), List())
+        )
       }
     }
 
     invalidEmailInputData foreach { email =>
       s"$email reject invalid email (using custom error message)" in {
-        emailAddressCustomErrorsMapping.bind(data = email).swap.getOrElse(List(FormError("", ""))) shouldBe List(FormError("email", List("field.invalid"), List()))
+        emailAddressCustomErrorsMapping.bind(data = email).swap.getOrElse(List(FormError("", ""))) shouldBe List(
+          FormError("email", List("field.invalid"), List())
+        )
       }
     }
 
     "reject too long email address (when using 'emailMaxLength' constraint)" in {
-      emailAddressMapping.verifying {
-       maxLengthConstraint
-      }.bind(Map("email" -> "aaa@bbb.ccc")).swap.getOrElse(List(FormError("", ""))) shouldBe
-          List(FormError("email", List("error.maxLength"), List(10)))
-      }
+      emailAddressMapping
+        .verifying {
+          maxLengthConstraint
+        }
+        .bind(Map("email" -> "aaa@bbb.ccc"))
+        .swap
+        .getOrElse(List(FormError("", ""))) shouldBe
+        List(FormError("email", List("error.maxLength"), List(10)))
     }
+  }
 
   private def emptyEmailInputData: Seq[Map[String, String]] =
     Seq(
@@ -104,14 +116,18 @@ class PlayFormFormatterSpec extends AnyWordSpec with Matchers {
     )
 
   private def emailAddressMapping =
-    PlayFormFormatter.valueIsPresent()
+    PlayFormFormatter
+      .valueIsPresent()
       .verifying(error = "error.email", constraint = EmailAddress.isValid)
-      .transform[EmailAddress](EmailAddress(_), _.value).withPrefix("email")
+      .transform[EmailAddress](EmailAddress(_), _.value)
+      .withPrefix("email")
 
   private def emailAddressCustomErrorsMapping =
-    PlayFormFormatter.valueIsPresent(errorRequired = "field.required")
+    PlayFormFormatter
+      .valueIsPresent(errorRequired = "field.required")
       .verifying(error = "field.invalid", constraint = EmailAddress.isValid)
-      .transform[EmailAddress](EmailAddress(_), _.value).withPrefix("email")
+      .transform[EmailAddress](EmailAddress(_), _.value)
+      .withPrefix("email")
 
   private def maxLengthConstraint =
     PlayFormFormatter.emailMaxLength(maxLength = 10)

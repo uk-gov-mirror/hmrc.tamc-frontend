@@ -26,24 +26,31 @@ import utils.{LoggerHelper, TransferErrorHandler}
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class FinishedController @Inject()(
-                                    errorHandler: TransferErrorHandler,
-                                    authenticate: StandardAuthJourney,
-                                    registrationService: TransferService,
-                                    cachingService: CachingService,
-                                    cc: MessagesControllerComponents,
-                                    finishedV: views.html.finished,
-                                  )(implicit ec: ExecutionContext) extends BaseController(cc) with LoggerHelper {
+class FinishedController @Inject() (
+  errorHandler: TransferErrorHandler,
+  authenticate: StandardAuthJourney,
+  registrationService: TransferService,
+  cachingService: CachingService,
+  cc: MessagesControllerComponents,
+  finishedV: views.html.finished
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc)
+    with LoggerHelper {
 
   def finished: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
-    registrationService.getRecipientDetailsFormData().flatMap { details =>
-      registrationService.getFinishedData(request.nino).flatMap {
-        case NotificationRecord(email) =>
+    registrationService
+      .getRecipientDetailsFormData()
+      .flatMap { details =>
+        registrationService
+          .getFinishedData(request.nino)
+          .flatMap { case NotificationRecord(email) =>
             val cache = cachingService.clear()
             cache.map { _ =>
               Ok(finishedV(transferorEmail = email, name = details.name))
             }
-      }.recover(errorHandler.handleError)
-    }.recover(errorHandler.handleError)
+          }
+          .recover(errorHandler.handleError)
+      }
+      .recover(errorHandler.handleError)
   }
 }

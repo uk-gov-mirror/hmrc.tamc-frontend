@@ -29,18 +29,17 @@ class LanguageUtilsSpec extends BaseTest with Matchers {
 
   val languageUtilsImpl: LanguageUtilsImpl = instanceOf[LanguageUtilsImpl]
 
-
-  private val currentYear = LocalDate.now().getYear
+  private val currentYear               = LocalDate.now().getYear
   private val years: immutable.Seq[Int] = (currentYear - 2 to currentYear + 3).toList
 
   trait EnglishSetup {
-    val languageUtils: LanguageUtils = EnglishLangaugeUtils
+    val languageUtils: LanguageUtils      = EnglishLangaugeUtils
     implicit val englishMessage: Messages = mock[Messages]
     when(englishMessage.lang).thenReturn(Lang("en"))
   }
 
   trait WelshSetup {
-    val languageUtils: LanguageUtils = WelshLanguageUtils
+    val languageUtils: LanguageUtils    = WelshLanguageUtils
     implicit val welshMessage: Messages = mock[Messages]
     when(welshMessage.lang).thenReturn(Lang("cy"))
   }
@@ -79,15 +78,25 @@ class LanguageUtilsSpec extends BaseTest with Matchers {
         }
       }
 
-      val welshMonthsInOrder = Seq("Ionawr", "Chwefror", "Mawrth", "Ebrill", "Mai", "Mehefin", "Gorffennaf", "Awst",
-        "Medi", "Hydref", "Tachwedd", "Rhagfyr")
+      val welshMonthsInOrder = Seq(
+        "Ionawr",
+        "Chwefror",
+        "Mawrth",
+        "Ebrill",
+        "Mai",
+        "Mehefin",
+        "Gorffennaf",
+        "Awst",
+        "Medi",
+        "Hydref",
+        "Tachwedd",
+        "Rhagfyr"
+      )
 
-
-      for ((month, monthAsInt) <- welshMonthsInOrder.zip(LazyList from 1)) {
+      for ((month, monthAsInt) <- welshMonthsInOrder.zip(LazyList from 1))
         s"return month as Welsh $month" in new WelshSetup {
           languageUtils.ukDateTransformer(LocalDate.of(2020, monthAsInt, 1)) should include(month)
         }
-      }
     }
 
     "formPossessive" must {
@@ -102,7 +111,7 @@ class LanguageUtilsSpec extends BaseTest with Matchers {
 
     "taxDateInterval" must {
       for (year <- years) {
-        val start = year
+        val start  = year
         val finish = year + 1
         s"return the beginning and end dates of $year tax year(UK)" in new EnglishSetup {
           languageUtils.taxDateInterval(year) shouldBe s"6 April $start to 5 April $finish"
@@ -115,10 +124,10 @@ class LanguageUtilsSpec extends BaseTest with Matchers {
 
     "taxDateIntervalMultiYear" must {
       for (year <- years) {
-        val start = year
-        val finish = year + 1
+        val start    = year
+        val finish   = year + 1
         val expected = finish + 1
-        s"return the years that two tax years span from $start to $finish (UK)" in  new EnglishSetup {
+        s"return the years that two tax years span from $start to $finish (UK)" in new EnglishSetup {
           languageUtils.taxDateIntervalMultiYear(start, finish) shouldBe s"$start to $expected"
         }
         s"return the years that two tax years span from $start to $finish (CY)" in new WelshSetup {
@@ -129,7 +138,7 @@ class LanguageUtilsSpec extends BaseTest with Matchers {
 
     "taxDateIntervalShort" must {
       for (year <- years) {
-        val start = year
+        val start  = year
         val finish = year + 1
         s"return the years that a single($start) tax year spans across(UK)" in new EnglishSetup {
           languageUtils.taxDateIntervalShort(start) shouldBe s"$start to $finish"
@@ -149,7 +158,7 @@ class LanguageUtilsSpec extends BaseTest with Matchers {
         languageUtils.taxDateIntervalString("20160505", None) shouldBe "2016 to Present"
       }
 
-      "return dates for one tax year to present(CY)" in new WelshSetup  {
+      "return dates for one tax year to present(CY)" in new WelshSetup {
         languageUtils.taxDateIntervalString("20160505", Some("20170505")) shouldBe "2016 i 2018"
       }
 

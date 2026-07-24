@@ -30,11 +30,12 @@ import java.util.Locale
 
 class ChooseContentTest extends BaseTest with Injecting with NinoGenerator {
 
-  val view: decision = inject[decision]
-  implicit val request: AuthenticatedUserRequest[?] = AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
+  val view: decision                                = inject[decision]
+  implicit val request: AuthenticatedUserRequest[?] =
+    AuthenticatedUserRequest(FakeRequest(), None, isSA = true, None, Nino(nino))
   override implicit lazy val messages: MessagesImpl = MessagesImpl(Lang(Locale.getDefault), inject[MessagesApi])
-  lazy val nino: String = generateNino().nino
-  val doc: Document = Jsoup.parse(view(CheckClaimOrCancelDecisionForm.form()).toString())
+  lazy val nino: String                             = generateNino().nino
+  val doc: Document                                 = Jsoup.parse(view(CheckClaimOrCancelDecisionForm.form()).toString())
 
   "Choose page - get view" should {
 
@@ -43,9 +44,13 @@ class ChooseContentTest extends BaseTest with Injecting with NinoGenerator {
     }
 
     "Display correct page content & radio options" in {
-      doc.getElementsByClass("govuk-label govuk-radios__label")
+      doc
+        .getElementsByClass("govuk-label govuk-radios__label")
         .eachText()
-        .toArray() shouldBe Array("Check current or earlier Marriage Allowance claims", "Stop current Marriage Allowance claim")
+        .toArray() shouldBe Array(
+        "Check current or earlier Marriage Allowance claims",
+        "Stop current Marriage Allowance claim"
+      )
     }
 
     "Display continue button" in {
@@ -53,9 +58,12 @@ class ChooseContentTest extends BaseTest with Injecting with NinoGenerator {
     }
 
     "Display all correct page text" in {
-      doc.getElementsByTag("p")
+      doc
+        .getElementsByTag("p")
         .eachText()
-        .toArray() shouldBe Array("Beta This is a new service. Help us improve it and give your feedback (opens in new tab).")
+        .toArray() shouldBe Array(
+        "Beta This is a new service. Help us improve it and give your feedback (opens in new tab)."
+      )
     }
   }
 

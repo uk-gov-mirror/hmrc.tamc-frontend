@@ -39,7 +39,11 @@ import views.html.errors.{citizen_not_found, transferor_not_found, try_later}
 
 import scala.concurrent.Future
 
-class HistoryControllerTest extends ControllerBaseTest with ControllerViewTestHelper with CreateRelationshipRecordsHelper with Injecting {
+class HistoryControllerTest
+    extends ControllerBaseTest
+    with ControllerViewTestHelper
+    with CreateRelationshipRecordsHelper
+    with Injecting {
 
   val mockUpdateRelationshipService: UpdateRelationshipService = mock[UpdateRelationshipService]
   val historySummaryViewModelImpl: HistorySummaryViewModelImpl = instanceOf[HistorySummaryViewModelImpl]
@@ -50,14 +54,15 @@ class HistoryControllerTest extends ControllerBaseTest with ControllerViewTestHe
       bind[AuthRetrievals].to[MockAuthenticatedAction],
       bind[MessagesApi].toInstance(stubMessagesApi()),
       bind[PertaxAuthAction].to[FakePertaxAuthAction]
-    ).build()
+    )
+    .build()
 
   lazy val controller: HistoryController = app.injector.instanceOf[HistoryController]
 
-  val tryLaterView: try_later = inject[views.html.errors.try_later]
-  val historySummaryView: history_summary = inject[views.html.coc.history_summary]
+  val tryLaterView: try_later                    = inject[views.html.errors.try_later]
+  val historySummaryView: history_summary        = inject[views.html.coc.history_summary]
   val transferNotFoundView: transferor_not_found = inject[views.html.errors.transferor_not_found]
-  val citizenNotFoundView: citizen_not_found = inject[views.html.errors.citizen_not_found]
+  val citizenNotFoundView: citizen_not_found     = inject[views.html.errors.citizen_not_found]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -66,13 +71,17 @@ class HistoryControllerTest extends ControllerBaseTest with ControllerViewTestHe
 
   "history" should {
     "display the history summary page with a status of OK" in {
-      val relationshipRecords = createRelationshipRecords()
-      val historySummaryViewModel = historySummaryViewModelImpl(relationshipRecords.primaryRecord.role,
+      val relationshipRecords     = createRelationshipRecords()
+      val historySummaryViewModel = historySummaryViewModelImpl(
+        relationshipRecords.primaryRecord.role,
         relationshipRecords.hasMarriageAllowanceBeenCancelled,
-        relationshipRecords.loggedInUserInfo)
+        relationshipRecords.loggedInUserInfo
+      )
       when(mockUpdateRelationshipService.retrieveRelationshipRecords(any())(any(), any()))
         .thenReturn(Future.successful(relationshipRecords))
-      when(mockUpdateRelationshipService.saveRelationshipRecords(ArgumentMatchers.eq(relationshipRecords))(any(), any()))
+      when(
+        mockUpdateRelationshipService.saveRelationshipRecords(ArgumentMatchers.eq(relationshipRecords))(any(), any())
+      )
         .thenReturn(Future.successful(relationshipRecords))
 
       val result = controller.history()(request)
@@ -89,7 +98,7 @@ class HistoryControllerTest extends ControllerBaseTest with ControllerViewTestHe
           .thenReturn(Future.failed(NoPrimaryRecordError()))
         val result = controller.history()(request)
 
-        status(result) shouldBe SEE_OTHER
+        status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(controllers.routes.HowItWorksController.howItWorks().url)
       }
     }
@@ -101,10 +110,12 @@ class HistoryControllerTest extends ControllerBaseTest with ControllerViewTestHe
 
         val request: Request[AnyContent] = FakeRequest("GET", "/marriage-allowance-application/history")
           .withHeaders("Referer" -> "https://www.gov.uk/")
-        val result = controller.history()(request)
+        val result                       = controller.history()(request)
 
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url)
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(
+          controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url
+        )
       }
 
       "there is no active (primary) record for a govuk user who is currently logging in" in {
@@ -113,10 +124,12 @@ class HistoryControllerTest extends ControllerBaseTest with ControllerViewTestHe
 
         val request: Request[AnyContent] = FakeRequest("GET", "/marriage-allowance-application/history")
           .withHeaders("Referer" -> "https://www.access.service.gov.uk/")
-        val result = controller.history()(request)
+        val result                       = controller.history()(request)
 
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url)
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(
+          controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url
+        )
       }
     }
 
@@ -126,8 +139,10 @@ class HistoryControllerTest extends ControllerBaseTest with ControllerViewTestHe
           .thenReturn(Future.failed(TransferorNotFound()))
 
         val result = controller.history()(request)
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.errors.routes.TransferorNotFoundController.transferorNotFoundError().url)
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(
+          controllers.errors.routes.TransferorNotFoundController.transferorNotFoundError().url
+        )
       }
 
       "a BadFetchRequest error is returned " in {

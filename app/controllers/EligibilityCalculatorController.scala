@@ -25,46 +25,65 @@ import services.EligibilityCalculatorService
 
 import javax.inject.Inject
 
-class EligibilityCalculatorController @Inject()(
+class EligibilityCalculatorController @Inject() (
   unauthenticatedAction: UnauthenticatedActionTransformer,
   eligibilityCalculatorService: EligibilityCalculatorService,
   appConfig: ApplicationConfig,
   cc: MessagesControllerComponents,
   calculatorView: views.html.calculator,
-  ptaCalculatorView: views.html.pta.calculator) extends BaseController(cc) {
+  ptaCalculatorView: views.html.pta.calculator
+) extends BaseController(cc) {
 
-  def gdsCalculator(): Action[AnyContent] = unauthenticatedAction {
-    implicit request =>
-      Ok(calculatorView(calculatorForm = calculatorForm))
+  def gdsCalculator(): Action[AnyContent] = unauthenticatedAction { implicit request =>
+    Ok(calculatorView(calculatorForm = calculatorForm))
   }
 
-  def gdsCalculatorAction(): Action[AnyContent] = unauthenticatedAction {
-    implicit request =>
-      calculatorForm.bindFromRequest().fold(
-        formWithErrors =>
-          BadRequest(calculatorView(calculatorForm = formWithErrors)),
+  def gdsCalculatorAction(): Action[AnyContent] = unauthenticatedAction { implicit request =>
+    calculatorForm
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(calculatorView(calculatorForm = formWithErrors)),
         calculatorInput =>
-          Ok(calculatorView(
-            calculatorForm = calculatorForm.fill(calculatorInput),
-            calculationResult = Some(eligibilityCalculatorService.calculate(calculatorInput.transferorIncome,
-              calculatorInput.recipientIncome, Country.fromString(calculatorInput.country), appConfig.currentTaxYear())))))
+          Ok(
+            calculatorView(
+              calculatorForm = calculatorForm.fill(calculatorInput),
+              calculationResult = Some(
+                eligibilityCalculatorService.calculate(
+                  calculatorInput.transferorIncome,
+                  calculatorInput.recipientIncome,
+                  Country.fromString(calculatorInput.country),
+                  appConfig.currentTaxYear()
+                )
+              )
+            )
+          )
+      )
   }
 
-  def ptaCalculator(): Action[AnyContent] = unauthenticatedAction {
-    implicit request =>
-      Ok(ptaCalculatorView(calculatorForm = calculatorForm))
+  def ptaCalculator(): Action[AnyContent] = unauthenticatedAction { implicit request =>
+    Ok(ptaCalculatorView(calculatorForm = calculatorForm))
   }
 
-  def ptaCalculatorAction(): Action[AnyContent] = unauthenticatedAction {
-    implicit request =>
-      calculatorForm.bindFromRequest().fold(
-        formWithErrors =>
-          BadRequest(ptaCalculatorView(calculatorForm = formWithErrors)),
+  def ptaCalculatorAction(): Action[AnyContent] = unauthenticatedAction { implicit request =>
+    calculatorForm
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(ptaCalculatorView(calculatorForm = formWithErrors)),
         calculatorInput =>
-          Ok(ptaCalculatorView(
-            calculatorForm = calculatorForm.fill(calculatorInput),
-            calculationResult = Some(eligibilityCalculatorService.calculate(calculatorInput.transferorIncome,
-              calculatorInput.recipientIncome, Country.fromString(calculatorInput.country), appConfig.currentTaxYear())))))
+          Ok(
+            ptaCalculatorView(
+              calculatorForm = calculatorForm.fill(calculatorInput),
+              calculationResult = Some(
+                eligibilityCalculatorService.calculate(
+                  calculatorInput.transferorIncome,
+                  calculatorInput.recipientIncome,
+                  Country.fromString(calculatorInput.country),
+                  appConfig.currentTaxYear()
+                )
+              )
+            )
+          )
+      )
   }
 
 }

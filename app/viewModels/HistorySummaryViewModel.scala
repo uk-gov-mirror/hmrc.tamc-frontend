@@ -31,9 +31,14 @@ case class HistorySummaryButton(id: String, content: String, href: String)
 
 case class HistorySummaryViewModel(paragraphContent: Html, button: HistorySummaryButton, displayName: String)
 
-class HistorySummaryViewModelImpl @Inject()(applicationConfig: ApplicationConfig, languageUtilsImpl: LanguageUtilsImpl) {
+class HistorySummaryViewModelImpl @Inject() (
+  applicationConfig: ApplicationConfig,
+  languageUtilsImpl: LanguageUtilsImpl
+) {
 
-  def apply(role: Role, hasMarriageAllowanceBeenCancelled: Boolean, loggedInUserInfo: LoggedInUserInfo)(implicit messages: Messages): HistorySummaryViewModel = {
+  def apply(role: Role, hasMarriageAllowanceBeenCancelled: Boolean, loggedInUserInfo: LoggedInUserInfo)(implicit
+    messages: Messages
+  ): HistorySummaryViewModel = {
 
     val (paragraphContent, button) = if (hasMarriageAllowanceBeenCancelled) {
       marriageAllowanceCancelledContent(role)
@@ -47,17 +52,23 @@ class HistorySummaryViewModelImpl @Inject()(applicationConfig: ApplicationConfig
   }
 
   private def activeRecordContent(role: Role)(implicit messages: Messages): (Html, HistorySummaryButton) = {
-    lazy val maxPersonalAllowanceTransfer = applicationConfig.MAX_ALLOWED_PERSONAL_ALLOWANCE_TRANSFER(applicationConfig.currentTaxYear().currentYear)
-    lazy val maxPersonalBenefit = applicationConfig.MAX_BENEFIT(applicationConfig.currentTaxYear().currentYear)
+    lazy val maxPersonalAllowanceTransfer =
+      applicationConfig.MAX_ALLOWED_PERSONAL_ALLOWANCE_TRANSFER(applicationConfig.currentTaxYear().currentYear)
+    lazy val maxPersonalBenefit           = applicationConfig.MAX_BENEFIT(applicationConfig.currentTaxYear().currentYear)
 
     lazy val formattedMaxPATransfer = NumberFormat.getIntegerInstance().format(maxPersonalAllowanceTransfer)
-    lazy val formattedMaxBenefit = NumberFormat.getIntegerInstance().format(maxPersonalBenefit)
+    lazy val formattedMaxBenefit    = NumberFormat.getIntegerInstance().format(maxPersonalBenefit)
 
     val paragraphContent = if (role == Transferor) {
       Html(s"""<p class="govuk-body">${messages("pages.history.active.transferor")}</p>""")
     } else {
-      Html(s"""<p class="govuk-body">${messages("pages.history.active.recipient.paragraph1", formattedMaxPATransfer)}</p>""" +
-        s"""<p class="govuk-body">${messages("pages.history.active.recipient.paragraph2", formattedMaxBenefit)}</p>""")
+      Html(
+        s"""<p class="govuk-body">${messages(
+            "pages.history.active.recipient.paragraph1",
+            formattedMaxPATransfer
+          )}</p>""" +
+          s"""<p class="govuk-body">${messages("pages.history.active.recipient.paragraph2", formattedMaxBenefit)}</p>"""
+      )
     }
 
     val button = HistorySummaryButton(
@@ -69,21 +80,29 @@ class HistorySummaryViewModelImpl @Inject()(applicationConfig: ApplicationConfig
     (paragraphContent, button)
   }
 
-
-  private def marriageAllowanceCancelledContent(role: Role)(implicit messages: Messages): (Html, HistorySummaryButton) = {
+  private def marriageAllowanceCancelledContent(
+    role: Role
+  )(implicit messages: Messages): (Html, HistorySummaryButton) = {
     val formattedEndOfYear = languageUtilsImpl().ukDateTransformer(applicationConfig.currentTaxYear().finishes)
 
     val paragraphContent = if (role == Transferor) {
-      Html(s"""<p class="govuk-body">${messages("pages.history.historic.ended")}</p>""" +
-        s"""<p class="govuk-body">${messages("pages.history.historic.transferor", formattedEndOfYear)}</p>""")
+      Html(
+        s"""<p class="govuk-body">${messages("pages.history.historic.ended")}</p>""" +
+          s"""<p class="govuk-body">${messages("pages.history.historic.transferor", formattedEndOfYear)}</p>"""
+      )
 
     } else {
-      Html(s"""<p class="govuk-body">${messages("pages.history.historic.ended")}</p>""" +
-        s"""<p class="govuk-body">${messages("pages.history.historic.recipient", formattedEndOfYear)}</p>""")
+      Html(
+        s"""<p class="govuk-body">${messages("pages.history.historic.ended")}</p>""" +
+          s"""<p class="govuk-body">${messages("pages.history.historic.recipient", formattedEndOfYear)}</p>"""
+      )
     }
 
-    val button = HistorySummaryButton("checkMarriageAllowance", messages("pages.history.historic.button"),
-      controllers.UpdateRelationship.routes.ClaimsController.claims().url)
+    val button = HistorySummaryButton(
+      "checkMarriageAllowance",
+      messages("pages.history.historic.button"),
+      controllers.UpdateRelationship.routes.ClaimsController.claims().url
+    )
 
     (paragraphContent, button)
   }

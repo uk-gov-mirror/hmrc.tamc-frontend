@@ -46,7 +46,7 @@ class HowItWorksControllerTest extends ControllerBaseTest {
         .withHeaders("Referer" -> "https://www.gov.uk/")
 
       val result = await(howItWorksController.howItWorks()(request))
-      status(result) shouldBe SEE_OTHER
+      status(result)           shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url)
     }
 
@@ -55,7 +55,7 @@ class HowItWorksControllerTest extends ControllerBaseTest {
         .withHeaders("Referer" -> "https://www.access.service.gov.uk/")
 
       val result = await(howItWorksController.howItWorks()(request))
-      status(result) shouldBe SEE_OTHER
+      status(result)           shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url)
     }
   }
@@ -63,7 +63,7 @@ class HowItWorksControllerTest extends ControllerBaseTest {
   "home" should {
     "redirect the user" in {
       val result = howItWorksController.home()(request)
-      status(result) shouldBe SEE_OTHER
+      status(result)           shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(controllers.routes.HowItWorksController.howItWorks().url)
     }
   }

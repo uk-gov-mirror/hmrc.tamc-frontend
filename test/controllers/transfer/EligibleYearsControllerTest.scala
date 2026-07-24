@@ -106,7 +106,7 @@ class EligibleYearsControllerTest extends ControllerBaseTest with ControllerView
               )
             )
           )
-        val result = controller.eligibleYears()(request)
+        val result       = controller.eligibleYears()(request)
         val h1: Elements = Jsoup.parse(contentAsString(result)).getElementsByTag("h1")
 
         h1.eq(0).text() shouldBe "You are applying for the current tax year onwards, from 6 April 2023"
@@ -125,7 +125,7 @@ class EligibleYearsControllerTest extends ControllerBaseTest with ControllerView
               )
             )
           )
-        val result = controller.eligibleYears()(request)
+        val result       = controller.eligibleYears()(request)
         val h1: Elements = Jsoup.parse(contentAsString(result)).getElementsByTag("h1")
 
         h1.eq(0).text() shouldBe "You are applying for the current tax year onwards, from 6 April 2024"
@@ -189,7 +189,9 @@ class EligibleYearsControllerTest extends ControllerBaseTest with ControllerView
 
         val result = controller.eligibleYearsAction()(request)
         status(result)           shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.transfer.routes.ConfirmEmailController.confirmYourEmail().url)
+        redirectLocation(result) shouldBe Some(
+          controllers.transfer.routes.ConfirmEmailController.confirmYourEmail().url
+        )
         verify(mockTransferService, times(1)).saveSelectedYears(ArgumentMatchers.eq(List(2015)))(any())
       }
 
@@ -207,7 +209,7 @@ class EligibleYearsControllerTest extends ControllerBaseTest with ControllerView
           )
         when(mockTransferService.saveSelectedYears(ArgumentMatchers.eq(Nil))(any())).thenReturn(Future.successful(Nil))
         def messages: Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
-        val result = controller.eligibleYearsAction()(request)
+        val result             = controller.eligibleYearsAction()(request)
         status(result) shouldBe OK
         result `rendersTheSameViewAs` noTaxYearAvailableView()(messages, authRequest)
       }
@@ -247,7 +249,7 @@ class EligibleYearsControllerTest extends ControllerBaseTest with ControllerView
           )
         when(mockTransferService.saveSelectedYears(ArgumentMatchers.eq(Nil))(any())).thenReturn(Future.successful(Nil))
         def messages: Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
-        val result = controller.eligibleYearsAction()(request)
+        val result             = controller.eligibleYearsAction()(request)
         status(result) shouldBe OK
         result `rendersTheSameViewAs` noTaxYearAvailableView()(messages, authRequest)
       }

@@ -18,15 +18,19 @@ package models
 
 import utils.SystemTaxYear
 
-case class CurrentAndPreviousYearsEligibility(currentYearAvailable: Boolean, previousYears: List[TaxYear],
-                                              registrationInput: RegistrationFormInput, availableTaxYears: List[TaxYear])
+case class CurrentAndPreviousYearsEligibility(
+  currentYearAvailable: Boolean,
+  previousYears: List[TaxYear],
+  registrationInput: RegistrationFormInput,
+  availableTaxYears: List[TaxYear]
+)
 
 object CurrentAndPreviousYearsEligibility {
 
   def apply(recipient: RecipientRecord, taxYear: SystemTaxYear): CurrentAndPreviousYearsEligibility = {
-    val currentTaxYear: Int = taxYear.current().startYear
+    val currentTaxYear: Int  = taxYear.current().startYear
     val currentYearAvailable = recipient.availableTaxYears.exists(_.year == currentTaxYear)
-    val previousYears = recipient.availableTaxYears.filterNot(_.year == currentTaxYear)
+    val previousYears        = recipient.availableTaxYears.filterNot(_.year == currentTaxYear)
 
     CurrentAndPreviousYearsEligibility(currentYearAvailable, previousYears, recipient.data, recipient.availableTaxYears)
   }

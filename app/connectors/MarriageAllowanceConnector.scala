@@ -30,77 +30,81 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MarriageAllowanceConnector @Inject()(httpClient: HttpClientV2, applicationConfig: ApplicationConfig) {
+class MarriageAllowanceConnector @Inject() (httpClient: HttpClientV2, applicationConfig: ApplicationConfig) {
 
   def marriageAllowanceUrl = applicationConfig.marriageAllowanceUrl
 
-  def listRelationship(nino: Nino)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[RelationshipRecordList] = {
+  def listRelationship(nino: Nino)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[RelationshipRecordList] =
     httpClient
       .get(url"$marriageAllowanceUrl/paye/$nino/list-relationship")
       .execute[HttpResponse]
-      .flatMap {
-        response =>
-          val relationshipRecordWrapper = response.json.as[RelationshipRecordStatusWrapper]
-          relationshipRecordWrapper match {
-            case RelationshipRecordStatusWrapper(relationshipRecordWrapper, ResponseStatus("OK")) =>
-              Future.successful(relationshipRecordWrapper)
-            case RelationshipRecordStatusWrapper(_, ResponseStatus(TRANSFEROR_NOT_FOUND)) =>
-              Future.failed(TransferorNotFound())
-            case RelationshipRecordStatusWrapper(_, ResponseStatus(CITIZEN_NOT_FOUND)) =>
-              Future.failed(CitizenNotFound())
-            case RelationshipRecordStatusWrapper(_, ResponseStatus(BAD_REQUEST)) =>
-              Future.failed(BadFetchRequest())
-            case _ =>
-              Future.failed(
-                new UnsupportedOperationException("Unable to handle list relationship request")
-              )
-          }
-      }.recoverWith {
-      case t: Throwable => Future.failed(t)
-    }
-  }
+      .flatMap { response =>
+        val relationshipRecordWrapper = response.json.as[RelationshipRecordStatusWrapper]
+        relationshipRecordWrapper match {
+          case RelationshipRecordStatusWrapper(relationshipRecordWrapper, ResponseStatus("OK")) =>
+            Future.successful(relationshipRecordWrapper)
+          case RelationshipRecordStatusWrapper(_, ResponseStatus(TRANSFEROR_NOT_FOUND))         =>
+            Future.failed(TransferorNotFound())
+          case RelationshipRecordStatusWrapper(_, ResponseStatus(CITIZEN_NOT_FOUND))            =>
+            Future.failed(CitizenNotFound())
+          case RelationshipRecordStatusWrapper(_, ResponseStatus(BAD_REQUEST))                  =>
+            Future.failed(BadFetchRequest())
+          case _                                                                                =>
+            Future.failed(
+              new UnsupportedOperationException("Unable to handle list relationship request")
+            )
+        }
+      }
+      .recoverWith { case t: Throwable =>
+        Future.failed(t)
+      }
 
-  def getRecipientRelationship(transferorNino: Nino, recipientData: RegistrationFormInput)
-                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[MarriageAllowanceError, GetRelationshipResponse]] = {
+  def getRecipientRelationship(transferorNino: Nino, recipientData: RegistrationFormInput)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Either[MarriageAllowanceError, GetRelationshipResponse]] =
     httpClient
       .post(url"$marriageAllowanceUrl/paye/$transferorNino/get-recipient-relationship")
       .withBody(Json.toJson(recipientData))
       .execute[HttpResponse]
       .map {
         case response if response.status == 200 => Right(response.json.as[GetRelationshipResponse])
-        case errorResponse => Left(errorResponse.json.as[MarriageAllowanceError])
-      }.recoverWith {
-      case t: Throwable => Future.failed(t)
-    }
-  }
+        case errorResponse                      => Left(errorResponse.json.as[MarriageAllowanceError])
+      }
+      .recoverWith { case t: Throwable =>
+        Future.failed(t)
+      }
 
-  def createRelationship(transferorNino: Nino, data: CreateRelationshipRequestHolder)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[MarriageAllowanceError, Option[CreateRelationshipResponse]]] = {
+  def createRelationship(transferorNino: Nino, data: CreateRelationshipRequestHolder)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Either[MarriageAllowanceError, Option[CreateRelationshipResponse]]] =
     httpClient
       .put(url"$marriageAllowanceUrl/paye/$transferorNino/create-multi-year-relationship/pta")
       .withBody(Json.toJson(data))
       .execute[HttpResponse]
       .map {
         case response if response.status == 200 => Right(Json.fromJson[CreateRelationshipResponse](response.json).asOpt)
-        case errorResponse =>
+        case errorResponse                      =>
           Left(errorResponse.json.as[MarriageAllowanceError])
-      }.recoverWith {
-      case t: Throwable => Future.failed(t)
-    }
-  }
+      }
+      .recoverWith { case t: Throwable =>
+        Future.failed(t)
+      }
 
-  def updateRelationship(transferorNino: Nino, data: UpdateRelationshipRequestHolder)(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[MarriageAllowanceError, Option[UpdateRelationshipResponse]]] = {
+  def updateRelationship(transferorNino: Nino, data: UpdateRelationshipRequestHolder)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Either[MarriageAllowanceError, Option[UpdateRelationshipResponse]]] =
     httpClient
       .put(url"$marriageAllowanceUrl/paye/$transferorNino/update-relationship")
       .withBody(Json.toJson(data))
       .execute[HttpResponse]
       .map {
         case response if response.status == 200 => Right(Json.fromJson[UpdateRelationshipResponse](response.json).asOpt)
-        case errorResponse => Left(errorResponse.json.as[MarriageAllowanceError])
-      }.recoverWith {
-      case t: Throwable => Future.failed(t)
-    }
-  }
+        case errorResponse                      => Left(errorResponse.json.as[MarriageAllowanceError])
+      }
+      .recoverWith { case t: Throwable =>
+        Future.failed(t)
+      }
 }

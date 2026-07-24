@@ -30,27 +30,25 @@ import utils.BaseTest
 import scala.concurrent.Future
 import scala.language.postfixOps
 
-
 class CachingServiceTest extends BaseTest {
-  val mockMongoComponent: MongoComponent = mock[MongoComponent]
-  val mockTimestampSupport: TimestampSupport = mock[TimestampSupport]
+  val mockMongoComponent: MongoComponent           = mock[MongoComponent]
+  val mockTimestampSupport: TimestampSupport       = mock[TimestampSupport]
   val mockSessionCacheRepo: SessionCacheRepository = mock[SessionCacheRepository]
-  val fakeSessionId = "test-session-id"
-  val fakeRequest: Request[?] = FakeRequest()
+  val fakeSessionId                                = "test-session-id"
+  val fakeRequest: Request[?]                      = FakeRequest()
     .withHeaders(FakeHeaders())
     .withSession(SessionKeys.sessionId -> fakeSessionId)
 
-
   val cachingService = app.injector.instanceOf[CachingService]
 
-  implicit val mockRequest: Request[?] = mock[Request[?]]
+  implicit val mockRequest: Request[?]    = mock[Request[?]]
   implicit val mockWrites: Writes[String] = mock[Writes[String]]
-  implicit val mockReads: Reads[String] = mock[Reads[String]]
+  implicit val mockReads: Reads[String]   = mock[Reads[String]]
 
   "CachingServiceImpl" should {
     "retrieve a value from the cache when it exists" in {
-      val cacheKey = CacheKey("testKey")
-      val dataKey = DataKey[String](cacheKey.dataKey.unwrap)
+      val cacheKey    = CacheKey("testKey")
+      val dataKey     = DataKey[String](cacheKey.dataKey.unwrap)
       val cachedValue = "cachedValue"
 
       when(mockSessionCacheRepo.getFromSession(dataKey))
@@ -63,7 +61,7 @@ class CachingServiceTest extends BaseTest {
 
     "return None when the cache does not contain a value" in {
       val cacheKey = CacheKey("missingKey")
-      val dataKey = DataKey[String](cacheKey.dataKey.unwrap)
+      val dataKey  = DataKey[String](cacheKey.dataKey.unwrap)
 
       when(mockSessionCacheRepo.getFromSession(dataKey))
         .thenReturn(Future.successful(None))

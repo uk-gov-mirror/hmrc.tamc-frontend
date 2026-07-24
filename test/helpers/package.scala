@@ -18,9 +18,9 @@ package object helpers {
   implicit class NbspString(str: String) {
 
     def replaceNbsp: String =
-      str.replace('\u00A0',' ')
+      str.replace('\u00A0', ' ')
 
     def replaceNbspString: String =
-      str.replace("&nbsp;"," ")
+      str.replace("&nbsp;", " ")
   }
 }

@@ -22,6 +22,11 @@ import play.api.mvc.{ActionBuilder, AnyContent, DefaultActionBuilder}
 
 import javax.inject.Inject
 
-class StandardAuthJourney @Inject()(auth: AuthRetrievals, pertaxAuth: PertaxAuthAction, defaultActionBuilder: DefaultActionBuilder) {
-  val pertaxAuthActionWithUserDetails: ActionBuilder[AuthenticatedUserRequest, AnyContent] = defaultActionBuilder andThen pertaxAuth andThen auth
+class StandardAuthJourney @Inject() (
+  auth: AuthRetrievals,
+  pertaxAuth: PertaxAuthAction,
+  defaultActionBuilder: DefaultActionBuilder
+) {
+  val pertaxAuthActionWithUserDetails: ActionBuilder[AuthenticatedUserRequest, AnyContent] =
+    defaultActionBuilder andThen pertaxAuth andThen auth
 }

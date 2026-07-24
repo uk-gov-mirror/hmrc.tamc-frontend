@@ -29,21 +29,20 @@ import scala.concurrent.Future
 class CalculatorViewTest extends BaseTest {
 
   val controller: EligibilityCalculatorController = app.injector.instanceOf[EligibilityCalculatorController]
-  implicit val request: Request[AnyContent] = FakeRequest()
+  implicit val request: Request[AnyContent]       = FakeRequest()
 
   val result: Future[Result] = controller.ptaCalculator()(request)
 
-  def getContent(id: String, expected: String): Assertion = {
+  def getContent(id: String, expected: String): Assertion =
     Jsoup.parse(contentAsString(result)).getElementById(id).text() should be(expected)
-  }
 
-  def getContentByClass(identifier: String, expected: String): Assertion = {
-    Jsoup.parse(contentAsString(result)).getElementById("calculator").getElementsByClass(identifier).text() should be(expected)
-  }
+  def getContentByClass(identifier: String, expected: String): Assertion =
+    Jsoup.parse(contentAsString(result)).getElementById("calculator").getElementsByClass(identifier).text() should be(
+      expected
+    )
 
-  def getRadioContent(id: String, expected: String): Assertion = {
+  def getRadioContent(id: String, expected: String): Assertion =
     Jsoup.parse(contentAsString(result)).getElementById(id).nextElementSibling().text() should be(expected)
-  }
 
   "calculator" should {
     "display correct title" in {
@@ -62,7 +61,10 @@ class CalculatorViewTest extends BaseTest {
 
     "display radio button header" in {
       getContentByClass(identifier = "govuk-fieldset__heading", expected = "Where do you live?")
-      getContentByClass(identifier = "govuk-hint", expected = "Where you live can affect how much you benefit because of different tax rates.")
+      getContentByClass(
+        identifier = "govuk-hint",
+        expected = "Where you live can affect how much you benefit because of different tax rates."
+      )
     }
 
     "display radio buttons" in {
