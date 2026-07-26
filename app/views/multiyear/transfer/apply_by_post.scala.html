@@ -42,6 +42,7 @@
 ){
     @h1("title.apply-by-post")
 
+    @* TODO - DDCNL-12164: Make this check order-independent. *@
     @if(selectedTaxYears == Seq("previousTaxYears", "currentTaxYear")) {
         @p(HtmlContent(messages("pages.apply-by-post.paragraph")))
     } else {
