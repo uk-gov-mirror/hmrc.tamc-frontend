@@ -31,18 +31,23 @@ import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.Injecting
+import play.api.test.FakeRequest
+import play.api.test.Helpers.GET
 import services.CacheService.*
 import services.CacheService.CacheKey.{CacheReadKey, CacheReadWriteKey}
-import services.CachingService
+import services.{ApplicationService, CachingService}
 import uk.gov.hmrc.domain.{AtedUtr, Generator, Nino}
+import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.time.TaxYear
 
 import java.time.LocalDate
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 trait IntegrationSpec
-  extends PlaySpec
+    extends PlaySpec
     with GuiceOneAppPerSuite
     with Matchers
     with WireMockHelper
@@ -50,12 +55,13 @@ trait IntegrationSpec
     with IntegrationPatience
     with Injecting {
 
-  val generatedNino: Nino                = new Generator().nextNino
-  val generatedSaUtr: AtedUtr            = new Generator().nextAtedUtr
-  lazy val messagesApi: MessagesApi      = inject[MessagesApi]
-  val mockCachingService: CachingService = mock[CachingService]
-  implicit lazy val messages: Messages   = MessagesImpl(Lang("en"), messagesApi)
-  implicit lazy val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+  val generatedNino: Nino                        = new Generator().nextNino
+  val generatedSaUtr: AtedUtr                    = new Generator().nextAtedUtr
+  lazy val messagesApi: MessagesApi              = inject[MessagesApi]
+  val mockCachingService: CachingService         = mock[CachingService]
+  val mockApplicationService: ApplicationService = mock[ApplicationService]
+  implicit lazy val messages: Messages           = MessagesImpl(Lang("en"), messagesApi)
+  implicit lazy val ec: ExecutionContext         = app.injector.instanceOf[ExecutionContext]
 
   val instanceIdentifier = 1
   val timeStamp          = "20130101"
@@ -63,6 +69,19 @@ trait IntegrationSpec
   val surname            = "Surname"
   val date: LocalDate    = LocalDate.now()
   val email              = "email@email.com"
+
+  protected val baseUrl = "/marriage-allowance-application"
+  val sessionId: String = UUID.randomUUID().toString
+
+  protected def request(
+    url: String,
+    method: String = GET
+  ): FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest(method, s"$baseUrl$url")
+      .withSession(
+        SessionKeys.sessionId -> sessionId,
+        SessionKeys.authToken -> "Bearer 123"
+      )
 
   val activeRecipientRelationshipRecord: RelationshipRecord = RelationshipRecord(
     Recipient.value,
@@ -75,8 +94,8 @@ trait IntegrationSpec
   )
 
   def createLoggedInUserInfo(
-                              name: Option[CitizenName] = Some(CitizenName(Some(firstName), Some(surname)))
-                            ): LoggedInUserInfo = LoggedInUserInfo(instanceIdentifier, timeStamp, None, name)
+    name: Option[CitizenName] = Some(CitizenName(Some(firstName), Some(surname)))
+  ): LoggedInUserInfo = LoggedInUserInfo(instanceIdentifier, timeStamp, None, name)
 
   lazy val relationshipRecordList = RelationshipRecordList(
     Seq(activeRecipientRelationshipRecord),
@@ -139,7 +158,7 @@ trait IntegrationSpec
     stubGet(CACHE_RELATIONSHIP_RECORDS, relationshipRecords)
     stubGet(CACHE_DIVORCE_DATE, date)
     stubGet(CACHE_MARRIAGE_DATE, dateOfMarriageInput)
-    stubGet(CACHE_CHOOSE_YEARS, "2018,2019")
+    stubGet(CACHE_CHOOSE_YEARS, "currentTaxYear,previousTaxYears")
     stubGet(CACHE_CHECK_CLAIM_OR_CANCEL, "checkMarriageAllowanceClaim")
     stubGet(CACHE_MAKE_CHANGES_DECISION, "Divorce")
     stubGet(USER_ANSWERS_UPDATE_CONFIRMATION, confirmationUpdateAnswersCacheData)
@@ -153,6 +172,7 @@ trait IntegrationSpec
     stubPut(CACHE_LOCKED_CREATE, false)
     stubPut(CACHE_TRANSFEROR_RECORD, userRecord)
     stubPut(CACHE_RELATIONSHIP_RECORDS, relationshipRecords)
+    stubPut(CACHE_RECIPIENT_DETAILS, recipientDetails)
 
     when(mockCachingService.clear()(any())).thenReturn(Future.successful(()))
   }
