@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class ConfirmEmailControllerISpec extends IntegrationSpec {
 
-  "ConfirmEmailControllerISpec" must {
+  "ConfirmEmailController" must {
 
     "render the confirm email page with the cached email address" in {
       when(mockCachingService.get[NotificationRecord](eqTo(CACHE_NOTIFICATION_RECORD))(any()))

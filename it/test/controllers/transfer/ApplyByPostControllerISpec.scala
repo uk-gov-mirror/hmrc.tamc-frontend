@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 class ApplyByPostControllerISpec extends IntegrationSpec {
 
-  "ApplyByPostControllerISpec" must {
+  "ApplyByPostController" must {
 
     "render the apply by post page with the selected tax years from the cache" in {
       when(mockCachingService.get[String](eqTo(CACHE_CHOOSE_YEARS))(any()))
