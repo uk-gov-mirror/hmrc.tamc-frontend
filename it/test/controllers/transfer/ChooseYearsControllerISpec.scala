@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.transfer
 
 import models.ApplyForEligibleYears
 import org.jsoup.Jsoup

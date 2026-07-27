@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.transfer
 
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when

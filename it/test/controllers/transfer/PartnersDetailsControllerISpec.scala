@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.transfer
 
+import com.github.tomakehurst.wiremock.client.WireMock.{ok, post, urlEqualTo}
 import models.*
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import com.github.tomakehurst.wiremock.client.WireMock.{ok, post, urlEqualTo}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*

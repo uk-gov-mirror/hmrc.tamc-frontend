@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.transfer
 
 import com.github.tomakehurst.wiremock.client.WireMock.{ok, put, urlEqualTo}
 import models.*

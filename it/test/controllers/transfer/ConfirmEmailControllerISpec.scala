@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.transfer
 
 import models.NotificationRecord
 import org.jsoup.Jsoup
@@ -24,8 +24,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.CACHE_NOTIFICATION_RECORD
 import uk.gov.hmrc.http.SessionKeys
-import utils.IntegrationSpec
-import utils.EmailAddress
+import utils.{EmailAddress, IntegrationSpec}
 
 import scala.concurrent.Future
 
