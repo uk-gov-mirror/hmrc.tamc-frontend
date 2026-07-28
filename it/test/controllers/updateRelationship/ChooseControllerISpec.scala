@@ -16,13 +16,11 @@
 
 package controllers.updateRelationship
 
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import forms.coc.CheckClaimOrCancelDecisionForm
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.CACHE_CHECK_CLAIM_OR_CANCEL
-import uk.gov.hmrc.http.SessionKeys
 import utils.IntegrationSpec
 
 import scala.concurrent.Future
@@ -47,16 +45,12 @@ class ChooseControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[String](eqTo(CACHE_CHECK_CLAIM_OR_CANCEL), any())(any(), any()))
         .thenReturn(Future.successful("checkMarriageAllowanceClaim"))
 
-      val request = FakeRequest(POST, s"$baseUrl/choose")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/choose", POST)
         .withFormUrlEncodedBody(
           CheckClaimOrCancelDecisionForm.DecisionChoice -> CheckClaimOrCancelDecisionForm.CheckMarriageAllowanceClaim
         )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.UpdateRelationship.routes.ClaimsController.claims().url)
@@ -66,32 +60,22 @@ class ChooseControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[String](eqTo(CACHE_CHECK_CLAIM_OR_CANCEL), any())(any(), any()))
         .thenReturn(Future.successful("stopMarriageAllowance"))
 
-      val request = FakeRequest(POST, s"$baseUrl/choose")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/choose", POST)
         .withFormUrlEncodedBody(
           CheckClaimOrCancelDecisionForm.DecisionChoice -> CheckClaimOrCancelDecisionForm.StopMarriageAllowance
         )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.UpdateRelationship.routes.MakeChangesController.makeChange().url)
     }
 
     "return BAD_REQUEST and show form errors when no option is selected" in {
-      val request = FakeRequest(POST, s"$baseUrl/choose")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
-        .withFormUrlEncodedBody(
-          CheckClaimOrCancelDecisionForm.DecisionChoice -> ""
-        )
+      val fakeRequest = request("/choose", POST)
+        .withFormUrlEncodedBody(CheckClaimOrCancelDecisionForm.DecisionChoice -> "")
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe BAD_REQUEST
       contentAsString(result) must include("Select if you want to check or stop your marriage allowance claim")

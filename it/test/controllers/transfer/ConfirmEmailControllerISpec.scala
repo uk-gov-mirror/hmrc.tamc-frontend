@@ -20,10 +20,8 @@ import models.NotificationRecord
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.CACHE_NOTIFICATION_RECORD
-import uk.gov.hmrc.http.SessionKeys
 import utils.{EmailAddress, IntegrationSpec}
 
 import scala.concurrent.Future
@@ -60,32 +58,20 @@ class ConfirmEmailControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[NotificationRecord](eqTo(CACHE_NOTIFICATION_RECORD), any())(any(), any()))
         .thenReturn(Future.successful(NotificationRecord(EmailAddress("email@email.com"))))
 
-      val request = FakeRequest(POST, s"$baseUrl/confirm-your-email")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
-        .withFormUrlEncodedBody(
-          "transferor-email" -> "email@email.com"
-        )
+      val fakeRequest = request("/confirm-your-email", POST)
+        .withFormUrlEncodedBody("transferor-email" -> "email@email.com")
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.transfer.routes.ConfirmController.confirm().url)
     }
 
     "return a BAD_REQUEST when an invalid email address is submitted" in {
-      val request = FakeRequest(POST, s"$baseUrl/confirm-your-email")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
-        .withFormUrlEncodedBody(
-          "transferor-email" -> "some invalid-email"
-        )
+      val fakeRequest = request("/confirm-your-email", POST)
+        .withFormUrlEncodedBody("transferor-email" -> "some invalid-email")
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe BAD_REQUEST
       contentAsString(result) must include("Enter an email address in the correct format, like name@example.com")

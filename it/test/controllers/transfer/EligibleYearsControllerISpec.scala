@@ -19,11 +19,9 @@ package controllers.transfer
 import models.{Gender, RecipientRecord, RegistrationFormInput}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.{CACHE_RECIPIENT_RECORD, CACHE_SELECTED_YEARS}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.time.TaxYear
 import utils.IntegrationSpec
 
@@ -79,13 +77,7 @@ class EligibleYearsControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[List[Int]](eqTo(CACHE_SELECTED_YEARS), any())(any(), any()))
         .thenReturn(Future.successful(List(currentTaxYear)))
 
-      val request = FakeRequest(POST, s"$baseUrl/eligible-years")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
-
-      val result = route(app, request).value
+      val result = route(app, request("/eligible-years", POST)).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.transfer.routes.ConfirmEmailController.confirmYourEmail().url)
@@ -98,13 +90,7 @@ class EligibleYearsControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[List[Int]](eqTo(CACHE_SELECTED_YEARS), any())(any(), any()))
         .thenReturn(Future.successful(Nil))
 
-      val request = FakeRequest(POST, s"$baseUrl/eligible-years")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
-
-      val result = route(app, request).value
+      val result = route(app, request("/eligible-years", POST)).value
 
       status(result) mustBe OK
       contentAsString(result) must include("We were unable to process your Marriage Allowance application.")

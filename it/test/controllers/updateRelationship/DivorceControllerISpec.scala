@@ -18,10 +18,8 @@ package controllers.updateRelationship
 
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.CACHE_DIVORCE_DATE
-import uk.gov.hmrc.http.SessionKeys
 import utils.IntegrationSpec
 
 import java.time.LocalDate
@@ -48,18 +46,14 @@ class DivorceControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[LocalDate](eqTo(CACHE_DIVORCE_DATE), any())(any(), any()))
         .thenReturn(Future.successful(date))
 
-      val request = FakeRequest(POST, s"$baseUrl/divorce-enter-year")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/divorce-enter-year", POST)
         .withFormUrlEncodedBody(
           "dateOfDivorce.year"  -> date.getYear.toString,
           "dateOfDivorce.month" -> date.getMonthValue.toString,
           "dateOfDivorce.day"   -> date.getDayOfMonth.toString
         )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
@@ -68,18 +62,14 @@ class DivorceControllerISpec extends IntegrationSpec {
     }
 
     "return BAD_REQUEST when an invalid divorce date is submitted" in {
-      val request = FakeRequest(POST, s"$baseUrl/divorce-enter-year")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/divorce-enter-year", POST)
         .withFormUrlEncodedBody(
           "dateOfDivorce.year"  -> "",
           "dateOfDivorce.month" -> "",
           "dateOfDivorce.day"   -> ""
         )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe BAD_REQUEST
 

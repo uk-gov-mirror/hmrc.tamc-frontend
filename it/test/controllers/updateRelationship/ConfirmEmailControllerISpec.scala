@@ -19,10 +19,8 @@ package controllers.updateRelationship
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.CACHE_EMAIL_ADDRESS
-import uk.gov.hmrc.http.SessionKeys
 import utils.{EmailAddress, IntegrationSpec}
 
 import scala.concurrent.Future
@@ -45,14 +43,10 @@ class ConfirmEmailControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[EmailAddress](eqTo(CACHE_EMAIL_ADDRESS), any())(any(), any()))
         .thenReturn(Future.successful(EmailAddress(email)))
 
-      val request = FakeRequest(POST, s"$baseUrl/confirm-email")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/confirm-email", POST)
         .withFormUrlEncodedBody("transferor-email" -> email)
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
@@ -61,16 +55,10 @@ class ConfirmEmailControllerISpec extends IntegrationSpec {
     }
 
     "return BAD_REQUEST when an invalid email address is submitted" in {
-      val request = FakeRequest(POST, s"$baseUrl/confirm-email")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
-        .withFormUrlEncodedBody(
-          "transferor-email" -> "some-invalid-email"
-        )
+      val fakeRequest = request("/confirm-email", POST)
+        .withFormUrlEncodedBody("transferor-email" -> "some-invalid-email")
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe BAD_REQUEST
       contentAsString(result) must include("Enter an email address in the correct format, like name@example.com")

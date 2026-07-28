@@ -20,10 +20,8 @@ import models.ApplyForEligibleYears
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.CACHE_CHOOSE_YEARS
-import uk.gov.hmrc.http.SessionKeys
 import utils.IntegrationSpec
 
 import scala.concurrent.Future
@@ -65,16 +63,11 @@ class ChooseYearsControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[String](eqTo(CACHE_CHOOSE_YEARS), any())(any(), any()))
         .thenReturn(Future.successful(currentTaxYear))
 
-      val request = FakeRequest(POST, s"$baseUrl/choose-years-to-apply-for")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
-        .withFormUrlEncodedBody(
-          "value[]" -> currentTaxYear
-        )
+      val fakeRequest = request("/choose-years-to-apply-for", POST).withFormUrlEncodedBody(
+        "value[]" -> currentTaxYear
+      )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.transfer.routes.PartnersDetailsController.transfer().url)
@@ -87,17 +80,11 @@ class ChooseYearsControllerISpec extends IntegrationSpec {
         mockCachingService.put[String](eqTo(CACHE_CHOOSE_YEARS), any())(any(), any())
       ).thenReturn(Future.successful(previousTaxYears))
 
-      val request =
-        FakeRequest(POST, s"$baseUrl/choose-years-to-apply-for")
-          .withSession(
-            SessionKeys.sessionId -> sessionId,
-            SessionKeys.authToken -> "Bearer 123"
-          )
-          .withFormUrlEncodedBody(
-            "value[]" -> previousTaxYears
-          )
+      val fakeRequest = request("/choose-years-to-apply-for", POST).withFormUrlEncodedBody(
+        "value[]" -> previousTaxYears
+      )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.transfer.routes.ApplyByPostController.applyByPost().url)
@@ -107,16 +94,11 @@ class ChooseYearsControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[String](eqTo(CACHE_CHOOSE_YEARS), any())(any(), any()))
         .thenReturn(Future.successful("unexpected-value"))
 
-      val request = FakeRequest(POST, s"$baseUrl/choose-years-to-apply-for")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
-        .withFormUrlEncodedBody(
-          "value[]" -> ApplyForEligibleYears.CurrentTaxYear.toString
-        )
+      val fakeRequest = request("/choose-years-to-apply-for", POST).withFormUrlEncodedBody(
+        "value[]" -> ApplyForEligibleYears.CurrentTaxYear.toString
+      )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.transfer.routes.ChooseYearsController.chooseYears().url)

@@ -20,10 +20,8 @@ import forms.coc.MakeChangesDecisionForm
 import models.{RelationshipRecords, Transferor}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.{CACHE_MAKE_CHANGES_DECISION, CACHE_RELATIONSHIP_RECORDS}
-import uk.gov.hmrc.http.SessionKeys
 import utils.IntegrationSpec
 
 import scala.concurrent.Future
@@ -50,14 +48,10 @@ class MakeChangesControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[String](eqTo(CACHE_MAKE_CHANGES_DECISION), any())(any(), any()))
         .thenReturn(Future.successful("Divorce"))
 
-      val request = FakeRequest(POST, s"$baseUrl/make-changes")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/make-changes", POST)
         .withFormUrlEncodedBody(MakeChangesDecisionForm.StopMAChoice -> MakeChangesDecisionForm.Divorce)
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
@@ -69,14 +63,10 @@ class MakeChangesControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[String](eqTo(CACHE_MAKE_CHANGES_DECISION), any())(any(), any()))
         .thenReturn(Future.successful("Cancel"))
 
-      val request = FakeRequest(POST, s"$baseUrl/make-changes")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/make-changes", POST)
         .withFormUrlEncodedBody(MakeChangesDecisionForm.StopMAChoice -> MakeChangesDecisionForm.Cancel)
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
@@ -97,14 +87,10 @@ class MakeChangesControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[String](eqTo(CACHE_MAKE_CHANGES_DECISION), any())(any(), any()))
         .thenReturn(Future.successful("Cancel"))
 
-      val request = FakeRequest(POST, s"$baseUrl/make-changes")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/make-changes", POST)
         .withFormUrlEncodedBody(MakeChangesDecisionForm.StopMAChoice -> MakeChangesDecisionForm.Cancel)
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
@@ -116,14 +102,10 @@ class MakeChangesControllerISpec extends IntegrationSpec {
       when(mockCachingService.put[String](eqTo(CACHE_MAKE_CHANGES_DECISION), any())(any(), any()))
         .thenReturn(Future.successful("Bereavement"))
 
-      val request = FakeRequest(POST, s"$baseUrl/make-changes")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/make-changes", POST)
         .withFormUrlEncodedBody(MakeChangesDecisionForm.StopMAChoice -> MakeChangesDecisionForm.Bereavement)
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(

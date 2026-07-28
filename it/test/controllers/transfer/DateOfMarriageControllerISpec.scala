@@ -19,10 +19,8 @@ package controllers.transfer
 import models.DateOfMarriageFormInput
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.CACHE_MARRIAGE_DATE
-import uk.gov.hmrc.http.SessionKeys
 import utils.IntegrationSpec
 
 import java.time.LocalDate
@@ -66,18 +64,14 @@ class DateOfMarriageControllerISpec extends IntegrationSpec {
     "redirect to the partners details page when a current tax year date is submitted" in {
       val today = LocalDate.now()
 
-      val request = FakeRequest(POST, s"$baseUrl/date-of-marriage")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/date-of-marriage", POST)
         .withFormUrlEncodedBody(
           "dateOfMarriage.day"   -> today.getDayOfMonth.toString,
           "dateOfMarriage.month" -> today.getMonthValue.toString,
           "dateOfMarriage.year"  -> today.getYear.toString
         )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.transfer.routes.PartnersDetailsController.transfer().url)
@@ -86,36 +80,28 @@ class DateOfMarriageControllerISpec extends IntegrationSpec {
     "redirect to the choose years page when a previous tax year date is submitted" in {
       val previousTaxYearDate = LocalDate.now().minusYears(2)
 
-      val request = FakeRequest(POST, s"$baseUrl/date-of-marriage")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/date-of-marriage", POST)
         .withFormUrlEncodedBody(
           "dateOfMarriage.day"   -> previousTaxYearDate.getDayOfMonth.toString,
           "dateOfMarriage.month" -> previousTaxYearDate.getMonthValue.toString,
           "dateOfMarriage.year"  -> previousTaxYearDate.getYear.toString
         )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.transfer.routes.ChooseYearsController.chooseYears().url)
     }
 
     "return BAD_REQUEST when an invalid date of marriage is submitted" in {
-      val request = FakeRequest(POST, s"$baseUrl/date-of-marriage")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
+      val fakeRequest = request("/date-of-marriage", POST)
         .withFormUrlEncodedBody(
           "dateOfMarriage.day"   -> "",
           "dateOfMarriage.month" -> "",
           "dateOfMarriage.year"  -> ""
         )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe BAD_REQUEST
     }

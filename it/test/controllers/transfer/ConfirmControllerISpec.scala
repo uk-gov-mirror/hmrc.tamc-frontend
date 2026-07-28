@@ -22,11 +22,9 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
 import play.api.libs.json.Json
-import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.USER_ANSWERS_CACHE
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.time.TaxYear
 import utils.{EmailAddress, IntegrationSpec}
 
@@ -76,13 +74,7 @@ class ConfirmControllerISpec extends IntegrationSpec {
           .willReturn(ok.withBody(Json.toJson(CreateRelationshipResponse(ResponseStatus("OK"))).toString()))
       )
 
-      val request = FakeRequest(POST, s"$baseUrl/confirm")
-        .withSession(
-          SessionKeys.sessionId -> sessionId,
-          SessionKeys.authToken -> "Bearer 123"
-        )
-
-      val result = route(app, request).value
+      val result = route(app, request("/confirm", POST)).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.transfer.routes.FinishedController.finished().url)

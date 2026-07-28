@@ -22,11 +22,9 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
 import play.api.libs.json.Json
-import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.CacheService.{CACHE_RECIPIENT_DETAILS, CACHE_RECIPIENT_RECORD, USER_ANSWERS_CACHE, USER_ANSWERS_ELIGIBILITY_CHECK}
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.SessionKeys
 import utils.{EmailAddress, IntegrationSpec}
 
 import java.time.LocalDate
@@ -88,27 +86,24 @@ class PartnersDetailsControllerISpec extends IntegrationSpec {
           )
       )
 
-      val request = FakeRequest(POST, s"$baseUrl/partners-details")
-        .withSession(SessionKeys.sessionId -> sessionId, SessionKeys.authToken -> "Bearer 123")
-        .withFormUrlEncodedBody(
-          "name"      -> "Claire",
-          "last-name" -> "Forester",
-          "gender"    -> "F",
-          "nino"      -> partnerNino.nino
-        )
+      val fakeRequest = request("/partners-details", POST).withFormUrlEncodedBody(
+        "name"      -> "Claire",
+        "last-name" -> "Forester",
+        "gender"    -> "F",
+        "nino"      -> partnerNino.nino
+      )
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.transfer.routes.EligibleYearsController.eligibleYears().url)
     }
 
     "return BAD_REQUEST when an invalid form is submitted" in {
-      val request = FakeRequest(POST, s"$baseUrl/partners-details")
-        .withSession(SessionKeys.sessionId -> sessionId, SessionKeys.authToken -> "Bearer 123")
+      val fakeRequest = request("/partners-details", POST)
         .withFormUrlEncodedBody("name" -> "", "last-name" -> "", "gender" -> "", "nino" -> "")
 
-      val result = route(app, request).value
+      val result = route(app, fakeRequest).value
 
       status(result) mustBe BAD_REQUEST
     }
