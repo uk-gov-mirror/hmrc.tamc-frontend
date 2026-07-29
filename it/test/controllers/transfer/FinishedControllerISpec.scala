@@ -32,7 +32,7 @@ class FinishedControllerISpec extends IntegrationSpec {
 
   private val dateOfMarriage  = LocalDate.now().minusDays(10)
   private val partnerNino     = new Generator().nextNino
-  private val recipientData   = RegistrationFormInput("Claire", "Forester", Gender("F"), partnerNino, dateOfMarriage)
+  private val recipientData   = RegistrationFormInput("Test", "User", Gender("F"), partnerNino, dateOfMarriage)
   private val recipientRecord = RecipientRecord(userRecord, recipientData, Nil)
 
   private val cacheData = UserAnswersCacheData(
@@ -41,7 +41,7 @@ class FinishedControllerISpec extends IntegrationSpec {
     notification = Some(NotificationRecord(EmailAddress("email@email.com"))),
     relationshipCreated = Some(true),
     selectedYears = Some(List(TaxYear.current.startYear)),
-    recipientDetailsFormData = Some(RecipientDetailsFormInput("Claire", "Forester", Gender("F"), partnerNino)),
+    recipientDetailsFormData = Some(RecipientDetailsFormInput("Test", "User", Gender("F"), partnerNino)),
     dateOfMarriage = Some(DateOfMarriageFormInput(dateOfMarriage))
   )
 

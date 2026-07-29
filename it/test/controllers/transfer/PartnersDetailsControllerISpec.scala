@@ -37,7 +37,7 @@ class PartnersDetailsControllerISpec extends IntegrationSpec {
   "PartnersDetailsController" must {
 
     "render the partners details page with cached recipient details populated" in {
-      val recipient = RecipientDetailsFormInput("Claire", "Forester", Gender("F"), partnerNino)
+      val recipient = RecipientDetailsFormInput("Test", "User", Gender("F"), partnerNino)
 
       when(mockCachingService.get[RecipientDetailsFormInput](eqTo(CACHE_RECIPIENT_DETAILS))(any()))
         .thenReturn(Future.successful(Some(recipient)))
@@ -46,16 +46,16 @@ class PartnersDetailsControllerISpec extends IntegrationSpec {
 
       status(result) mustBe OK
       contentAsString(result) must include("Your partner’s details")
-      contentAsString(result) must include("Claire")
-      contentAsString(result) must include("Forester")
+      contentAsString(result) must include("Test")
+      contentAsString(result) must include("User")
     }
 
     "redirect to the eligible years page when valid recipient details are submitted" in {
 
       val dateOfMarriage: LocalDate            = LocalDate.now().minusDays(10)
-      val rdfi                                 = RecipientDetailsFormInput("Claire", "Forester", Gender("F"), partnerNino)
+      val rdfi                                 = RecipientDetailsFormInput("Test", "User", Gender("F"), partnerNino)
       val recipientData: RegistrationFormInput =
-        RegistrationFormInput("Claire", "Forester", Gender("F"), partnerNino, dateOfMarriage)
+        RegistrationFormInput("Test", "User", Gender("F"), partnerNino, dateOfMarriage)
       val recipientRecord                      = RecipientRecord(userRecord, recipientData, Nil)
       val cacheData                            =
         UserAnswersCacheData(
@@ -87,8 +87,8 @@ class PartnersDetailsControllerISpec extends IntegrationSpec {
       )
 
       val fakeRequest = request("/partners-details", POST).withFormUrlEncodedBody(
-        "name"      -> "Claire",
-        "last-name" -> "Forester",
+        "name"      -> "Test",
+        "last-name" -> "User",
         "gender"    -> "F",
         "nino"      -> partnerNino.nino
       )

@@ -35,7 +35,7 @@ class ConfirmControllerISpec extends IntegrationSpec {
 
   private val dateOfMarriage  = LocalDate.now().minusDays(10)
   private val partnerNino     = new Generator().nextNino
-  private val recipientData   = RegistrationFormInput("Claire", "Forester", Gender("F"), partnerNino, dateOfMarriage)
+  private val recipientData   = RegistrationFormInput("Test", "User", Gender("F"), partnerNino, dateOfMarriage)
   private val recipientRecord = RecipientRecord(userRecord, recipientData, Nil)
 
   private val cacheData = UserAnswersCacheData(
@@ -44,7 +44,7 @@ class ConfirmControllerISpec extends IntegrationSpec {
     notification = Some(NotificationRecord(EmailAddress("email@email.com"))),
     relationshipCreated = None,
     selectedYears = Some(List(TaxYear.current.startYear)),
-    recipientDetailsFormData = Some(RecipientDetailsFormInput("Claire", "Forester", Gender("F"), partnerNino)),
+    recipientDetailsFormData = Some(RecipientDetailsFormInput("Test", "User", Gender("F"), partnerNino)),
     dateOfMarriage = Some(DateOfMarriageFormInput(dateOfMarriage))
   )
 
@@ -64,7 +64,7 @@ class ConfirmControllerISpec extends IntegrationSpec {
 
       val document = Jsoup.parse(contentAsString(result))
 
-      document.getElementById("recipient-name").text() mustBe "Claire Forester"
+      document.getElementById("recipient-name").text() mustBe "Test User"
       document.getElementById("transferor-email").text() mustBe "email@email.com"
     }
 

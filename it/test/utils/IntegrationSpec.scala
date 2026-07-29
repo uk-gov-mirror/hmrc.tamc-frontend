@@ -130,8 +130,8 @@ trait IntegrationSpec
        |    "nino": "$generatedNino",
        |    "saUtr": "$generatedSaUtr",
        |    "name": {
-       |        "name": "John",
-       |        "lastName": "Smith"
+       |        "name": "Test",
+       |        "lastName": "User"
        |    },
        |    "loginTimes": {
        |        "currentLogin": "2021-06-07T10:52:02.594Z",
