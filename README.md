@@ -27,12 +27,21 @@ Running the application
 sbt -Dplay.http.router=testOnlyDoNotUseInAppConf.Routes run
 ```
 
-
 Testing the application
 -----------------------
-```shell
-sbt test
-```
+
+- Unit Tests
+  ----------
+  - **Unit test the entire test suite:**  `sbt test`
+
+  - **Unit test a single spec file:**  sbt "test:testOnly *fileName"   (for e.g : `sbt "test:testOnly *DivorceControllerTest"`)
+
+
+- Integration tests
+  ----------------
+    ```shell
+    sbt it/test
+    ```
 
 
 Acronyms

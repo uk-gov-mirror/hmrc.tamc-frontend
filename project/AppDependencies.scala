@@ -22,18 +22,18 @@ object AppDependencies {
   private val hmrcMongoVersion      = "2.12.0"
   private val playVersion           = "play-30"
 
-  private val compile: Seq[ModuleID] = Seq(
+  val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"       %% s"sca-wrapper-$playVersion" % hmrcScaWrapperVersion,
     "uk.gov.hmrc"       %% s"tax-year"                 % "6.0.0",
     "org.typelevel"     %% "cats-core"                 % "2.13.0",
     "uk.gov.hmrc.mongo" %% s"hmrc-mongo-$playVersion"  % hmrcMongoVersion
   )
 
-  private val test: Seq[ModuleID] = Seq(
+  val test: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"       %% s"sca-wrapper-test-$playVersion" % hmrcScaWrapperVersion,
     "org.scalatestplus" %% "scalacheck-1-18"                % "3.2.19.0",
     "org.scalacheck"    %% "scalacheck"                     % "1.19.0"
   ).map(_ % Test)
 
-  def apply(): Seq[ModuleID] = compile ++ test
+  val all: Seq[ModuleID] = compile ++ test
 }
