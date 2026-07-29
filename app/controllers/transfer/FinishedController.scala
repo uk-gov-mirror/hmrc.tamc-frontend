@@ -38,7 +38,7 @@ class FinishedController @Inject() (
     with LoggerHelper {
 
   def finished: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
-    // TODO: DDCNL-12164 : Fetch the user answers cache once and reuse it for both call.
+    // TODO: DDCNL-12227 : Fetch the user answers cache once and reuse it for both call.
     registrationService
       .getRecipientDetailsFormData()
       .flatMap { details =>
