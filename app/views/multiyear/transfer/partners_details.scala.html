@@ -27,6 +27,7 @@
     languageUtilsImpl: LanguageUtilsImpl,
     h1: H1,
     p: P,
+    govukFieldset: GovukFieldset,
     inputRadios: InputRadios,
     inputValue: InputValue,
     errorSummary: ErrorSummary,
@@ -40,77 +41,26 @@
     recipientForm: Form[models.RecipientDetailsFormInput],
     domCurrentTaxYear: Boolean
 )(
-implicit messages: Messages,
-request: AuthenticatedUserRequest[?]
+    implicit messages: Messages,
+    request: AuthenticatedUserRequest[?]
 )
-
-@backLink = @{
-    if(domCurrentTaxYear) {
-        controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url
-    } else {
-        controllers.transfer.routes.ChooseYearsController.chooseYears().url
-    }
-}
 
 @main(
     pageTitle = viewHelpers.formErrorPrefix(recipientForm, messages("title.transfer")),
     serviceTitle = "title.application.pattern",
     backLinkHref = Some(backLink)
 ) {
-
     @errorSummary(recipientForm)
 
-    @h1("pages.form.h1", classes = Some("govuk-heading-xl govuk-!-margin-bottom-4"))
-
-    @p(HtmlContent(Messages("pages.form.details")))
-
     @form(action = transfer.routes.PartnersDetailsController.transferAction(), args = (Symbol("id") -> "register-form")) {
-        <fieldset class="govuk-fieldset">
-            @inputValue(
-                form = recipientForm,
-                id = "name",
-                name = "name",
-                labelKey = "pages.form.field.name",
-                classes = Some("govuk-!-width-one-half")
-            )
-            @inputValue(
-                form = recipientForm,
-                id = "last-name",
-                name = "last-name",
-                labelKey = "pages.form.field.last-name",
-                classes = Some("govuk-!-width-one-half")
-            )
-            @inputRadios(
-                form = recipientForm,
-                legend = "pages.form.field.gender",
-                id = Some("gender"),
-                name = "gender",
-                items = Seq(
-                            RadioItem(
-                                content = Text(messages("pages.form.field.gender.male")),
-                                value = Some(Gender("M").gender),
-                                id = Some("gender"),
-                                checked = recipientForm("gender").value.contains("M")
-                            ),
-                            RadioItem(
-                                content = Text(messages("pages.form.field.gender.female")),
-                                value = Some(Gender("F").gender),
-                                id = Some("gender-f"),
-                                checked = recipientForm("gender").value.contains("F")
-                            )),
-                legendAsHeading = false,
-                    legendClasses = "govuk-label",
-                    hint = Some(Text(messages("pages.form.field-helper.gender")))
-                )
-            @inputValue(
-                form = recipientForm,
-                id = "nino",
-                name = "nino",
-                labelKey = "pages.form.field.nino",
-                hint = Some(Text(Messages("pages.form.field-helper.nino-example"))),
-                classes = Some("govuk-!-width-one-half")
-            )
-        </fieldset>
+        @govukFieldset(Fieldset(
+            legend = Some(Legend(
+                content = HtmlContent(legendContent),
+                classes = "govuk-fieldset__legend--l",
+                isPageHeading = false
+            )),
+            html = html
+        ))
 
         @details(Details(
             summary = Text(messages("pages.form.field-helper.nino-where")),
@@ -124,4 +74,69 @@ request: AuthenticatedUserRequest[?]
 
         @button(msg = "generic.continue", attrs = Map("data-journey-click" -> "marriage-allowance:button:recipient_continue"))
     }
+}
+
+@backLink = @{
+    if(domCurrentTaxYear) {
+        controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url
+    } else {
+        controllers.transfer.routes.ChooseYearsController.chooseYears().url
+    }
+}
+
+@legendContent = {
+    @h1("pages.form.h1")
+
+    @p(HtmlContent(Messages("pages.form.details")))
+}
+
+@html = {
+    @inputValue(
+        form = recipientForm,
+        id = "name",
+        name = "name",
+        labelKey = "pages.form.field.name",
+        classes = Some("govuk-!-width-one-half")
+    )
+
+    @inputValue(
+        form = recipientForm,
+        id = "last-name",
+        name = "last-name",
+        labelKey = "pages.form.field.last-name",
+        classes = Some("govuk-!-width-one-half")
+    )
+
+    @inputRadios(
+        form = recipientForm,
+        legend = "pages.form.field.gender",
+        id = Some("gender"),
+        name = "gender",
+        items = Seq(
+                    RadioItem(
+                        content = Text(messages("pages.form.field.gender.male")),
+                        value = Some(Gender("M").gender),
+                        id = Some("gender"),
+                        checked = recipientForm("gender").value.contains("M")
+                    ),
+                    RadioItem(
+                        content = Text(messages("pages.form.field.gender.female")),
+                        value = Some(Gender("F").gender),
+                        id = Some("gender-f"),
+                        checked = recipientForm("gender").value.contains("F")
+                    )
+                ),
+        legendAsHeading = false,
+        legendClasses = "govuk-label",
+        hint = Some(Text(messages("pages.form.field-helper.gender")))
+    )
+
+    @inputValue(
+        form = recipientForm,
+        id = "nino",
+        name = "nino",
+        labelKey = "pages.form.field.nino",
+        hint = Some(Text(Messages("pages.form.field-helper.nino-example"))),
+        classes = Some("govuk-!-width-one-half")
+    )
 }

@@ -17,46 +17,54 @@
 @import models.auth.AuthenticatedUserRequest
 @import java.time.LocalDate
 @import forms.coc.DivorceSelectYearForm
-@import includes.{H1, P, ErrorSummary, InputDate, Button}
+@import includes.{H1, P, ErrorSummary, Button}
 
 @import views.Main
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(
-main: Main,
-form: FormWithCSRF,
-divorceYearForm: DivorceSelectYearForm,
-h1: H1,
-p: P,
-errorSummary: ErrorSummary,
-inputDate: InputDate,
-viewHelpers: utils.ViewHelpers,
-button: Button
+    main: Main,
+    form: FormWithCSRF,
+    divorceYearForm: DivorceSelectYearForm,
+    h1: H1,
+    p: P,
+    errorSummary: ErrorSummary,
+    viewHelpers: utils.ViewHelpers,
+    button: Button,
+    govukDateInput: GovukDateInput
 )
 
-@(divorceSelectYearForm: Form[LocalDate])(implicit messages: Messages,
-request: AuthenticatedUserRequest[?])
+@(divorceSelectYearForm: Form[LocalDate])(implicit messages: Messages, request: AuthenticatedUserRequest[?])
 
 @main(
     pageTitle = viewHelpers.formErrorPrefix(divorceSelectYearForm, messages("pages.divorce.title")),
-    serviceTitle = "tamc.manage") {
-
-    @errorSummary(divorceSelectYearForm, Some("dateOfDivorce.day"))
-
-    @h1("pages.divorce.title")
-
-    @p(Text(messages("pages.divorce.paragraph1")))
+    serviceTitle = "tamc.manage"
+) {
+    @errorSummary(divorceSelectYearForm, Some("dateOfDivorce-day"))
 
     @form(action = UpdateRelationship.routes.DivorceController.submitDivorceEnterYear()) {
-        
-        @inputDate(
-            fieldName = divorceYearForm.DateOfDivorce,
-            form = divorceSelectYearForm,
-            legendKey = "pages.divorce.title",
-            hint = Some(Text(messages("pages.divorce.date.hint"))),
-            isPageHeading = false,
-            legendClasses = "govuk-visually-hidden"
-        )
+
+        @govukDateInput(DateInput(
+            id = divorceYearForm.DateOfDivorce,
+            namePrefix = Some(divorceYearForm.DateOfDivorce),
+            hint = Some(Hint(
+                content = Text((messages("pages.divorce.date.hint")))
+            )),
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = HtmlContent(legendContent),
+                    classes = "govuk-fieldset__legend--l",
+                    isPageHeading = false
+                ))
+            ))
+        ))
 
         @button("generic.continue")
     }
+}
+
+@legendContent = {
+    @h1("pages.divorce.title")
+
+    @p(Text(messages("pages.divorce.paragraph1")))
 }
