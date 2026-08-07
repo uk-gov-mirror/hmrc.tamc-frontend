@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,19 +38,12 @@ class FinishedController @Inject() (
     with LoggerHelper {
 
   def finished: Action[AnyContent] = authenticate.pertaxAuthActionWithUserDetails.async { implicit request =>
-    // TODO: DDCNL-12227 : Fetch the user answers cache once and reuse it for both call.
     registrationService
-      .getRecipientDetailsFormData()
-      .flatMap { details =>
-        registrationService
-          .getFinishedData(request.nino)
-          .flatMap { case NotificationRecord(email) =>
-            val cache = cachingService.clear()
-            cache.map { _ =>
-              Ok(finishedV(transferorEmail = email, name = details.name))
-            }
-          }
-          .recover(errorHandler.handleError)
+      .getFinishedPageData()
+      .flatMap { case (details, NotificationRecord(email)) =>
+        cachingService.clear().map { _ =>
+          Ok(finishedV(transferorEmail = email, name = details.name))
+        }
       }
       .recover(errorHandler.handleError)
   }

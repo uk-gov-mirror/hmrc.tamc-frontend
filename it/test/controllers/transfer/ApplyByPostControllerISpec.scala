@@ -41,6 +41,20 @@ class ApplyByPostControllerISpec extends IntegrationSpec {
       )
     }
 
+    "render the apply by post page when the selected tax years are stored in reverse order" in {
+      when(mockCachingService.get[String](eqTo(CACHE_CHOOSE_YEARS))(any()))
+        .thenReturn(Future.successful(Some("currentTaxYear,previousTaxYears")))
+
+      val result = route(app, request("/apply-by-post")).value
+
+      status(result) mustBe OK
+
+      contentAsString(result) must include("Apply for Marriage Allowance by post")
+      contentAsString(result) must include(
+        "Your application includes a previous tax year. You cannot apply for previous tax years online."
+      )
+    }
+
     "render the apply by post page when no tax years are stored in the cache" in {
       when(mockCachingService.get[String](eqTo(CACHE_CHOOSE_YEARS))(any()))
         .thenReturn(Future.successful(None))
