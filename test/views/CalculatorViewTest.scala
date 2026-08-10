@@ -60,7 +60,7 @@ class CalculatorViewTest extends BaseTest {
     }
 
     "display radio button header" in {
-      getContentByClass(identifier = "govuk-fieldset__heading", expected = "Where do you live?")
+      getContentByClass(identifier = "govuk-label--s", expected = "Where do you live?")
       getContentByClass(
         identifier = "govuk-hint",
         expected = "Where you live can affect how much you benefit because of different tax rates."
