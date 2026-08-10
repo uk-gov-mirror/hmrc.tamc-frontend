@@ -40,7 +40,7 @@ class ChooseContentTest extends BaseTest with Injecting with NinoGenerator {
   "Choose page - get view" should {
 
     "Display correct page heading" in {
-      doc.getElementById("pageHeading").text() shouldBe "What do you want to do?"
+      doc.getElementsByClass("govuk-fieldset__heading").eachText().toArray() shouldBe Array("What do you want to do?")
     }
 
     "Display correct page content & radio options" in {

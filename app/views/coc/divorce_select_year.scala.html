@@ -21,6 +21,7 @@
 
 @import views.Main
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 
 @this(
     main: Main,
@@ -44,20 +45,20 @@
 
     @form(action = UpdateRelationship.routes.DivorceController.submitDivorceEnterYear()) {
 
-        @govukDateInput(DateInput(
-            id = divorceYearForm.DateOfDivorce,
-            namePrefix = Some(divorceYearForm.DateOfDivorce),
-            hint = Some(Hint(
-                content = Text((messages("pages.divorce.date.hint")))
-            )),
-            fieldset = Some(Fieldset(
-                legend = Some(Legend(
-                    content = HtmlContent(legendContent),
-                    classes = "govuk-fieldset__legend--l",
-                    isPageHeading = false
+        @govukDateInput(
+            DateInput(
+                hint = Some(Hint(
+                    content = Text((messages("pages.divorce.date.hint")))
+                )),
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = HtmlContent(legendContent),
+                        classes = "govuk-fieldset__legend--l",
+                        isPageHeading = false
+                    ))
                 ))
-            ))
-        ))
+            ).withDayMonthYearFormField(divorceSelectYearForm(divorceYearForm.DateOfDivorce))
+        )
 
         @button("generic.continue")
     }

@@ -60,7 +60,7 @@ class CalculatorViewTest extends BaseTest {
     }
 
     "display radio button header" in {
-      getContentByClass(identifier = "govuk-fieldset__heading", expected = "Where do you live?")
+      getContentByClass(identifier = "govuk-label--s", expected = "Where do you live?")
       getContentByClass(
         identifier = "govuk-hint",
         expected = "Where you live can affect how much you benefit because of different tax rates."
@@ -75,11 +75,10 @@ class CalculatorViewTest extends BaseTest {
     }
 
     "display income headers" in {
+      val label = Jsoup.parse(contentAsString(result)).getElementsByClass("govuk-label")
 
-      val label = Jsoup.parse(contentAsString(result)).getElementsByClass("govuk-label govuk-label--l ")
-
-      label.eq(0).text() should equal("Your income (low), before tax is taken off")
-      label.eq(1).text() should equal("Your partner’s income (high), before tax is taken off")
+      label.eq(4).text() should equal("Your income (low), before tax is taken off")
+      label.eq(5).text() should equal("Your partner’s income (high), before tax is taken off")
     }
 
   }

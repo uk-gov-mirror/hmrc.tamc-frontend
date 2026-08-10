@@ -49,11 +49,20 @@
 ) {
     @errorSummary(calculatorForm)
 
+    @h1("pages.calc.header")
+
     @form(action = routes.EligibilityCalculatorController.gdsCalculatorAction(), args = Symbol("id") -> "calculator") {
+
+        @if(calculationResult.isEmpty) {
+            @p(Text(Messages("pages.calc.para1")), elmId = Some("how-much-tax-you-can-save"))
+        }
+
+        @calculatorResultView(calculationResult)
+
         @govukFieldset(Fieldset(
             legend = Some(Legend(
-                content = HtmlContent(legendContent),
-                classes = "govuk-fieldset__legend--l",
+                content = Text(Messages("pages.calc.header")),
+                classes = "govuk-visually-hidden",
                 isPageHeading = false
             )),
             html = html
@@ -86,19 +95,11 @@
     <hr aria-hidden="true" class="govuk-section-break govuk-section-break--xl">
 }
 
-@legendContent = {
-    @h1("pages.calc.header")
-    
-    @calculatorResultView(calculationResult)
-
-    @p(Text(Messages("pages.calc.para1")), elmId = Some("how-much-tax-you-can-save"))
-}
-
 @html = {
     @inputRadios(
         form = calculatorForm,
         legend = "pages.calc.where",
-        legendAsHeading = true,
+        legendAsHeading = false,
         legendClasses = "govuk-label--s",
         hint = Some(Text(messages("pages.calc.where.hint"))),
         id = Some("country"),

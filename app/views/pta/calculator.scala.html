@@ -37,39 +37,39 @@
         calculatorForm: Form[models.EligibilityCalculatorInput]
 )(implicit messages: Messages, request: UserRequest[?])
 
-    @main(
-        pageTitle = viewHelpers.formErrorPrefix(calculatorForm, Messages("title.eligibility-criteria")),
-        backLinkHref = Some(controllers.routes.HowItWorksController.howItWorks().url)
-    ) {
+@main(
+    pageTitle = viewHelpers.formErrorPrefix(calculatorForm, Messages("title.eligibility-criteria")),
+    backLinkHref = Some(controllers.routes.HowItWorksController.howItWorks().url)
+) {
 
-        @errorSummary(calculatorForm)
+    @errorSummary(calculatorForm)
 
-        @h1("pages.calc.header")
+    @h1("pages.calc.header")
 
-        @form(action = routes.EligibilityCalculatorController.ptaCalculatorAction(), args = Symbol("id") -> "calculator") {
+    @form(action = routes.EligibilityCalculatorController.ptaCalculatorAction(), args = Symbol("id") -> "calculator") {
 
-            @if(calculationResult.isEmpty) {
-                @p(Text(Messages("pages.calc.para1")), elmId = Some("how-much-tax-you-can-save"))
-            }
-
-            @calculatorResultView(calculationResult)
-
-            @govukFieldset(Fieldset(
-                legend = Some(Legend(
-                    content = Text(Messages("pages.calc.header")),
-                    classes = "govuk-visually-hidden",
-                    isPageHeading = false
-                )),
-                html = html,
-                attributes = Map("id" -> "calculator")
-            ))
-
-            @button(msg = "estimate.tax.saving", id = "calculate", attrs = Map("data-journey-click" -> "marriage-allowance:click:calculate"))
-
-            @link(link = controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url, messageKey = "change.status.apply", id = Some("continue"))
-
+        @if(calculationResult.isEmpty) {
+            @p(Text(Messages("pages.calc.para1")), elmId = Some("how-much-tax-you-can-save"))
         }
+
+        @calculatorResultView(calculationResult)
+
+        @govukFieldset(Fieldset(
+            legend = Some(Legend(
+                content = Text(Messages("pages.calc.header")),
+                classes = "govuk-visually-hidden",
+                isPageHeading = false
+            )),
+            html = html,
+            attributes = Map("id" -> "calculator")
+        ))
+
+        @button(msg = "estimate.tax.saving", id = "calculate", attrs = Map("data-journey-click" -> "marriage-allowance:click:calculate"))
+
+        @link(link = controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url, messageKey = "change.status.apply", id = Some("continue"))
+
     }
+}
 
 @html = {
     @inputRadios(
