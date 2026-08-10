@@ -46,14 +46,13 @@
 
     @h1("pages.calc.header")
 
+    @if(calculationResult.isEmpty) {
+        @p(Text(Messages("pages.calc.para1")), elmId = Some("how-much-tax-you-can-save"))
+    }
+
+    @calculatorResultView(calculationResult)
+
     @form(action = routes.EligibilityCalculatorController.ptaCalculatorAction(), args = Symbol("id") -> "calculator") {
-
-        @if(calculationResult.isEmpty) {
-            @p(Text(Messages("pages.calc.para1")), elmId = Some("how-much-tax-you-can-save"))
-        }
-
-        @calculatorResultView(calculationResult)
-
         @govukFieldset(Fieldset(
             legend = Some(Legend(
                 content = Text(Messages("pages.calc.header")),
@@ -67,7 +66,6 @@
         @button(msg = "estimate.tax.saving", id = "calculate", attrs = Map("data-journey-click" -> "marriage-allowance:click:calculate"))
 
         @link(link = controllers.transfer.routes.DateOfMarriageController.dateOfMarriage().url, messageKey = "change.status.apply", id = Some("continue"))
-
     }
 }
 
