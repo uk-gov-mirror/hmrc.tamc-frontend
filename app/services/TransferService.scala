@@ -111,17 +111,17 @@ class TransferService @Inject() (
       throw error
     }
 
-  def getFinishedData(
-    transferorNino: Nino
-  )(implicit request: Request[?], ec: ExecutionContext): Future[NotificationRecord] =
+  def getFinishedPageData()(implicit
+    request: Request[?],
+    ec: ExecutionContext
+  ): Future[(RecipientDetailsFormInput, NotificationRecord)] =
     for {
-      userAnswersCachedData <- getUserAnswersCachedData
-      notification          <- validateFinishedData(userAnswersCachedData)
-    } yield notification
+      cache        <- getUserAnswersCachedData
+      recipient    <- validateRegistrationData(cache)
+      notification <- validateFinishedData(cache)
+    } yield (recipient, notification)
 
-  def getUserAnswersCachedData(implicit
-    request: Request[?]
-  ): Future[Option[UserAnswersCacheData]] =
+  private def getUserAnswersCachedData(implicit request: Request[?]): Future[Option[UserAnswersCacheData]] =
     cachingService.get[UserAnswersCacheData](USER_ANSWERS_CACHE)
 
   private def validateFinishedData(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -310,59 +310,108 @@ class TransferServiceTest extends BaseTest with BeforeAndAfterEach {
 
   }
 
-  "getFinishedData" should {
-    "return NotificationRecord when notification is present in cacheData" in {
+  "getFinishedPageData" should {
+    "return recipient details and NotificationRecord when both are present in cacheData" in {
       val notificationRecord = NotificationRecord(EmailAddress("email@email.com"))
-      val cacheData          = UserAnswersCacheData(None, None, Some(notificationRecord), Some(true))
+      val recipientDetails   = RecipientDetailsFormInput("John", "Doe", Gender("M"), nino)
+
+      val cacheData = UserAnswersCacheData(
+        transferor = None,
+        recipient = None,
+        notification = Some(notificationRecord),
+        relationshipCreated = Some(true),
+        recipientDetailsFormData = Some(recipientDetails)
+      )
 
       when(mockCachingService.get(ArgumentMatchers.eq(USER_ANSWERS_CACHE))(any()))
         .thenReturn(Future.successful(Some(cacheData)))
 
-      val result = await(service.getFinishedData(nino))
+      val result = await(service.getFinishedPageData())
 
-      result shouldBe notificationRecord
+      result shouldBe (recipientDetails, notificationRecord)
     }
 
     "return CacheCreateRequestNotSent Error" when {
       "cacheData is returned and no notificationRecord is present" in {
-        val cacheData = UserAnswersCacheData(None, None, None, Some(true))
+        val recipientDetails = RecipientDetailsFormInput("John", "Doe", Gender("M"), nino)
+
+        val cacheData = UserAnswersCacheData(
+          transferor = None,
+          recipient = None,
+          notification = None,
+          relationshipCreated = Some(true),
+          recipientDetailsFormData = Some(recipientDetails)
+        )
 
         when(mockCachingService.get(ArgumentMatchers.eq(USER_ANSWERS_CACHE))(any()))
           .thenReturn(Future.successful(Some(cacheData)))
 
         intercept[CacheCreateRequestNotSent] {
-          await(service.getFinishedData(nino))
+          await(service.getFinishedPageData())
         }
       }
 
-      "cacheData is returned and  relationshipCreated is false" in {
-        val cacheData =
-          UserAnswersCacheData(None, None, Some(NotificationRecord(EmailAddress("email@email.com"))), Some(false))
+      "cacheData is returned without recipient details" in {
+        val cacheData = UserAnswersCacheData(
+          transferor = None,
+          recipient = None,
+          notification = Some(NotificationRecord(EmailAddress("email@email.com"))),
+          relationshipCreated = Some(true)
+        )
+
+        when(mockCachingService.get(ArgumentMatchers.eq(USER_ANSWERS_CACHE))(any()))
+          .thenReturn(Future.successful(Some(cacheData)))
+
+        intercept[CacheMissingRecipient] {
+          await(service.getFinishedPageData())
+        }
+      }
+
+      "cacheData is returned and relationshipCreated is false" in {
+        val recipientDetails = RecipientDetailsFormInput("John", "Doe", Gender("M"), nino)
+        val cacheData        =
+          UserAnswersCacheData(
+            None,
+            None,
+            Some(NotificationRecord(EmailAddress("email@email.com"))),
+            Some(false),
+            None,
+            Some(recipientDetails)
+          )
 
         when(mockCachingService.get(ArgumentMatchers.eq(USER_ANSWERS_CACHE))(any()))
           .thenReturn(Future.successful(Some(cacheData)))
 
         intercept[CacheCreateRequestNotSent] {
-          await(service.getFinishedData(nino))
+          await(service.getFinishedPageData())
         }
       }
 
       "cacheDate is returned and relationshipCreated is None" in {
-        val cacheData = UserAnswersCacheData(None, None, Some(NotificationRecord(EmailAddress("email@email.com"))))
+        val recipientDetails = RecipientDetailsFormInput("John", "Doe", Gender("M"), nino)
+        val cacheData        = UserAnswersCacheData(
+          transferor = None,
+          recipient = None,
+          notification = Some(NotificationRecord(EmailAddress("email@email.com"))),
+          recipientDetailsFormData = Some(recipientDetails),
+          relationshipCreated = None
+        )
 
         when(mockCachingService.get(ArgumentMatchers.eq(USER_ANSWERS_CACHE))(any()))
           .thenReturn(Future.successful(Some(cacheData)))
 
         intercept[CacheCreateRequestNotSent] {
-          await(service.getFinishedData(nino))
+          await(service.getFinishedPageData())
         }
       }
+    }
 
+    "return BadFetchRequest Error" when {
       "no cacheData is returned" in {
         when(mockCachingService.get(ArgumentMatchers.eq(USER_ANSWERS_CACHE))(any())).thenReturn(Future.successful(None))
 
-        intercept[CacheCreateRequestNotSent] {
-          await(service.getFinishedData(nino))
+        intercept[BadFetchRequest] {
+          await(service.getFinishedPageData())
         }
       }
     }

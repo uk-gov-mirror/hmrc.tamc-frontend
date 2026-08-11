@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import controllers.auth.PertaxAuthAction
 import controllers.transfer.FinishedController
 import helpers.FakePertaxAuthAction
 import models.*
-import models.auth.AuthenticatedUserRequest
 import org.apache.pekko.util.Timeout
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -31,7 +30,6 @@ import play.api.http.Status.OK
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 
-import scala.concurrent.ExecutionContext
 import play.api.test.Helpers.contentAsString
 import play.api.test.{FakeRequest, Helpers}
 import services.TransferService
@@ -59,11 +57,11 @@ class FinishedTest extends BaseTest with NinoGenerator {
 
   val finishedController: FinishedController = app.injector.instanceOf[FinishedController]
 
-  when(mockTransferService.getRecipientDetailsFormData()(any[AuthenticatedUserRequest[?]], any[ExecutionContext]))
-    .thenReturn(Future.successful(RecipientDetailsFormInput("Alex", "Smith", Gender("M"), Nino(nino))))
+  val recipientDetails: RecipientDetailsFormInput = RecipientDetailsFormInput("Alex", "Smith", Gender("M"), Nino(nino))
+  val notificationRecord: NotificationRecord      = NotificationRecord(EmailAddress("example@example.com"))
 
-  when(mockTransferService.getFinishedData(any())(any(), any()))
-    .thenReturn(Future.successful(NotificationRecord(EmailAddress("example@example.com"))))
+  when(mockTransferService.getFinishedPageData()(any(), any()))
+    .thenReturn(Future.successful((recipientDetails, notificationRecord)))
 
   "Calling non-pta finished page" should {
 

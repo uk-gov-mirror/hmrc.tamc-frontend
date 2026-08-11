@@ -41,12 +41,7 @@
     backLinkHref = Some(controllers.transfer.routes.ChooseYearsController.chooseYears().url)
 ){
     @h1("title.apply-by-post")
-
-    @* TODO - DDCNL-12227:
-        This check depends on the order of the selected tax years.
-        Consider using selectedTaxYears.contains() instead of sequence equality.
-    *@
-    @if(selectedTaxYears == Seq("previousTaxYears", "currentTaxYear")) {
+    @if(selectedTaxYears.contains("previousTaxYears") && selectedTaxYears.contains("currentTaxYear")) {
         @p(HtmlContent(messages("pages.apply-by-post.paragraph")))
     } else {
         @p(HtmlContent(messages("pages.apply-by-post.only.previous.years")))

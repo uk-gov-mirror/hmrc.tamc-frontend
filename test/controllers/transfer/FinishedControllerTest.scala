@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 
 package controllers.transfer
 
-import config.ApplicationConfig
 import controllers.actions.AuthRetrievals
 import controllers.auth.PertaxAuthAction
 import helpers.FakePertaxAuthAction
 import models.*
-import models.auth.AuthenticatedUserRequest
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import play.api.Application
@@ -35,16 +33,16 @@ import uk.gov.hmrc.time
 import utils.{ControllerBaseTest, EmailAddress, MockAuthenticatedAction, NinoGenerator}
 
 import java.time.LocalDate
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class FinishedControllerTest extends ControllerBaseTest with NinoGenerator {
 
-  lazy val nino: String                      = generateNino().nino
-  val currentTaxYear: Int                    = time.TaxYear.current.startYear
-  val mockTransferService: TransferService   = mock[TransferService]
-  val mockTimeService: TimeService           = mock[TimeService]
-  val notificationRecord: NotificationRecord = NotificationRecord(EmailAddress("test@test.com"))
-  val applicationConfig: ApplicationConfig   = instanceOf[ApplicationConfig]
+  lazy val nino: String                           = generateNino().nino
+  val currentTaxYear: Int                         = time.TaxYear.current.startYear
+  val mockTransferService: TransferService        = mock[TransferService]
+  val mockTimeService: TimeService                = mock[TimeService]
+  val notificationRecord: NotificationRecord      = NotificationRecord(EmailAddress("test@test.com"))
+  val recipientDetails: RecipientDetailsFormInput = RecipientDetailsFormInput("Alex", "Smith", Gender("M"), Nino(nino))
 
   override def fakeApplication(): Application = GuiceApplicationBuilder()
     .overrides(
@@ -56,20 +54,16 @@ class FinishedControllerTest extends ControllerBaseTest with NinoGenerator {
     )
     .build()
 
-  def controller: FinishedController =
-    app.injector.instanceOf[FinishedController]
+  def controller: FinishedController = app.injector.instanceOf[FinishedController]
 
   when(mockTimeService.getCurrentDate) `thenReturn` LocalDate.now()
   when(mockTimeService.getCurrentTaxYear) `thenReturn` currentTaxYear
 
-  when(mockTransferService.getRecipientDetailsFormData()(any[AuthenticatedUserRequest[?]], any[ExecutionContext]))
-    .thenReturn(Future.successful(RecipientDetailsFormInput("Alex", "Smith", Gender("M"), Nino(nino))))
-
   "finished" should {
     "return success" when {
-      "A notification record is returned" in {
-        when(mockTransferService.getFinishedData(any())(any(), any()))
-          .thenReturn(Future.successful(notificationRecord))
+      "recipient details and notification data are returned" in {
+        when(mockTransferService.getFinishedPageData()(any(), any()))
+          .thenReturn(Future.successful((recipientDetails, notificationRecord)))
 
         val result = controller.finished()(request)
         status(result) shouldBe OK
@@ -78,8 +72,8 @@ class FinishedControllerTest extends ControllerBaseTest with NinoGenerator {
 
     "return error" when {
       "error is thrown" in {
-        when(mockTransferService.getFinishedData(any())(any(), any()))
-          .thenThrow(new IllegalArgumentException("123"))
+        when(mockTransferService.getFinishedPageData()(any(), any()))
+          .thenReturn(Future.failed(new IllegalArgumentException("123")))
 
         val result = controller.finished()(request)
         status(result) shouldBe INTERNAL_SERVER_ERROR

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ import sbt.*
 
 object AppDependencies {
 
-  private val hmrcScaWrapperVersion = "5.3.0"
-  private val hmrcMongoVersion      = "2.12.0"
+  private val hmrcScaWrapperVersion = "5.5.0"
+  private val hmrcMongoVersion      = "2.13.0"
   private val playVersion           = "play-30"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"       %% s"sca-wrapper-$playVersion" % hmrcScaWrapperVersion,
-    "uk.gov.hmrc"       %% s"tax-year"                 % "6.0.0",
+    "uk.gov.hmrc"       %% "tax-year"                  % "6.0.0",
     "org.typelevel"     %% "cats-core"                 % "2.13.0",
     "uk.gov.hmrc.mongo" %% s"hmrc-mongo-$playVersion"  % hmrcMongoVersion
   )
