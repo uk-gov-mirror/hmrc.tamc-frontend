@@ -37,13 +37,12 @@ pageTitle = viewHelpers.formErrorPrefix(decisionForm, messages("pages.decision.t
 
     @errorSummary(decisionForm, Some("decisionChoice-checkmarriageallowanceclaim"))
 
-     @h1("pages.decision.title")
-
     @form(action = UpdateRelationship.routes.ChooseController.submitDecision(), args = (Symbol("id") -> "check-relationship-form")) {
-
         @inputRadios(
             form = decisionForm,
             legend = "pages.decision.title",
+            legendAsHeading = true,
+            legendClasses = "govuk-fieldset__legend--xl",
             id = Some(CheckClaimOrCancelDecisionForm.DecisionChoice),
             name = CheckClaimOrCancelDecisionForm.DecisionChoice,
             items = Seq(RadioItem(
@@ -55,8 +54,6 @@ pageTitle = viewHelpers.formErrorPrefix(decisionForm, messages("pages.decision.t
                             value = Some(CheckClaimOrCancelDecisionForm.StopMarriageAllowance),
                             id = Some("decisionChoice-stopmarriageallowance")
                         )),
-            legendAsHeading = false,
-            legendClasses = "govuk-visually-hidden"
         )
 
         @button("generic.continue")

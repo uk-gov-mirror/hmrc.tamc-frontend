@@ -19,26 +19,29 @@
 @import views.Main
 
 @this(
-        main: Main,
-        calculatorResultView: templates.calculator_result,
-        form: FormWithCSRF,
-        errorSummary: ErrorSummary,
-        h1: H1,
-        govukFieldset: GovukFieldset,
-        p: P,
-        inputValue: InputValue,
-        inputRadios: InputRadios,
-        link: Link,
-        button: Button,
-        viewHelpers: _root_.utils.ViewHelpers,
-        govukInsetText: GovukInsetText
+    main: Main,
+    calculatorResultView: templates.calculator_result,
+    form: FormWithCSRF,
+    errorSummary: ErrorSummary,
+    h1: H1,
+    govukFieldset: GovukFieldset,
+    p: P,
+    inputValue: InputValue,
+    inputRadios: InputRadios,
+    link: Link,
+    button: Button,
+    viewHelpers: _root_.utils.ViewHelpers,
+    govukInsetText: GovukInsetText
 )
 
 
 @(
-        calculatorForm: Form[models.EligibilityCalculatorInput],
-        calculationResult: Option[models.EligibilityCalculatorResult] = None
-)(implicit messages: Messages, request: UserRequest[?])
+    calculatorForm: Form[models.EligibilityCalculatorInput],
+    calculationResult: Option[models.EligibilityCalculatorResult] = None
+)(
+    implicit messages: Messages,
+    request: UserRequest[?]
+)
 
 @main(
     pageTitle = viewHelpers.formErrorPrefix(calculatorForm, Messages("title.eligibility-criteria")),
@@ -48,9 +51,11 @@
 
     @h1("pages.calc.header")
 
-    @calculatorResultView(calculationResult)
+    @if(calculationResult.isEmpty) {
+        @p(Text(Messages("pages.calc.para1")), elmId = Some("how-much-tax-you-can-save"))
+    }
 
-    @p(Text(Messages("pages.calc.para1")), elmId = Some("how-much-tax-you-can-save"))
+    @calculatorResultView(calculationResult)
 
     @form(action = routes.EligibilityCalculatorController.gdsCalculatorAction(), args = Symbol("id") -> "calculator") {
         @govukFieldset(Fieldset(
@@ -72,14 +77,14 @@
         <ul class="group">
             <li class="previous">
                 <a href="https://www.gov.uk/marriage-allowance-guide/how-it-works" id="previous" rel="prev"
-                title="Navigate to previous part">
+                    title="Navigate to previous part">
                     <span class="pagination-label">@Html(Messages("generic.previous"))</span>
                     <span class="pagination-part-title">@Html(Messages("pages.how-it-works.heading"))</span>
                 </a>
             </li>
             <li class="next">
                 <a href="https://www.gov.uk/marriage-allowance/how-to-apply" id="next" rel="next"
-                title="Navigate to next part">
+                    title="Navigate to next part">
                     <span class="pagination-label">@Html(Messages("generic.next"))</span>
                     <span class="pagination-part-title">@Html(Messages("pages.calc.how-to-apply"))</span>
                 </a>
@@ -90,55 +95,61 @@
 }
 
 @html = {
-@inputRadios(
-    form = calculatorForm,
-    legend = "pages.calc.where",
-    hint = Some(Text(messages("pages.calc.where.hint"))),
-    id = Some("country"),
-    name = "country",
-    items = Seq(RadioItem(
-        content = Text(messages("label.england")),
-        value = Some("england"),
-        id = Some("country-england"),
-        checked = calculatorForm("country").value.contains("england")
-    ), RadioItem(
-        content = Text(messages("label.ni")),
-        value = Some("northernireland"),
-        id = Some("country-northernireland"),
-        checked = calculatorForm("country").value.contains("northernireland")
-    ), RadioItem(
-        content = Text(messages("label.scotland")),
-        value = Some("scotland"),
-        id = Some("country-scotland"),
-        checked = calculatorForm("country").value.contains("scotland")
-    ), RadioItem(
-        content = Text(messages("label.wales")),
-        value = Some("wales"),
-        id = Some("country-wales"),
-        checked = calculatorForm("country").value.contains("wales")
-    )),
-    legendAsHeading = true,
-    legendClasses = "govuk-label--s",
-    inline = false
-)
+    @inputRadios(
+        form = calculatorForm,
+        legend = "pages.calc.where",
+        legendAsHeading = false,
+        legendClasses = "govuk-label--s",
+        hint = Some(Text(messages("pages.calc.where.hint"))),
+        id = Some("country"),
+        fieldSetAttrs = Map("id" -> "country"),
+        name = "country",
+        inline = false,
+        items = Seq(
+            RadioItem(
+                content = Text(messages("label.england")),
+                value = Some("england"),
+                id = Some("country-england"),
+                checked = calculatorForm("country").value.contains("england")
+            ),
+            RadioItem(
+                content = Text(messages("label.ni")),
+                value = Some("northernireland"),
+                id = Some("country-northernireland"),
+                checked = calculatorForm("country").value.contains("northernireland")
+            ),
+            RadioItem(
+                content = Text(messages("label.scotland")),
+                value = Some("scotland"),
+                id = Some("country-scotland"),
+                checked = calculatorForm("country").value.contains("scotland")
+            ),
+            RadioItem(
+                content = Text(messages("label.wales")),
+                value = Some("wales"),
+                id = Some("country-wales"),
+                checked = calculatorForm("country").value.contains("wales")
+            )
+        )
+    )
 
-@inputValue(
-    form = calculatorForm,
-    id = "transferor-income",
-    name = "transferor-income",
-    labelKey = "pages.form.field.income",
-    isPageHeading = true,
-    classes = Some("govuk-!-width-one-half"),
-    prefix = Some(PrefixOrSuffix(content = Text("£")))
-)
+    @inputValue(
+        form = calculatorForm,
+        id = "transferor-income",
+        name = "transferor-income",
+        labelKey = "pages.form.field.income",
+        isPageHeading = false,
+        classes = Some("govuk-!-width-one-half"),
+        prefix = Some(PrefixOrSuffix(content = Text("£")))
+    )
 
-@inputValue(
-    form = calculatorForm,
-    id = "recipient-income",
-    name = "recipient-income",
-    labelKey = "pages.form.field.recipient-income",
-    isPageHeading = true,
-    classes = Some("govuk-!-width-one-half"),
-    prefix = Some(PrefixOrSuffix(content = Text("£")))
-)
+    @inputValue(
+        form = calculatorForm,
+        id = "recipient-income",
+        name = "recipient-income",
+        labelKey = "pages.form.field.recipient-income",
+        isPageHeading = false,
+        classes = Some("govuk-!-width-one-half"),
+        prefix = Some(PrefixOrSuffix(content = Text("£")))
+    )
 }

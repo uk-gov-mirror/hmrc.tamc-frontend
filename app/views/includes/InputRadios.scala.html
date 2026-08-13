@@ -18,17 +18,18 @@
 
 @this(govukRadios: GovukRadios)
 
-@(      form: Form[?],
-        legend: String,
-        id: Option[String] = None,
-        name: String,
-        items: Seq[RadioItem],
-        legendAsHeading: Boolean = true,
-        fieldSetAttrs: Map[String, String] = Map.empty,
-        hint: Option[Content] = None,
-        hintClasses: String = "",
-        legendClasses: String = "govuk-fieldset__legend--l",
-        inline: Boolean = true
+@(
+    form: Form[?],
+    legend: String,
+    id: Option[String] = None,
+    name: String,
+    items: Seq[RadioItem],
+    legendAsHeading: Boolean = true,
+    fieldSetAttrs: Map[String, String] = Map.empty,
+    hint: Option[Content] = None,
+    hintClasses: String = "",
+    legendClasses: String = "govuk-fieldset__legend--l",
+    inline: Boolean = true
 )(implicit messages: Messages)
 
 @govukRadios(Radios(

@@ -51,62 +51,59 @@ request: AuthenticatedUserRequest[?])
     serviceTitle = "title.application.pattern",
     backLinkHref = Some(controllers.transfer.routes.EligibleYearsController.eligibleYearsAction().url)
 ) {
-
     @errorSummary(earlierYearsForm, Some("selectedYear-true"))
 
     @h1("pages.multi-year-select.heading", elmId = Some("heading"))
 
     @form(action = transfer.routes.ExtraYearsController.extraYearsAction(), args = Symbol("id") -> "eligible-years-form") {
-    <fieldset class="govuk-fieldset inline spacingBottom" id="earlierYears">
-        <div id="year-@availableYears.head.year">
-            <h2 class="govuk-heading-m"><span style="color: grey">@Html(Messages("pages.multiyear.taxyear", languageUtilsImpl().taxDateIntervalShort(availableYears.head.year)))</span>
-                <br>@languageUtilsImpl().taxDateInterval(availableYears.head.year)</h2>
+        <fieldset class="govuk-fieldset inline spacingBottom" id="earlierYears">
+            <div id="year-@availableYears.head.year">
+                <h2 class="govuk-heading-m"><span style="color: grey">@Html(Messages("pages.multiyear.taxyear", languageUtilsImpl().taxDateIntervalShort(availableYears.head.year)))</span>
+                    <br>@languageUtilsImpl().taxDateInterval(availableYears.head.year)</h2>
 
 
-                @p(HtmlContent(Messages("pages.multiyear.canclaim", input.name,
-                    languageUtilsImpl().taxDateIntervalShort(availableYears.head.year))))
+                    @p(HtmlContent(Messages("pages.multiyear.canclaim", input.name,
+                        languageUtilsImpl().taxDateIntervalShort(availableYears.head.year))))
 
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>@Html(Messages("your-income", benefitCalculatorHelper.currencyFormatter(applicationConfig.PERSONAL_ALLOWANCE(availableYears.head.year))))</li>
-                    @if(applicationConfig.MAX_LIMIT_SCOT(availableYears.head.year) == 0) {
-                    <li>@Html(Messages("income-between", languageUtilsImpl().formPossessive(input.name),benefitCalculatorHelper.currencyFormatter(applicationConfig.PERSONAL_ALLOWANCE(availableYears.head.year)+1),
-                        benefitCalculatorHelper.currencyFormatter(applicationConfig.MAX_LIMIT(availableYears.head.year))))
-                    </li>
-                    } else {
-                    <li>@Html(Messages("income-between-scots", languageUtilsImpl().formPossessive(input.name),benefitCalculatorHelper.currencyFormatter(applicationConfig.PERSONAL_ALLOWANCE(availableYears.head.year)+1),
-                        benefitCalculatorHelper.currencyFormatter(applicationConfig.MAX_LIMIT(availableYears.head.year)),
-                        benefitCalculatorHelper.currencyFormatter(applicationConfig.MAX_LIMIT_SCOT(availableYears.head.year))))
-                    </li>
-                    }
-                </ul>
-                @p(HtmlContent(Messages("pages.multiyear.successful",
-                    languageUtilsImpl().taxDateIntervalShort(availableYears.head.year),
-                    input.name, benefitCalculatorHelper.currencyFormatter(applicationConfig.MAX_BENEFIT(availableYears.head.year)))))
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li>@Html(Messages("your-income", benefitCalculatorHelper.currencyFormatter(applicationConfig.PERSONAL_ALLOWANCE(availableYears.head.year))))</li>
+                        @if(applicationConfig.MAX_LIMIT_SCOT(availableYears.head.year) == 0) {
+                        <li>@Html(Messages("income-between", languageUtilsImpl().formPossessive(input.name),benefitCalculatorHelper.currencyFormatter(applicationConfig.PERSONAL_ALLOWANCE(availableYears.head.year)+1),
+                            benefitCalculatorHelper.currencyFormatter(applicationConfig.MAX_LIMIT(availableYears.head.year))))
+                        </li>
+                        } else {
+                        <li>@Html(Messages("income-between-scots", languageUtilsImpl().formPossessive(input.name),benefitCalculatorHelper.currencyFormatter(applicationConfig.PERSONAL_ALLOWANCE(availableYears.head.year)+1),
+                            benefitCalculatorHelper.currencyFormatter(applicationConfig.MAX_LIMIT(availableYears.head.year)),
+                            benefitCalculatorHelper.currencyFormatter(applicationConfig.MAX_LIMIT_SCOT(availableYears.head.year))))
+                        </li>
+                        }
+                    </ul>
+                    @p(HtmlContent(Messages("pages.multiyear.successful",
+                        languageUtilsImpl().taxDateIntervalShort(availableYears.head.year),
+                        input.name, benefitCalculatorHelper.currencyFormatter(applicationConfig.MAX_BENEFIT(availableYears.head.year)))))
 
-            @inputRadios(
-                form = earlierYearsForm,
-                legend = Messages("pages.multiyear.extrayears.from.to", languageUtilsImpl().taxDateInterval(availableYears.head.year)),
-                id = Some("selectedYear"),
-                name = "selectedYear",
-                items = Seq(RadioItem(
-                                content = Text(messages("radio.yes")),
-                                value = Some(availableYears.head.year.toString),
-                                id = Some("selectedYear-true")
-                            ), RadioItem(
-                                content = Text(messages("radio.no")),
-                                value = Some("0"),
-                                id = Some("selectedYear-false")
-                            )),
-                legendAsHeading = true,
-                legendClasses = "heading-medium"
-            )
-            <input type="hidden" name="furtherYears" value="@availableYears.tail.map(_.year).mkString(" ,")" />
-            <input type="hidden" name="yearAvailableForSelection" value="@availableYears.head.year"/>
-        </div>
-    </fieldset>
+                @inputRadios(
+                    form = earlierYearsForm,
+                    legend = Messages("pages.multiyear.extrayears.from.to", languageUtilsImpl().taxDateInterval(availableYears.head.year)),
+                    id = Some("selectedYear"),
+                    name = "selectedYear",
+                    items = Seq(RadioItem(
+                                    content = Text(messages("radio.yes")),
+                                    value = Some(availableYears.head.year.toString),
+                                    id = Some("selectedYear-true")
+                                ), RadioItem(
+                                    content = Text(messages("radio.no")),
+                                    value = Some("0"),
+                                    id = Some("selectedYear-false")
+                                )),
+                    legendAsHeading = true,
+                    legendClasses = "heading-medium"
+                )
+                <input type="hidden" name="furtherYears" value="@availableYears.tail.map(_.year).mkString(" ,")" />
+                <input type="hidden" name="yearAvailableForSelection" value="@availableYears.head.year"/>
+            </div>
+        </fieldset>
 
-    @button(msg = "generic.continue", attrs = Map("data-journey-click" -> "marriage-allowance:button:previousyear_continue"))
-
-
+        @button(msg = "generic.continue", attrs = Map("data-journey-click" -> "marriage-allowance:button:previousyear_continue"))
     }
 }

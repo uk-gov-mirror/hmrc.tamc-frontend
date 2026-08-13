@@ -57,18 +57,15 @@
 
     @errorSummary(form)
 
-    @h1("title.choose-years")
-
     @formCSRF(action = transfer.routes.ChooseYearsController.chooseYearsAction(), args = Symbol("id") -> "choose-year-form") {
-
         @govukCheckboxes(
             Checkboxes(
                 name = "value[]",
                 fieldset = Some(Fieldset(
                     legend = Some(Legend(
                         content = Text(messages("title.choose-years")),
-                        classes = "govuk-visually-hidden",
-                        isPageHeading = false
+                        classes = "govuk-fieldset__legend--xl",
+                        isPageHeading = true
                     ))
                 )),
                 hint = Some(Hint(content = Text(messages("pages.form.field-helper.chooseYears")))),
