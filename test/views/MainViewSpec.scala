@@ -47,7 +47,7 @@ class MainViewSpec extends BaseTest with Injecting {
     val localMessagesLink        = "http://localhost:9232/personal-account/messages"
     val localTrackProgressLink   = "http://localhost:9100/track"
     val signOutUrl               = "/marriage-allowance-application/logout"
-    val keepAliveUrl             = "/refresh-session"
+    val keepAliveUrl             = "/marriage-allowance-application/keep-alive"
 
     val urBannerHeader   = "Help make GOV.UK better"
     val urBannerLinkText = "Sign up to take part in research (opens in new tab)"
