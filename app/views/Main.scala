@@ -22,6 +22,7 @@ import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.ServiceURLs
+import uk.gov.hmrc.sca.config.BackLinkConfig
 import uk.gov.hmrc.sca.models.BannerConfig
 import uk.gov.hmrc.sca.services.WrapperService
 
@@ -62,10 +63,7 @@ class MainImpl @Inject() (
     disableBackLink: Boolean
   )(
     contentBlock: Html
-  )(implicit request: Request[?], messages: Messages): HtmlFormat.Appendable = {
-
-    val hideAccountMenu = request.session.get("authToken").isEmpty
-
+  )(implicit request: Request[?], messages: Messages): HtmlFormat.Appendable =
     wrapperService.standardScaLayout(
       content = contentBlock,
       pageTitle = Some(s"$pageTitle - ${messages(serviceTitle)}"),
@@ -73,9 +71,7 @@ class MainImpl @Inject() (
       serviceURLs = ServiceURLs(
         signOutUrl = Some(controllers.routes.AuthorisationController.logout().url)
       ),
-      timeOutUrl = Some(controllers.routes.AuthorisationController.sessionTimeout().url),
-      keepAliveUrl = "/keep-alive",
-      backLinkUrl = backLinkHref,
+      backLinkConfig = if (disableBackLink) None else backLinkHref.map(BackLinkConfig.UrlBack.apply),
       scripts = Seq(additionalScripts(scripts)),
       styleSheets = Seq(
         additionalStyles()
@@ -86,8 +82,6 @@ class MainImpl @Inject() (
         showHelpImproveBanner = false
       ),
       optTrustedHelper = None,
-      hideMenuBar = hideAccountMenu,
       fullWidth = false
     )(messages, request)
-  }
 }

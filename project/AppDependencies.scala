@@ -18,7 +18,7 @@ import sbt.*
 
 object AppDependencies {
 
-  private val hmrcScaWrapperVersion = "5.5.0"
+  private val hmrcScaWrapperVersion = "6.2.0"
   private val hmrcMongoVersion      = "2.13.0"
   private val playVersion           = "play-30"
 

@@ -19,7 +19,6 @@ package views
 import models.auth.{BaseUserRequest, UserRequest}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.jsoup.select.Elements
 import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.test.{FakeRequest, Injecting}
 import play.twirl.api.{Html, HtmlFormat}
@@ -48,7 +47,7 @@ class MainViewSpec extends BaseTest with Injecting {
     val localMessagesLink        = "http://localhost:9232/personal-account/messages"
     val localTrackProgressLink   = "http://localhost:9100/track"
     val signOutUrl               = "/marriage-allowance-application/logout"
-    val keepAliveUrl             = "/keep-alive"
+    val keepAliveUrl             = "/refresh-session"
 
     val urBannerHeader   = "Help make GOV.UK better"
     val urBannerLinkText = "Sign up to take part in research (opens in new tab)"
@@ -69,7 +68,7 @@ class MainViewSpec extends BaseTest with Injecting {
 
     val accessibilityReferrerUrl: String  = "%2Fsome-url"
     val reportTechnicalProblemUrl: String =
-      "http://localhost:9250/contact/report-technical-problem?service=TAMC&referrerUrl=%2Fsome-url"
+      "http://localhost:9250/contact/report-technical-problem?service=TAMC&referrerUrl=%2Fsome-url&useServiceNavigation"
 
   }
 
@@ -78,7 +77,7 @@ class MainViewSpec extends BaseTest with Injecting {
     implicit val baseUserRequest: BaseUserRequest[?] =
       UserRequest(
         FakeRequest("GET", "/some-url")
-          .withSession(SessionKeys.authToken -> "Bearer 1"),
+          .withSession(SessionKeys.authToken -> "******"),
         None,
         isAuthenticated = true,
         Some(""),
@@ -91,7 +90,7 @@ class MainViewSpec extends BaseTest with Injecting {
 
     s"using the ${CommonValues.testName} for the main" which {
       "the page header should" should {
-        lazy val pageHeader = doc.select(".govuk-header__service-name")
+        lazy val pageHeader = doc.select(".govuk-service-navigation__text")
 
         "contain the text 'Apply for Marriage Allowance'" in {
           pageHeader.text() shouldBe CommonValues.pageHeader
@@ -105,12 +104,12 @@ class MainViewSpec extends BaseTest with Injecting {
 
       }
 
-      lazy val accountLinks           = doc.select(".hmrc-account-menu__link")
+      lazy val accountLinks           = doc.select(".govuk-service-navigation__link")
       lazy val accountHome            = accountLinks.first()
-      lazy val messagesLink           = accountLinks.get(3)
-      lazy val checkProgressLink      = accountLinks.get(4)
-      lazy val profileAndSettingsLink = accountLinks.get(5)
-      lazy val signOutLink            = accountLinks.get(6)
+      lazy val messagesLink           = accountLinks.get(1)
+      lazy val checkProgressLink      = accountLinks.get(2)
+      lazy val profileAndSettingsLink = accountLinks.get(3)
+      lazy val signOutLink            = doc.select(".hmrc-sign-out-nav__link").first()
 
       "the account link" should {
         "have the Account Menu visible" in {
@@ -189,16 +188,15 @@ class MainViewSpec extends BaseTest with Injecting {
       }
 
       "the accessibility link" should {
-        lazy val accessibilityLink = doc.select(
-          "body > footer > div > div > div.govuk-footer__meta-item.govuk-footer__meta-item--grow > ul > li:nth-child(2) > a"
-        )
+        lazy val accessibilityLink = doc.select("footer .govuk-footer__link[href*='accessibility-statement']").first()
 
         "contain the text 'Accessibility statement'" in {
           accessibilityLink.text() shouldBe CommonValues.accessibilityStatementText
         }
 
         "contains the correct URL" in {
-          val expectedUrl = CommonValues.accessibilityStatementBaseUrl + CommonValues.accessibilityReferrerUrl
+          val expectedUrl =
+            CommonValues.accessibilityStatementBaseUrl + CommonValues.accessibilityReferrerUrl + "&useServiceNavigation"
 
           accessibilityLink.attr("href") shouldBe expectedUrl
         }
@@ -256,7 +254,7 @@ class MainViewSpec extends BaseTest with Injecting {
 
       s"using the ${CommonValues.testName} for the main" which {
         "the page header should" should {
-          lazy val pageHeader = doc.select(".govuk-header__service-name")
+          lazy val pageHeader = doc.select(".govuk-service-navigation__text")
 
           "contain the text 'Apply for Marriage Allowance'" in {
             pageHeader.text() shouldBe CommonValues.pageHeader
@@ -269,13 +267,6 @@ class MainViewSpec extends BaseTest with Injecting {
           }
         }
 
-        lazy val accountLinks: Elements = doc.select(".hmrc-account-menu__link")
-
-        "the account link" should {
-          "not have the Account Menu visible" in {
-            accountLinks.isEmpty shouldBe true
-          }
-        }
       }
     }
   }
