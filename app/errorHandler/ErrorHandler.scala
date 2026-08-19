@@ -31,7 +31,7 @@ class ErrorHandler @Inject() (
   implicit val ec: ExecutionContext
 ) extends FrontendErrorHandler {
 
-  // Twirl templates still need an implicit Request, so adapt from RequestHeader here.
+  // FIXME sca-wrapper > 9.0.0 will have some breaking changes, views will be based on RequestHeader instead of Request[_]
   private def rhToRequest(rh: RequestHeader): Request[?] = Request(rh, "")
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
