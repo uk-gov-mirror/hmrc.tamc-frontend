@@ -76,6 +76,7 @@ class MainImpl @Inject() (
       timeOutUrl = Some(controllers.routes.AuthorisationController.sessionTimeout().url),
       keepAliveUrl = "/keep-alive",
       backLinkUrl = backLinkHref,
+      showBackLinkJS = backLinkHref.isEmpty,
       scripts = Seq(additionalScripts(scripts)),
       styleSheets = Seq(
         additionalStyles()
