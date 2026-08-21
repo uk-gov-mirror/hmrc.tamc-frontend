@@ -4,6 +4,7 @@
 GET         /not-authorised                      controllers.AuthorisationController.notAuthorised()
 GET         /logout                              controllers.AuthorisationController.logout()
 GET         /signed-out                          controllers.AuthorisationController.sessionTimeout()
+GET         /keep-alive                          controllers.AuthorisationController.keepAlive()
  
 # GDS journey 
 GET         /benefit-calculator                  controllers.EligibilityCalculatorController.gdsCalculator()

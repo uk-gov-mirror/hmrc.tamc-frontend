@@ -37,6 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait CachingService {
   def get[T](key: CacheReadKey[T])(implicit request: Request[?]): Future[Option[T]]
   def put[T](key: CacheReadWriteKey[T], value: T)(implicit request: Request[?], format: Format[T]): Future[T]
+  def keepAlive()(implicit request: Request[?]): Future[Unit]
   def clear()(implicit request: Request[?]): Future[Unit]
 }
 
@@ -71,6 +72,7 @@ object CacheService {
   val CACHE_LOCKED_UPDATE: CacheReadWriteKey[Boolean]                            = CacheKey[Boolean]("LOCKED_UPDATE") // TODO is this key required?
   val CACHE_ROLE_RECORD: CacheReadWriteKey[String]                               = CacheKey[String]("ROLE") // TODO is this key required?
   val CACHE_CHOOSE_YEARS: CacheReadWriteKey[String]                              = CacheKey[String]("CHOOSE_YEARS")
+  val CACHE_KEEP_ALIVE: CacheReadWriteKey[Long]                                  = CacheKey[Long]("KEEP_ALIVE")
 
   val USER_ANSWERS_CACHE: CacheReadKey[UserAnswersCacheData] = CacheKey[UserAnswersCacheData]((cacheItem: CacheItem) =>
     Some(
@@ -168,6 +170,9 @@ class CachingServiceImpl @Inject() (
       .put[T](request)(key.dataKey, value)
       .map(key.read)
       .map(_.getOrElse(throw new RuntimeException(s"Failed to retrieve ${key.dataKey} from cache after saving")))
+
+  def keepAlive()(implicit request: Request[?]): Future[Unit] =
+    put(CacheService.CACHE_KEEP_ALIVE, System.currentTimeMillis()).map(_ => ())
 
   def clear()(implicit request: Request[?]): Future[Unit] =
     cacheRepo
