@@ -17,12 +17,28 @@
 package controllers
 
 import config.ApplicationConfig
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import play.api.Application
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.CachingService
 import utils.BaseTest
 
+import scala.concurrent.Future
+
 class AuthorisationControllerTest extends BaseTest {
+
+  val mockCachingService: CachingService = mock[CachingService]
+
+  override def fakeApplication(): Application = GuiceApplicationBuilder()
+    .overrides(
+      bind[CachingService].toInstance(mockCachingService)
+    )
+    .build()
 
   implicit val request: Request[AnyContent] = FakeRequest()
 
@@ -48,6 +64,15 @@ class AuthorisationControllerTest extends BaseTest {
       val result = await(controller.logout()(request))
       status(result)           shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(applicationConfig.logoutUrl)
+    }
+  }
+
+  "Calling keepAlive" should {
+    "return NO_CONTENT" in {
+      when(mockCachingService.keepAlive()(any())).thenReturn(Future.successful(()))
+
+      val result = await(controller.keepAlive()(request))
+      status(result) shouldBe NO_CONTENT
     }
   }
 

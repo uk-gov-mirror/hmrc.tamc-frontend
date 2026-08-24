@@ -20,14 +20,19 @@ import com.google.inject.Inject
 import config.ApplicationConfig
 import controllers.actions.UnauthenticatedActionTransformer
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.CachingService
+
+import scala.concurrent.ExecutionContext
 
 class AuthorisationController @Inject() (
   unauthenticatedAction: UnauthenticatedActionTransformer,
+  cachingService: CachingService,
   appConfig: ApplicationConfig,
   cc: MessagesControllerComponents,
   otherWaysView: views.html.errors.other_ways,
   sessionTimeoutView: views.html.errors.session_timeout
-) extends BaseController(cc) {
+)(implicit ec: ExecutionContext)
+    extends BaseController(cc) {
 
   val logoutUrl: String = appConfig.logoutUrl
 
@@ -41,5 +46,9 @@ class AuthorisationController @Inject() (
 
   def sessionTimeout: Action[AnyContent] = unauthenticatedAction { implicit request =>
     Ok(sessionTimeoutView())
+  }
+
+  def keepAlive: Action[AnyContent] = unauthenticatedAction.async { implicit request =>
+    cachingService.keepAlive().map(_ => NoContent)
   }
 }
