@@ -434,7 +434,6 @@ pages.history.button.remove=Remove allowance
 # bereavement page
 #********************************************************************************
 pages.bereavement.title=We are sorry for your loss
-pages.bereavement.enquiries.link.paragraph=to tell us about a bereavement.
 pages.bereavement.recipient.paragraph=You will keep the Marriage Allowance your partner transferred to you until the end of the tax year.
 pages.bereavement.transferor.paragraph=If your partner died after you transferred some of your Personal Allowance to them:
 pages.bereavement.transferor.point1=their estate will be treated as having the extra Personal Allowance you transferred to them

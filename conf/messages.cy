@@ -439,7 +439,6 @@ pages.history.button.remove=Dileu lwfans
 # bereavement page
 #********************************************************************************
 pages.bereavement.title=Mae’n ddrwg gennym am eich colled
-pages.bereavement.enquiries.link.paragraph=i roi gwybod i ni am brofedigaeth.
 pages.bereavement.recipient.paragraph=Byddwch yn cadw’r Lwfans Priodasol y trosglwyddodd eich partner i chi tan ddiwedd y flwyddyn dreth.
 pages.bereavement.transferor.paragraph=Os bu farw eich partner ar ôl i chi drosglwyddo rhywfaint o’ch Lwfans Personol iddynt:
 pages.bereavement.transferor.point1=ystyrir bod ei ystâd yn cynnwys y Lwfans Personol ychwanegol y gwnaethoch drosglwyddo iddo
